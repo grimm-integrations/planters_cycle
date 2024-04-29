@@ -6,12 +6,12 @@ use std::env;
 use std::fmt::Debug;
 
 use ::sea_orm::*;
-use actix_web::{App, get, HttpRequest, HttpResponse, HttpServer, middleware, Result, web};
+use actix_web::{get, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use listenfd::ListenFd;
 use sea_orm_migration::prelude::*;
 
-use migration::{ConnectionTrait, MigratorTrait, SchemaManager};
 use migration::sea_orm::{Database, DbBackend};
+use migration::{ConnectionTrait, MigratorTrait, SchemaManager};
 
 mod controller;
 

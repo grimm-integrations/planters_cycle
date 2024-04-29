@@ -2,7 +2,7 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use actix_web::{get, HttpRequest, HttpResponse, web};
+use actix_web::{get, web, HttpRequest, HttpResponse};
 
 use crate::AppState;
 
