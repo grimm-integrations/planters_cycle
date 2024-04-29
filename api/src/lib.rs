@@ -1,4 +1,89 @@
-use actix_web::{
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
+use std::env;
+
+use sea_orm::*;
+use sea_orm_migration::prelude::*;
+
+use migration::sea_orm::{Database, DbBackend};
+use migration::{DbErr, SchemaManager};
+
+pub fn add(left: usize, right: usize) -> usize {
+    left + right
+}
+
+#[tokio::main]
+async fn start() -> Result<(), DbErr> {
+    println!("Hello World from the api crate!");
+    dotenvy::dotenv().ok();
+    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+    let db_name = env::var("DATABASE_NAME").expect("DATABASE_NAME is not set in .env file");
+
+    let db = Database::connect(&db_url)
+        .await
+        .expect("Database connection failed");
+
+    let db = &match db.get_database_backend() {
+        DbBackend::MySql => {
+            db.execute(Statement::from_string(
+                db.get_database_backend(),
+                format!("CREATE DATABASE IF NOT EXISTS `{}`", db_name),
+            ))
+            .await?;
+            let db_url = format!("{}/{}", db_url, db_name);
+            Database::connect(&db_url).await?
+        }
+        DbBackend::Postgres => {
+            db.execute(Statement::from_string(
+                db.get_database_backend(),
+                format!("DROP DATABASE IF EXISTS \"{}\";", db_name),
+            ))
+            .await?;
+            db.execute(Statement::from_string(
+                db.get_database_backend(),
+                format!("CREATE DATABASE \"{}\";", db_name),
+            ))
+            .await?;
+            let db_url = format!("{}/{}", db_url, db_name);
+            Database::connect(&db_url).await?
+        }
+        DbBackend::Sqlite => {
+            let db_url = format!("{}/{}", db_url, db_name);
+            Database::connect(&db_url).await?
+        }
+    };
+
+    let schema_manager = SchemaManager::new(db);
+    migration::Migrator::up(db, None).await?;
+
+    assert!(schema_manager.has_table("post").await?);
+
+    println!("Hello World from the api crate!");
+
+    Ok(())
+}
+
+pub fn main() {
+    let result = start();
+    if let Some(err) = result.err() {
+        println!("Error: {err}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let result = add(2, 2);
+        assert_eq!(result, 4);
+    }
+}
+
+/*use actix_web::{
     error, get, middleware, post, web, App, Error, HttpRequest, HttpResponse, HttpServer, Result,
 };
 
@@ -101,3 +186,4 @@ pub fn main() {
         println!("Error: {err}");
     }
 }
+*/

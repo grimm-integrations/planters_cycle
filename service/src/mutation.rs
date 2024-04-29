@@ -1,10 +1,14 @@
-// use ::entity::{post, post::Entity as Post};
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
 use sea_orm::*;
+
+// use ::entity::{post, post::Entity as Post};
 
 pub struct Mutation;
 
 impl Mutation {
-    /*pub async fn create_post(
+    /*    pub async fn create_post(
         db: &DbConn,
         form_data: post::Model,
     ) -> Result<post::ActiveModel, DbErr> {

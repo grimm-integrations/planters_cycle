@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 
 [dependencies.sea-orm]
-version = "1.0.0-rc.3"
+version = "0.12.15"
 features = ["debug-print", "runtime-tokio-native-tls", "sqlx-postgres", "mock"]
 
 [dev-dependencies]
