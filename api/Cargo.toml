@@ -8,13 +8,13 @@ edition = "2021"
 [dependencies]
 migration = { path = "../migration" }
 service = { path = "../service" }
+entity = { path = "../entity" }
+listenfd = "1"
 actix-web = "4.5.1"
 dotenvy = "0.15.7"
 tokio = { version = "1.37.0", features = ["full"] }
 sea-orm = { version = "1.0.0-rc.3", features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros"] }
 serde = { version = "1.0.199", features = ["derive"] }
-entity = { path = "../entity" }
-axum = "0.7.1"
 tower = "0.4"
 tower-http = { version = "0.5", features = ["fs"] }
 tower-cookies = "0.10"

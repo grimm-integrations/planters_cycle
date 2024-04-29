@@ -2,8 +2,9 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use ::entity::{post, post::Entity as Post};
 use sea_orm::*;
+
+use ::entity::{post, post::Entity as Post};
 
 pub struct Mutation;
 
@@ -17,8 +18,8 @@ impl Mutation {
             text: Set(form_data.text.to_owned()),
             ..Default::default()
         }
-            .save(db)
-            .await
+        .save(db)
+        .await
     }
 
     pub async fn update_post_by_id(
@@ -37,8 +38,8 @@ impl Mutation {
             title: Set(form_data.title.to_owned()),
             text: Set(form_data.text.to_owned()),
         }
-            .update(db)
-            .await
+        .update(db)
+        .await
     }
 
     pub async fn delete_post(db: &DbConn, id: i32) -> Result<DeleteResult, DbErr> {

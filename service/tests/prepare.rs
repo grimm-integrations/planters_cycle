@@ -2,8 +2,9 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use ::entity::post;
 use sea_orm::*;
+
+use ::entity::post;
 
 #[cfg(feature = "mock")]
 pub fn prepare_mock_db() -> DatabaseConnection {

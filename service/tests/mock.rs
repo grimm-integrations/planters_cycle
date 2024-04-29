@@ -2,11 +2,11 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-mod prepare;
-
 use entity::post;
 use prepare::prepare_mock_db;
 use service::{Mutation, Query};
+
+mod prepare;
 
 #[tokio::test]
 async fn main() {

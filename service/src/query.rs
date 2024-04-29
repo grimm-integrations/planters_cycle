@@ -2,8 +2,9 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use ::entity::{post, post::Entity as Post};
 use sea_orm::*;
+
+use ::entity::{post, post::Entity as Post};
 
 pub struct Query;
 

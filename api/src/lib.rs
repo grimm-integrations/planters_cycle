@@ -3,64 +3,128 @@
  */
 
 use std::env;
+use std::fmt::Debug;
 
 use ::sea_orm::*;
+use actix_web::{App, get, HttpRequest, HttpResponse, HttpServer, middleware, Result, web};
+use listenfd::ListenFd;
 use sea_orm_migration::prelude::*;
 
+use migration::{ConnectionTrait, MigratorTrait, SchemaManager};
 use migration::sea_orm::{Database, DbBackend};
-use migration::{ConnectionTrait, DbErr, MigratorTrait, SchemaManager};
+
+mod controller;
+
+#[derive(Debug, Clone)]
+struct AppState {
+    conn: DatabaseConnection,
+}
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }
 
+#[get("/")]
+async fn index(req: HttpRequest) -> &'static str {
+    println!("REQ: {:?}", req);
+    "Hello world!\r\n"
+}
+
+#[get("/show/{id}")]
+async fn user_detail(path: web::Path<(u32,)>) -> HttpResponse {
+    HttpResponse::Ok().body(format!("User detail: {}", path.into_inner().0))
+}
+
+async fn not_found(data: web::Data<AppState>, request: HttpRequest) -> Result<HttpResponse> {
+    Ok(HttpResponse::NotFound().body("Not Found"))
+}
+
 #[tokio::main]
-async fn start() -> Result<(), DbErr> {
+async fn start() -> std::io::Result<()> {
+    env::set_var("RUST_LOG", "debug");
+    tracing_subscriber::fmt::init();
+
     println!("Hello World from the api crate!");
     dotenvy::dotenv().ok();
+
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
     let db_name = env::var("DATABASE_NAME").expect("DATABASE_NAME is not set in .env file");
+
+    let host = env::var("HOST").expect("HOST is not set in .env file");
+    let port = env::var("PORT").expect("PORT is not set in .env file");
+
+    let server_url = format!("{host}:{port}");
 
     let db = Database::connect(&db_url)
         .await
         .expect("Database connection failed");
 
-    let db = &match db.get_database_backend() {
+    let db = match db.get_database_backend() {
         DbBackend::MySql => {
             db.execute(Statement::from_string(
                 db.get_database_backend(),
                 format!("CREATE DATABASE IF NOT EXISTS `{}`", db_name),
             ))
-            .await?;
+            .await
+            .expect("Could not create database");
             let db_url = format!("{}/{}", db_url, db_name);
-            Database::connect(&db_url).await?
+            Database::connect(&db_url)
+                .await
+                .expect("Could not open database connection.")
         }
         DbBackend::Postgres => {
-            db.execute(Statement::from_string(
-                db.get_database_backend(),
-                format!("DROP DATABASE IF EXISTS \"{}\";", db_name),
-            ))
-            .await?;
-            db.execute(Statement::from_string(
-                db.get_database_backend(),
-                format!("CREATE DATABASE \"{}\";", db_name),
-            ))
-            .await?;
+            let res = db
+                .execute(Statement::from_string(
+                    db.get_database_backend(),
+                    format!("CREATE DATABASE {db_name}"),
+                ))
+                .await;
             let db_url = format!("{}/{}", db_url, db_name);
-            Database::connect(&db_url).await?
+            Database::connect(&db_url)
+                .await
+                .expect("Could not open database connection.")
         }
         DbBackend::Sqlite => {
             let db_url = format!("{}/{}", db_url, db_name);
-            Database::connect(&db_url).await?
+            Database::connect(&db_url)
+                .await
+                .expect("Could not open database connection.")
         }
     };
 
-    let schema_manager = SchemaManager::new(db);
-    migration::Migrator::up(db, None).await?;
+    let schema_manager = SchemaManager::new(&db);
+    migration::Migrator::up(&db, None)
+        .await
+        .expect("Could not run database migrations.");
 
-    assert!(schema_manager.has_table("post").await?);
+    assert!(schema_manager.has_table("post").await.is_ok());
 
     println!("Hello World from the api crate!");
+
+    let state = AppState { conn: db };
+
+    let mut listenfd = ListenFd::from_env();
+    let mut server = HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::new(state.clone()))
+            .wrap(middleware::Logger::default())
+            .default_service(web::route().to(not_found))
+            .service(index)
+            .service(
+                web::scope("/api")
+                    .configure(controller::init)
+                    .service(user_detail),
+            )
+    });
+
+    println!("Starting server at {server_url}");
+
+    server = match listenfd.take_tcp_listener(0)? {
+        Some(listener) => server.listen(listener)?,
+        None => server.bind(&server_url)?,
+    };
+
+    server.run().await?;
 
     Ok(())
 }
@@ -82,108 +146,3 @@ mod tests {
         assert_eq!(result, 4);
     }
 }
-
-/*use actix_web::{
-    error, get, middleware, post, web, App, Error, HttpRequest, HttpResponse, HttpServer, Result,
-};
-
-use dotenvy::dotenv;
-use service::{
-    sea_orm::{Database, DatabaseConnection},
-    Mutation, Query,
-};
-use migration::{Migrator, MigratorTrait};
-use serde::{Deserialize, Serialize};
-use std::env;
-use sea_orm::{ConnectionTrait, Statement};
-
-#[get("/")]
-async fn index(req: HttpRequest) -> &'static str {
-    println!("REQ: {:?}", req);
-    "Hello world!\r\n"
-}
-
-#[get("/show/{id}")]
-async fn user_detail(path: web::Path<(u32,)>) -> HttpResponse {
-    HttpResponse::Ok().body(format!("User detail: {}", path.into_inner().0))
-}
-
-#[tokio::main]
-async fn start() -> std::io::Result<()> {
-    std::env::set_var("RUST_LOG", "debug");
-    tracing_subscriber::fmt::init();
-
-    dotenv().ok();
-    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
-    let db_name = env::var("DATABASE_NAME").expect("DATABASE_NAME is not set in .env file");
-    let host = env::var("HOST").expect("HOST is not set in .env file");
-    let port = env::var("PORT").expect("PORT is not set in .env file");
-    let server_url = format!("{host}:{port}");
-
-    // establish connection to database
-    let connection = Database::connect(&db_url)
-        .await
-        .expect("Could not connect to database server");
-    //const res = await client.query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${DB_NAME}'`);
-    let res = connection.execute(Statement::from_string(
-        connection.get_database_backend(),
-        format!("SELECT datname FROM pg_catalog.pg_database WHERE datname = {db_name}"),
-    ))
-        .await;
-    match res.err() {
-        None => {}
-        Some(_) => {
-            // create database
-            connection.execute(Statement::from_string(
-                connection.get_database_backend(),
-                format!("CREATE DATABASE {db_name}"),
-            ))
-                .await
-                .expect("Could not create database");
-        }
-    }
-
-    /*db.execute(Statement::from_string(
-        db.get_database_backend(),
-        format!("DROP DATABASE IF EXISTS \"{}\";", db_name),
-    ))
-        .await?;
-    */
-    connection.execute(Statement::from_string(
-        connection.get_database_backend(),
-        format!("CREATE DATABASE \"{}\";", db_name),
-    ))
-        .await?;
-    let db_url = format!("{}/{}", db_url, db_name);
-    let connection = &Database::connect(&db_url).await?;
-
-
-    /*let db_url = format!("{}/{}", db_url, db_name);
-    let connection = &Database::connect(&db_url)
-        .await
-        .expect("Could not connect to database");
-
-    let conn = Database::connect(&db_url).await.unwrap();*/
-
-    Migrator::up(&connection, None).await.unwrap();
-
-    println!("Hello, world!");
-
-    HttpServer::new(|| {
-        App::new()
-            .service(index)
-            .service(web::scope("/api").service(user_detail))
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
-}
-
-pub fn main() {
-    let result = start();
-
-    if let Some(err) = result.err() {
-        println!("Error: {err}");
-    }
-}
-*/
