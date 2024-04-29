@@ -4,11 +4,11 @@
 
 use std::env;
 
-use sea_orm::*;
+use ::sea_orm::*;
 use sea_orm_migration::prelude::*;
 
 use migration::sea_orm::{Database, DbBackend};
-use migration::{DbErr, SchemaManager};
+use migration::{ConnectionTrait, DbErr, MigratorTrait, SchemaManager};
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right

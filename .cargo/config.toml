@@ -4,5 +4,5 @@
 [source.vendored-sources]
 directory = "vendor"
 
-#[build]
-#incremental = true
+[build]
+incremental = true

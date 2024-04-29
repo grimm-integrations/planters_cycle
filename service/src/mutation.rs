@@ -1,14 +1,14 @@
 /*
  * Copyright (c) Johannes Grimm 2024.
  */
-use sea_orm::*;
 
-// use ::entity::{post, post::Entity as Post};
+use ::entity::{post, post::Entity as Post};
+use sea_orm::*;
 
 pub struct Mutation;
 
 impl Mutation {
-    /*    pub async fn create_post(
+    pub async fn create_post(
         db: &DbConn,
         form_data: post::Model,
     ) -> Result<post::ActiveModel, DbErr> {
@@ -17,8 +17,8 @@ impl Mutation {
             text: Set(form_data.text.to_owned()),
             ..Default::default()
         }
-        .save(db)
-        .await
+            .save(db)
+            .await
     }
 
     pub async fn update_post_by_id(
@@ -37,8 +37,8 @@ impl Mutation {
             title: Set(form_data.title.to_owned()),
             text: Set(form_data.text.to_owned()),
         }
-        .update(db)
-        .await
+            .update(db)
+            .await
     }
 
     pub async fn delete_post(db: &DbConn, id: i32) -> Result<DeleteResult, DbErr> {
@@ -53,5 +53,5 @@ impl Mutation {
 
     pub async fn delete_all_posts(db: &DbConn) -> Result<DeleteResult, DbErr> {
         Post::delete_many().exec(db).await
-    }*/
+    }
 }
