@@ -1,7 +1,16 @@
-use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer};
+use actix_web::{
+    error, get, middleware, post, web, App, Error, HttpRequest, HttpResponse, HttpServer, Result,
+};
+
 use dotenvy::dotenv;
-use sea_orm::{ConnectionTrait, Database, DbBackend, DbErr, Statement};
+use service::{
+    sea_orm::{Database, DatabaseConnection},
+    Mutation, Query,
+};
+use migration::{Migrator, MigratorTrait};
+use serde::{Deserialize, Serialize};
 use std::env;
+use sea_orm::{ConnectionTrait, Statement};
 
 #[get("/")]
 async fn index(req: HttpRequest) -> &'static str {
@@ -49,14 +58,29 @@ async fn start() -> std::io::Result<()> {
         }
     }
 
+    /*db.execute(Statement::from_string(
+        db.get_database_backend(),
+        format!("DROP DATABASE IF EXISTS \"{}\";", db_name),
+    ))
+        .await?;
+    */
+    connection.execute(Statement::from_string(
+        connection.get_database_backend(),
+        format!("CREATE DATABASE \"{}\";", db_name),
+    ))
+        .await?;
     let db_url = format!("{}/{}", db_url, db_name);
-    let connection = Database::connect(&db_url)
+    let connection = &Database::connect(&db_url).await?;
+
+
+    /*let db_url = format!("{}/{}", db_url, db_name);
+    let connection = &Database::connect(&db_url)
         .await
         .expect("Could not connect to database");
 
-    Migrator::up(&connection, None)
-        .await
-        .expect("Could not apply migrations");
+    let conn = Database::connect(&db_url).await.unwrap();*/
+
+    Migrator::up(&connection, None).await.unwrap();
 
     println!("Hello, world!");
 

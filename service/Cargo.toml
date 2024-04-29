@@ -1,0 +1,22 @@
+[package]
+name = "service"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[dependencies.sea-orm]
+version = "1.0.0-rc.3"
+features = ["debug-print", "runtime-tokio-native-tls", "sqlx-postgres", "mock"]
+
+[dev-dependencies]
+tokio = { version = "1.37.0", features = ["full"] }
+
+[features]
+mock = ["sea-orm/mock"]
+
+[[test]]
+name = "mock"
+required-features = ["mock"]

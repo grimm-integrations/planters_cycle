@@ -5,6 +5,8 @@
       <sourceFolder url="file://$MODULE_DIR$/api/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/migration/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/service/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/service/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/actix_example" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/vendor" />

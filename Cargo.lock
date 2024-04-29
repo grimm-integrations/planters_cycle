@@ -325,7 +325,10 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "dotenvy",
+ "migration",
  "sea-orm 1.0.0-rc.3",
+ "serde",
+ "service",
  "tokio",
  "tracing-subscriber",
 ]
@@ -2691,6 +2694,14 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "service"
+version = "0.1.0"
+dependencies = [
+ "sea-orm 1.0.0-rc.3",
+ "tokio",
 ]
 
 [[package]]
