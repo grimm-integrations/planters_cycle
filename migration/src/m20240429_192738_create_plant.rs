@@ -2,6 +2,8 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
+use crate::m20240429_194524_create_genetic::Genetic;
+
 use sea_orm_migration::prelude::*;
 use sea_orm_migration::schema::*;
 
@@ -14,21 +16,11 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Genetic::Table)
-                    .if_not_exists()
-                    .col(pk_auto(Genetic::Id))
-                    .col(string(Genetic::Name))
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_table(
-                Table::create()
                     .table(Plant::Table)
                     .if_not_exists()
                     .col(pk_auto(Plant::Id))
                     .col(string(Plant::Name))
+                    .col(integer(Plant::GeneticId))
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_genetic_id")
@@ -48,25 +40,16 @@ impl MigrationTrait for Migration {
         manager
             .drop_table(Table::drop().table(Plant::Table).to_owned())
             .await?;
-        manager
-            .drop_table(Table::drop().table(Genetic::Table).to_owned())
-            .await?;
+
         Ok(())
     }
 }
 
 #[derive(DeriveIden)]
-enum Plant {
+pub enum Plant {
     Table,
     Id,
     Name,
     GeneticId,
     Genetic,
-}
-
-#[derive(DeriveIden)]
-enum Genetic {
-    Table,
-    Id,
-    Name,
 }

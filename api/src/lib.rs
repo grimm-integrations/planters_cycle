@@ -5,19 +5,20 @@
 use std::env;
 use std::fmt::Debug;
 
-use ::sea_orm::*;
 use actix_web::{get, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use listenfd::ListenFd;
-use sea_orm_migration::prelude::*;
+use service::{
+    sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement},
+    Mutation, Query,
+};
 
-use migration::sea_orm::{Database, DbBackend};
-use migration::{ConnectionTrait, MigratorTrait, SchemaManager};
+use migration::{Migrator, MigratorTrait, SchemaManager};
 
 mod controller;
 
 #[derive(Debug, Clone)]
 struct AppState {
-    conn: DatabaseConnection,
+    conn: service::sea_orm::DatabaseConnection,
 }
 
 pub fn add(left: usize, right: usize) -> usize {

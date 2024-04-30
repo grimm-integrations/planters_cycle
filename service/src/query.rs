@@ -4,6 +4,7 @@
 
 use sea_orm::*;
 
+use ::entity::{genetic, genetic::Entity as Genetic};
 use ::entity::{post, post::Entity as Post};
 
 pub struct Query;
@@ -14,15 +15,15 @@ impl Query {
     }
 
     /// If ok, returns (post models, num pages).
-    pub async fn find_posts_in_page(
-        db: &DbConn,
+    pub async fn find_genetics_in_page(
+        db: &DatabaseConnection,
         page: u64,
-        posts_per_page: u64,
-    ) -> Result<(Vec<post::Model>, u64), DbErr> {
+        genetics_per_page: u64,
+    ) -> Result<(Vec<genetic::Model>, u64), DbErr> {
         // Setup paginator
-        let paginator = Post::find()
-            .order_by_asc(post::Column::Id)
-            .paginate(db, posts_per_page);
+        let paginator = Genetic::find()
+            .order_by_asc(genetic::Column::Id)
+            .paginate(db, genetics_per_page);
         let num_pages = paginator.num_pages().await?;
 
         // Fetch paginated posts
