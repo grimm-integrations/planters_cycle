@@ -1,0 +1,9 @@
+[package]
+name = "core"
+version = "0.1.0"
+authors = ["Johannes Grimm <grimmjohannes1998@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+api = { path = "../api" }

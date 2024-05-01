@@ -7,5 +7,4 @@ edition = "2021"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-[dependencies.sea-orm]
-version = "1.0.0-rc.3"
+sea-orm.workspace = true

@@ -11,6 +11,6 @@ pub fn init(cfg: &mut web::ServiceConfig) {
 }
 
 #[get("/")]
-pub async fn list_plants(data: web::Data<AppState>, request: HttpRequest) -> HttpResponse {
+pub async fn list_plants(_data: web::Data<AppState>, _request: HttpRequest) -> HttpResponse {
     HttpResponse::Ok().body(format!("Hello from sub mod"))
 }

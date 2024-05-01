@@ -1,14 +1,23 @@
-[package]
-name = "plntcycl"
-version = "0.1.0"
-authors = ["Johannes Grimm <grimmjohannes1998@gmail.com>"]
-edition = "2021"
-license = "MIT OR Apache-2.0"
-
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [workspace]
-members = [".", "api", "entity", "migration", "service"]
+members = ["crates/api", "crates/core", "crates/entity", "crates/migration", "crates/service"]
+resolver = "2"
 
-[dependencies]
-api = { path = "api" }
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+[workspace.dependencies.sea-orm]
+version = "1.0.0-rc.3"
+features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros", "debug-print"]
+
+[workspace.dependencies.sea-orm-migration]
+version = "1.0.0-rc.3"
+features = [
+    "runtime-tokio-native-tls",
+    "sqlx-postgres",
+]
+
+
+[profile.release]
+codegen-units = 1 # Compile crates one after another so the compiler can optimize better
+lto = true        # Enables link to optimizations
+opt-level = "s"   # Optimize for binary size
+debug = true      # Enable debug symbols, for profiling

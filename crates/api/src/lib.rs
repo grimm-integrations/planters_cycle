@@ -7,10 +7,7 @@ use std::fmt::Debug;
 
 use actix_web::{get, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use listenfd::ListenFd;
-use service::{
-    sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement},
-    Mutation, Query,
-};
+use service::sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 
 use migration::{Migrator, MigratorTrait, SchemaManager};
 
@@ -18,7 +15,7 @@ mod controller;
 
 #[derive(Debug, Clone)]
 struct AppState {
-    conn: service::sea_orm::DatabaseConnection,
+    conn: DatabaseConnection,
 }
 
 pub fn add(left: usize, right: usize) -> usize {
@@ -36,7 +33,7 @@ async fn user_detail(path: web::Path<(u32,)>) -> HttpResponse {
     HttpResponse::Ok().body(format!("User detail: {}", path.into_inner().0))
 }
 
-async fn not_found(data: web::Data<AppState>, request: HttpRequest) -> Result<HttpResponse> {
+async fn not_found(_data: web::Data<AppState>, _request: HttpRequest) -> Result<HttpResponse> {
     Ok(HttpResponse::NotFound().body("Not Found"))
 }
 
@@ -74,7 +71,7 @@ async fn start() -> std::io::Result<()> {
                 .expect("Could not open database connection.")
         }
         DbBackend::Postgres => {
-            let res = db
+            let _res = db
                 .execute(Statement::from_string(
                     db.get_database_backend(),
                     format!("CREATE DATABASE {db_name}"),
@@ -94,7 +91,7 @@ async fn start() -> std::io::Result<()> {
     };
 
     let schema_manager = SchemaManager::new(&db);
-    migration::Migrator::up(&db, None)
+    Migrator::up(&db, None)
         .await
         .expect("Could not run database migrations.");
 

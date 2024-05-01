@@ -5,13 +5,11 @@ edition = "2021"
 
 [dependencies]
 entity = { path = "../entity" }
-
-[dependencies.sea-orm]
-version = "1.0.0-rc.3"
-features = ["debug-print", "runtime-tokio-native-tls", "sqlx-postgres"]
+sea-orm.workspace = true
+serde = { version = "1.0.199", features = ["derive"] }
 
 [dev-dependencies]
-tokio = { version = "1.37.0", features = ["full"] }
+tokio.workspace = true
 
 [features]
 mock = ["sea-orm/mock"]
