@@ -11,9 +11,26 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8081:8080
+
+  rustapp:
+    container_name: rustapp
+    image: metratrj/rustapp:latest
+    build:
+      context: ./
+      dockerfile: backend.dockerfile
+      args:
+        DATABASE_URL: postgres://postgres:postgres@db:5432
+        DATABASE_NAME: postgres
+        HOST: 0.0.0.0
+        PORT: 8000
+
+volumes:
+  db_data: { }
