@@ -11,15 +11,14 @@ use service::sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend,
 
 use migration::{Migrator, MigratorTrait, SchemaManager};
 
-mod controller;
+pub mod controller;
 
 #[derive(Debug, Clone)]
-struct AppState {
-    conn: DatabaseConnection,
-}
-
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+pub struct Configs {
+    host: String,
+    port: String,
+    pub db_url: String,
+    pub db_name: String,
 }
 
 #[get("/")]
@@ -28,12 +27,10 @@ async fn index(req: HttpRequest) -> &'static str {
     "Hello world!\r\n"
 }
 
-#[get("/show/{id}")]
-async fn user_detail(path: web::Path<(u32,)>) -> HttpResponse {
-    HttpResponse::Ok().body(format!("User detail: {}", path.into_inner().0))
-}
-
-async fn not_found(_data: web::Data<AppState>, _request: HttpRequest) -> Result<HttpResponse> {
+async fn not_found(
+    _data: web::Data<DatabaseConnection>,
+    _request: HttpRequest,
+) -> Result<HttpResponse> {
     Ok(HttpResponse::NotFound().body("Not Found"))
 }
 
@@ -42,7 +39,41 @@ async fn start() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "debug");
     tracing_subscriber::fmt::init();
 
+    let config: Configs = get_config().await;
+
+    let server_url = format!("{}:{}", config.host, config.port);
+
+    let db = create_database_connection(&config.db_url, &config.db_name).await;
+
+    run_migrations(&db).await;
+
     println!("Hello World from the api crate!");
+
+    let state = web::Data::new(db);
+
+    let mut listenfd = ListenFd::from_env();
+    let mut server = HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::new(state.clone()))
+            .wrap(middleware::Logger::default())
+            .default_service(web::route().to(not_found))
+            .service(index)
+            .service(web::scope("/api").configure(controller::init))
+    });
+
+    println!("Starting server at {server_url}");
+
+    server = match listenfd.take_tcp_listener(0)? {
+        Some(listener) => server.listen(listener)?,
+        None => server.bind(&server_url)?,
+    };
+
+    server.run().await?;
+
+    Ok(())
+}
+
+pub async fn get_config() -> Configs {
     dotenvy::dotenv().ok();
 
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
@@ -51,13 +82,20 @@ async fn start() -> std::io::Result<()> {
     let host = env::var("HOST").expect("HOST is not set in .env file");
     let port = env::var("PORT").expect("PORT is not set in .env file");
 
-    let server_url = format!("{host}:{port}");
+    Configs {
+        host,
+        port,
+        db_url,
+        db_name,
+    }
+}
 
-    let db = Database::connect(&db_url)
+pub async fn create_database_connection(db_url: &String, db_name: &String) -> DatabaseConnection {
+    let db = Database::connect(db_url)
         .await
         .expect("Database connection failed");
 
-    let db = match db.get_database_backend() {
+    let db: DatabaseConnection = match db.get_database_backend() {
         DbBackend::MySql => {
             db.execute(Statement::from_string(
                 db.get_database_backend(),
@@ -90,41 +128,15 @@ async fn start() -> std::io::Result<()> {
         }
     };
 
-    let schema_manager = SchemaManager::new(&db);
-    Migrator::up(&db, None)
+    db
+}
+
+async fn run_migrations(db: &DatabaseConnection) {
+    let schema_manager = SchemaManager::new(db);
+    Migrator::up(db, None)
         .await
         .expect("Could not run database migrations.");
-
     assert!(schema_manager.has_table("post").await.is_ok());
-
-    println!("Hello World from the api crate!");
-
-    let state = AppState { conn: db };
-
-    let mut listenfd = ListenFd::from_env();
-    let mut server = HttpServer::new(move || {
-        App::new()
-            .app_data(web::Data::new(state.clone()))
-            .wrap(middleware::Logger::default())
-            .default_service(web::route().to(not_found))
-            .service(index)
-            .service(
-                web::scope("/api")
-                    .configure(controller::init)
-                    .service(user_detail),
-            )
-    });
-
-    println!("Starting server at {server_url}");
-
-    server = match listenfd.take_tcp_listener(0)? {
-        Some(listener) => server.listen(listener)?,
-        None => server.bind(&server_url)?,
-    };
-
-    server.run().await?;
-
-    Ok(())
 }
 
 pub fn main() {
@@ -136,11 +148,17 @@ pub fn main() {
 
 #[cfg(test)]
 mod tests {
+    use actix_web::{test, App};
+
     use super::*;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    #[actix_web::test]
+    async fn test_index() {
+        let app = test::init_service(App::new().service(index)).await;
+        let req = test::TestRequest::default().to_request();
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status().is_success());
+        let body = test::read_body(resp).await;
+        assert_eq!(body, "Hello world!\r\n");
     }
 }

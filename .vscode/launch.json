@@ -26,6 +26,25 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug integration test 'genetic_controller_test'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=genetic_controller_test",
+                    "--package=api"
+                ],
+                "filter": {
+                    "name": "genetic_controller_test",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug unit tests in library 'entity'",
             "cargo": {
                 "args": [
@@ -120,25 +139,6 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug integration test 'mock'",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--test=mock",
-                    "--package=service"
-                ],
-                "filter": {
-                    "name": "mock",
-                    "kind": "test"
-                }
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
             "name": "Debug integration test 'prepare'",
             "cargo": {
                 "args": [
@@ -149,6 +149,25 @@
                 ],
                 "filter": {
                     "name": "prepare",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'mock'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=mock",
+                    "--package=service"
+                ],
+                "filter": {
+                    "name": "mock",
                     "kind": "test"
                 }
             },

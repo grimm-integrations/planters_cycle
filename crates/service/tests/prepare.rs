@@ -6,7 +6,7 @@ use sea_orm::*;
 
 use ::entity::post;
 
-#[cfg(feature = "mock")]
+#[cfg(test)]
 pub fn prepare_mock_db() -> DatabaseConnection {
     MockDatabase::new(DatabaseBackend::Postgres)
         .append_query_results([

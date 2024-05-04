@@ -11,9 +11,6 @@ serde = { version = "1.0.199", features = ["derive"] }
 [dev-dependencies]
 tokio.workspace = true
 
-[features]
-mock = ["sea-orm/mock"]
-
-[[test]]
-name = "mock"
-required-features = ["mock"]
+[dev-dependencies.sea-orm]
+version = "1.0.0-rc.3"
+features = ["mock"]

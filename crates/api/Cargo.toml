@@ -12,14 +12,17 @@ entity = { path = "../entity" }
 listenfd = "1"
 actix-web = "4.5.1"
 dotenvy = "0.15.7"
-tokio = { version = "1.37.0", features = ["full"] }
+tokio.workspace = true
 serde = { version = "1.0.199", features = ["derive"] }
-tower = "0.4"
-tower-http = { version = "0.5", features = ["fs"] }
-tower-cookies = "0.10"
 anyhow = "1.0"
 serde_json = "1.0"
-tera = "1.19"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 sea-orm-migration.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
+actix-http = "3.6.0"
+[dev-dependencies.sea-orm]
+version = "1.0.0-rc.3"
+features = ["mock"]

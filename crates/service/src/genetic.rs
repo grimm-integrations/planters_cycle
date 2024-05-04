@@ -9,7 +9,7 @@ use ::entity::{genetic, genetic::Entity as Genetic};
 pub struct GeneticService;
 
 impl GeneticService {
-    pub async fn find_genetic_by_id(db: &DbConn, id: i32) -> Result<genetic::Model, DbErr> {
+    pub async fn find_genetic_by_id(db: &DbConn, id: i32) -> Result<genetic::Model, MyError> {
         match Genetic::find_by_id(id).one(db).await {
             Ok(result) => match result {
                 Some(result) => Ok(result),
