@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Johannes Grimm 2024.
  */
-use actix_web::{get, put, web, Error, HttpRequest, HttpResponse};
+use actix_web::{delete, get, post, put, web, Error, HttpRequest, HttpResponse};
 use serde::{Deserialize, Serialize};
 use service::GeneticService;
 
@@ -17,7 +17,9 @@ pub fn init(cfg: &mut web::ServiceConfig) {
         web::scope("/genetic")
             .service(list_genetics)
             .service(get_genetic)
-            .service(create_genetic),
+            .service(edit_genetic)
+            .service(create_genetic)
+            .service(delete_genetic),
     );
 }
 
@@ -25,26 +27,15 @@ pub fn init(cfg: &mut web::ServiceConfig) {
 async fn create_genetic(
     data: web::Data<AppState>,
     _request: HttpRequest,
-    genetic: web::Form<::entity::genetic::Model>,
+    genetic: web::Json<::entity::genetic::Model>,
 ) -> Result<HttpResponse, Error> {
-    match GeneticService::create_genetic(&data.conn, genetic.into_inner()).await {
-        Ok(genetic) => {
-            return Ok(HttpResponse::Ok()
-                .content_type("application/json")
-                .body(format!("{:?}", genetic)))
-        }
+    match GeneticService::create_genetic(&data.conn, genetic.name.to_owned()).await {
+        Ok(genetic) => return Ok(HttpResponse::Ok().json(genetic)),
         Err(e) => {
             eprintln!("Failed to create genetic: {:?}", e);
-            return Ok(HttpResponse::BadRequest().body("Failed to create genetic"));
+            return Ok(HttpResponse::BadRequest().body(e.to_string()));
         }
     }
-    /*let genetic = GeneticService::create_genetic(&data.conn, genetic.into_inner())
-        .await
-        .expect("Could not create Genetic");
-
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .body(format!("{:?}", genetic)))*/
 }
 
 #[get("/{user_id}")]
@@ -53,14 +44,13 @@ async fn get_genetic(
     _request: HttpRequest,
     path: web::Path<i32>,
 ) -> Result<HttpResponse, Error> {
-    let user_id = path.into_inner();
-    let genetic = GeneticService::find_genetic_by_id(&data.conn, user_id)
-        .await
-        .expect("Could not find Genetic");
-
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .body(format!("{:?}", genetic.unwrap())))
+    match GeneticService::find_genetic_by_id(&data.conn, path.into_inner()).await {
+        Ok(genetic) => return Ok(HttpResponse::Ok().json(genetic)),
+        Err(e) => {
+            eprintln!("Failed to get genetic: {:?}", e);
+            return Ok(HttpResponse::BadRequest().body(e.to_string()));
+        }
+    }
 }
 
 #[get("/")]
@@ -68,11 +58,44 @@ pub async fn list_genetics(
     data: web::Data<AppState>,
     _request: HttpRequest,
 ) -> Result<HttpResponse, Error> {
-    let genetics = GeneticService::find_genetics_in_page(&data.conn, 1, 10)
-        .await
-        .expect("Could not find Genetics in Page");
+    match GeneticService::find_genetics_in_page(&data.conn, 1, 10).await {
+        Ok(genetics) => return Ok(HttpResponse::Ok().json(genetics.0)),
+        Err(e) => {
+            eprintln!("Failed to list genetics: {:?}", e);
+            return Ok(HttpResponse::BadRequest().body("Failed to list genetics"));
+        }
+    }
+}
 
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .body(format!("{:?}", genetics.0)))
+#[delete("/{user_id}")]
+pub async fn delete_genetic(
+    data: web::Data<AppState>,
+    _request: HttpRequest,
+    path: web::Path<i32>,
+) -> Result<HttpResponse, Error> {
+    match GeneticService::delete_genetic_by_id(&data.conn, path.into_inner()).await {
+        Ok(_) => return Ok(HttpResponse::Ok().finish()),
+        Err(e) => {
+            eprintln!("Failed to delete genetic: {:?}", e);
+            return Ok(HttpResponse::BadRequest().body(e.to_string()));
+        }
+    }
+}
+
+#[post("/{user_id}")]
+pub async fn edit_genetic(
+    data: web::Data<AppState>,
+    _request: HttpRequest,
+    path: web::Path<i32>,
+    genetic: web::Json<::entity::genetic::Model>,
+) -> Result<HttpResponse, Error> {
+    match GeneticService::edit_genetic(&data.conn, path.into_inner(), genetic.into_inner()).await {
+        Ok(genetic) => {
+            return Ok(HttpResponse::Ok().json(genetic));
+        }
+        Err(e) => {
+            eprintln!("Failed to edit genetic: {:?}", e);
+            return Ok(HttpResponse::BadRequest().body(e.to_string()));
+        }
+    }
 }
