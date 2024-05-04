@@ -63,6 +63,7 @@ async fn not_found() -> actix_web::Result<HttpResponse> {
     Ok(HttpResponse::NotFound().finish())
 }
 
+#[allow(dead_code)]
 async fn init_service(
     db: Data<DatabaseConnection>,
 ) -> impl Service<Request, Response = ServiceResponse, Error = actix_web::Error> {
