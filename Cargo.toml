@@ -2,6 +2,8 @@
 members = ["crates/api", "crates/core", "crates/entity", "crates/migration", "crates/service"]
 resolver = "2"
 
+default-members = ["crates/api", "crates/core", "crates/entity", "crates/service"]
+
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
 [workspace.dependencies.sea-orm]
