@@ -15,5 +15,5 @@ pub async fn list_plants(
     _data: web::Data<DatabaseConnection>,
     _request: HttpRequest,
 ) -> HttpResponse {
-    HttpResponse::Ok().body(format!("Hello from sub mod"))
+    HttpResponse::Ok().body("Hello from sub mod")
 }
