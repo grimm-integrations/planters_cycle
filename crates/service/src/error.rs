@@ -16,9 +16,9 @@ impl std::error::Error for MyError {}
 impl ResponseError for MyError {
     fn error_response(&self) -> HttpResponse {
         match self {
-            MyError::NotFound(error) => HttpResponse::NotFound().finish(),
-            MyError::DbErr(DbErr::RecordNotFound(err)) => HttpResponse::NotFound().finish(),
-            MyError::DbErr(err) => HttpResponse::InternalServerError().finish(),
+            MyError::NotFound(_error) => HttpResponse::NotFound().finish(),
+            MyError::DbErr(DbErr::RecordNotFound(_err)) => HttpResponse::NotFound().finish(),
+            MyError::DbErr(_err) => HttpResponse::InternalServerError().finish(),
         }
     }
 }
