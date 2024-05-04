@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Johannes Grimm 2024.
  */
-use actix_web::{delete, get, post, put, web, Error, HttpRequest, HttpResponse};
+use actix_web::{delete, get, post, put, web, Error, HttpResponse};
 use serde::{Deserialize, Serialize};
 use service::sea_orm::DatabaseConnection;
 use service::GeneticService;

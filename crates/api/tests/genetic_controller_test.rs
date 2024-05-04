@@ -3,12 +3,12 @@
  */
 
 use ::entity::genetic;
-use actix_http::{Request, StatusCode};
+use actix_http::Request;
 use actix_web::{
     dev::{Service, ServiceResponse},
     http, test,
     web::{self, Data},
-    App, HttpRequest, HttpResponse,
+    App, HttpResponse,
 };
 use serde::{Deserialize, Serialize};
 use service::sea_orm::*;
@@ -107,11 +107,4 @@ async fn get_genetic_not_found() {
     let req = test::TestRequest::get().uri("/99999").to_request();
     let resp: genetic::Model = test::call_and_read_body_json(&app, req).await;
     println!("{:?}", resp);
-    //let mut app = init_service(db).await;
-
-    /*let req = test::TestRequest::get()
-        .uri("/api/genetic/999999")
-        .to_request();
-    let resp = test::call_service(&mut app, req).await;*/
-    //assert_eq!(resp.status(), http::StatusCode::NOT_FOUND);
 }
