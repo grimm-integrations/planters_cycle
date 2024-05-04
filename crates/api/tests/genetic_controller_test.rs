@@ -23,7 +23,7 @@ pub struct GeneticDto {
 
 pub fn prepare_mock_db() -> (DatabaseConnection, Vec<genetic::Model>, Vec<genetic::Model>) {
     let page1 = vec![genetic::Model {
-        id: 1,
+        id: 6,
         name: "Genetic A".to_owned(),
     }];
 
@@ -46,7 +46,7 @@ pub fn prepare_mock_db() -> (DatabaseConnection, Vec<genetic::Model>, Vec<geneti
         .append_query_results([page1.clone(), page2.clone()])
         .append_exec_results([
             MockExecResult {
-                last_insert_id: 1,
+                last_insert_id: 6,
                 rows_affected: 1,
             },
             MockExecResult {
