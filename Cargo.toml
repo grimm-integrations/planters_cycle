@@ -6,6 +6,7 @@ default-members = ["crates/api", "crates/core", "crates/entity", "crates/service
 
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
+actix-web = "4.5.1"
 [workspace.dependencies.sea-orm]
 version = "1.0.0-rc.3"
 features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros", "debug-print"]

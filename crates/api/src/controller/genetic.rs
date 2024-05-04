@@ -25,84 +25,45 @@ pub fn init(cfg: &mut web::ServiceConfig) {
 #[put("/")]
 async fn create_genetic(
     conn: web::Data<DatabaseConnection>,
-    _request: HttpRequest,
     genetic: web::Json<::entity::genetic::Model>,
 ) -> Result<HttpResponse, Error> {
-    match GeneticService::create_genetic(&conn, genetic.name.to_owned()).await {
-        Ok(genetic) => return Ok(HttpResponse::Ok().json(genetic)),
-        Err(e) => {
-            eprintln!("Failed to create genetic: {:?}", e);
-            return Ok(HttpResponse::BadRequest().body(e.to_string()));
-        }
-    }
+    let new_genetic = GeneticService::create_genetic(&conn, genetic.into_inner()).await?;
+    Ok(HttpResponse::Ok().json(new_genetic))
 }
 
 #[get("/{user_id}")]
 async fn get_genetic(
     conn: web::Data<DatabaseConnection>,
-    _request: HttpRequest,
     path: web::Path<i32>,
 ) -> Result<HttpResponse, Error> {
-    let g = GeneticService::find_genetic_by_id(&conn, path.into_inner()).await.unwrap();
-    Ok(HttpResponse::Ok().json(g))
-    /* match GeneticService::find_genetic_by_id(&conn, path.into_inner()).await {
-        Ok(genetic) => return Ok(HttpResponse::Ok().json(genetic)),
-        Err(e) => {
-            return Error(eprintln!("Failed to get genetic: {:?}", e));
-        }
-    
-    } */
+    match GeneticService::find_genetic_by_id(&conn, *path).await {
+        Ok(genetic) => Ok(HttpResponse::Ok().json(genetic)),
+        Err(_) => Ok(HttpResponse::NotFound().finish()),
+    }
 }
 
 #[get("/")]
-pub async fn list_genetics(
-    conn: web::Data<DatabaseConnection>,
-    _request: HttpRequest,
-) -> Result<HttpResponse, Error> {
-    match GeneticService::find_genetics_in_page(&conn, 1, 10).await {
-        Ok(genetics) => return Ok(HttpResponse::Ok().json(genetics.0)),
-        Err(e) => {
-            eprintln!("Failed to list genetics: {:?}", e);
-            return Ok(HttpResponse::BadRequest().body("Failed to list genetics"));
-        }
-    }
+pub async fn list_genetics(conn: web::Data<DatabaseConnection>) -> Result<HttpResponse, Error> {
+    let genetics = GeneticService::find_genetics_in_page(&conn, 1, 10).await?;
+    Ok(HttpResponse::Ok().json(genetics.0))
 }
 
 #[delete("/{user_id}")]
 pub async fn delete_genetic(
     conn: web::Data<DatabaseConnection>,
-    _request: HttpRequest,
-    path: web::Path<i32>,
+    id: web::Path<i32>,
 ) -> Result<HttpResponse, Error> {
-    match GeneticService::delete_genetic_by_id(&conn, path.into_inner()).await {
-        Ok(_) => return Ok(HttpResponse::Ok().finish()),
-        Err(e) => {
-            if e.to_string().contains("not found") {
-                return Ok(HttpResponse::NotFound().finish());
-            }
-            eprintln!("Failed to delete genetic: {:?}", e);
-            return Ok(HttpResponse::BadRequest().body(e.to_string()));
-        }
-    }
+    let _ = GeneticService::delete_genetic_by_id(&conn, *id).await?;
+    Ok(HttpResponse::Ok().finish())
 }
 
 #[post("/{user_id}")]
 pub async fn edit_genetic(
     conn: web::Data<DatabaseConnection>,
-    _request: HttpRequest,
-    path: web::Path<i32>,
-    genetic: web::Json<::entity::genetic::Model>,
+    id: web::Path<i32>,
+    genetic_info: web::Json<::entity::genetic::Model>,
 ) -> Result<HttpResponse, Error> {
-    match GeneticService::edit_genetic(&conn, path.into_inner(), genetic.into_inner()).await {
-        Ok(genetic) => {
-            return Ok(HttpResponse::Ok().json(genetic));
-        }
-        Err(e) => {
-            if e.to_string().contains("not found") {
-                return Ok(HttpResponse::NotFound().finish());
-            }
-            eprintln!("Failed to edit genetic: {:?}", e);
-            return Ok(HttpResponse::BadRequest().body(e.to_string()));
-        }
-    }
+    let genetic = genetic_info.into_inner();
+    let updated_genetic = GeneticService::edit_genetic(&conn, *id, genetic).await?;
+    Ok(HttpResponse::Ok().json(updated_genetic))
 }

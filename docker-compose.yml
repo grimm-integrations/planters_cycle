@@ -10,8 +10,8 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: example
-#    volumes:
-#      - db_data:/var/lib/postgresql/data
+  #    volumes:
+  #      - db_data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
@@ -30,6 +30,3 @@ services:
 #        DATABASE_NAME: postgres
 #        HOST: 0.0.0.0
 #        PORT: 8000
-
-volumes:
-  db_data: { }

@@ -4,42 +4,40 @@
 
 use sea_orm::*;
 
+use crate::MyError;
 use ::entity::{genetic, genetic::Entity as Genetic};
 
 pub struct GeneticService;
 
 impl GeneticService {
     pub async fn find_genetic_by_id(db: &DbConn, id: i32) -> Result<genetic::Model, MyError> {
-        match Genetic::find_by_id(id).one(db).await {
-            Ok(result) => match result {
-                Some(result) => Ok(result),
-                None => Err(DbErr::RecordNotFound(id.to_string())),
-            },
-            Err(e) => Err(e),
-        }
+        Genetic::find_by_id(id)
+            .one(db)
+            .await
+            .map_err(MyError::DbErr)?
+            .ok_or("Genetic not found".into())
+            .map_err(MyError::NotFound)
     }
 
-    pub async fn create_genetic(db: &DbConn, name: String) -> Result<genetic::Model, DbErr> {
-        let res = genetic::ActiveModel {
-            name: Set(name.to_owned()),
+    pub async fn create_genetic(
+        db: &DbConn,
+        genetic_info: genetic::Model,
+    ) -> Result<genetic::Model, MyError> {
+        let genetic = genetic::ActiveModel {
+            name: Set(genetic_info.name.to_owned()),
             ..Default::default()
-        }
-        .save(db)
-        .await;
-        match res {
-            Ok(gen) => match gen.try_into_model() {
-                Ok(gen) => Ok(gen),
-                Err(e) => Err(e),
-            },
-            Err(e) => Err(e),
-        }
+        };
+
+        let genetic = genetic.insert(db).await?;
+
+        Ok(genetic)
     }
 
     pub async fn find_genetics_in_page(
         db: &DatabaseConnection,
         page: u64,
         genetics_per_page: u64,
-    ) -> Result<(Vec<genetic::Model>, u64), DbErr> {
+    ) -> Result<(Vec<genetic::Model>, u64), MyError> {
         // Setup paginator
         let paginator = Genetic::find()
             .order_by_asc(genetic::Column::Id)
@@ -47,36 +45,29 @@ impl GeneticService {
         let num_pages = paginator.num_pages().await?;
 
         // Fetch paginated posts
-        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+        paginator
+            .fetch_page(page - 1)
+            .await
+            .map(|p| (p, num_pages))
+            .map_err(MyError::DbErr)
     }
 
-    pub async fn delete_genetic_by_id(db: &DbConn, id: i32) -> Result<DeleteResult, DbErr> {
-        match Genetic::delete_by_id(id).exec(db).await {
-            Ok(result) => {
-                if result.rows_affected == 0 {
-                    return Err(DbErr::RecordNotFound(id.to_string()));
-                }
-                Ok(result)
-            }
-            Err(e) => Err(e),
-        }
+    pub async fn delete_genetic_by_id(db: &DbConn, id: i32) -> Result<bool, MyError> {
+        let genetic = Genetic::delete_by_id(id).exec(db).await?;
+        Ok(genetic.rows_affected > 0)
     }
 
     pub async fn edit_genetic(
         db: &DbConn,
         id: i32,
-        model: genetic::Model,
-    ) -> Result<genetic::Model, DbErr> {
-        let gen = match Genetic::find_by_id(id).one(db).await {
-            Ok(gen) => gen,
-            Err(e) => return Err(e),
+        genetic_info: genetic::Model,
+    ) -> Result<genetic::Model, MyError> {
+        let genetic = genetic::ActiveModel {
+            id: Set(id),
+            name: Set(genetic_info.name.to_owned()),
+            ..Default::default()
         };
-
-        let mut gen: genetic::ActiveModel = match gen {
-            Some(gen) => gen.into(),
-            None => return Err(DbErr::RecordNotFound(id.to_string())),
-        };
-        gen.name = Set(model.name.to_owned());
-        gen.update(db).await
+        let genetic = genetic.update(db).await?;
+        Ok(genetic)
     }
 }

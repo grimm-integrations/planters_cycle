@@ -1,10 +1,14 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 use ::entity::genetic;
 use actix_http::{Request, StatusCode};
 use actix_web::{
     dev::{Service, ServiceResponse},
     http, test,
     web::{self, Data},
-    App,
+    App, HttpRequest, HttpResponse,
 };
 use serde::{Deserialize, Serialize};
 use service::sea_orm::*;
@@ -55,12 +59,17 @@ pub fn prepare_mock_db() -> (DatabaseConnection, Vec<genetic::Model>, Vec<geneti
     (mockdb, page1, page2)
 }
 
+async fn not_found() -> actix_web::Result<HttpResponse> {
+    Ok(HttpResponse::NotFound().finish())
+}
+
 async fn init_service(
     db: Data<DatabaseConnection>,
 ) -> impl Service<Request, Response = ServiceResponse, Error = actix_web::Error> {
     test::init_service(
         App::new()
             .app_data(db)
+            .default_service(web::route().to(not_found))
             .service(web::scope("/api").configure(::api::controller::init)),
     )
     .await
@@ -91,7 +100,7 @@ async fn get_genetic_not_found() {
     let mut app = init_service(db).await;
 
     let req = test::TestRequest::get()
-        .uri("/api/genetic/999")
+        .uri("/api/genetic/999999")
         .to_request();
     let resp = test::call_service(&mut app, req).await;
     assert_eq!(resp.status(), http::StatusCode::NOT_FOUND);

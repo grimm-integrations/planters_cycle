@@ -54,7 +54,7 @@ async fn start() -> std::io::Result<()> {
     let mut listenfd = ListenFd::from_env();
     let mut server = HttpServer::new(move || {
         App::new()
-            .app_data(web::Data::new(state.clone()))
+            .app_data(state.clone())
             .wrap(middleware::Logger::default())
             .default_service(web::route().to(not_found))
             .service(index)

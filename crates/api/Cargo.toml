@@ -10,7 +10,7 @@ migration = { path = "../migration" }
 service = { path = "../service" }
 entity = { path = "../entity" }
 listenfd = "1"
-actix-web = "4.5.1"
+actix-web.workspace = true
 dotenvy = "0.15.7"
 tokio.workspace = true
 serde = { version = "1.0.199", features = ["derive"] }
