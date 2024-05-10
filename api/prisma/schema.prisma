@@ -11,40 +11,55 @@ generator client {
 }
 
 model User {
-  id          String @id @default(uuid())
-  displayName String
+  id           String         @id @default(uuid())
+  displayName  String
+  email        String?        @unique
+  password     String
+  lastLogin    DateTime?
+  createdAt    DateTime       @default(now())
+  roles        UsersInRoles[]
+  PlantHistory PlantHistory[]
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  published Boolean
-  title     String
-  content   String?
-  desc      String?
-
-  comments Comment[]
+model Role {
+  id    Int            @id @default(autoincrement())
+  name  String
+  users UsersInRoles[]
 }
 
-model Comment {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  content   String
+model UsersInRoles {
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  role       Role     @relation(fields: [roleId], references: [id])
+  roleId     Int
+  assignedAt DateTime @default(now())
+  assignedBy String
 
-  post   Post   @relation(fields: [postID], references: [id])
-  postID String
+  @@id([userId, roleId])
 }
 
 model Plant {
-  id        String  @id @default(uuid())
-  name      String
-  genetic   Genetic @relation(fields: [geneticId], references: [id])
-  geneticId String
+  id           String         @id @default(uuid())
+  name         String
+  genetic      Genetic        @relation(fields: [geneticId], references: [id])
+  geneticId    String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  PlantHistory PlantHistory[]
 }
 
 model Genetic {
   id    String  @id @default(uuid())
   name  String
   Plant Plant[]
+}
+
+model PlantHistory {
+  id        String   @id @default(uuid())
+  plant     Plant    @relation(fields: [plantId], references: [id])
+  plantId   String
+  action    String
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
 }
