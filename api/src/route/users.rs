@@ -1,6 +1,7 @@
 use crate::prisma::{user, PrismaClient};
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 
+#[allow(dead_code)]
 pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(
         web::scope("/users")
@@ -57,9 +58,7 @@ async fn delete_user(data: web::Data<PrismaClient>, id: web::Path<String>) -> im
         .exec()
         .await
     {
-        Err(_) => return HttpResponse::NotFound().body("User not found"),
-        Ok(usr) => {
-            return HttpResponse::Ok().json(usr);
-        }
-    };
+        Err(_) => HttpResponse::NotFound().body("User not found"),
+        Ok(usr) => HttpResponse::Ok().json(usr),
+    }
 }
