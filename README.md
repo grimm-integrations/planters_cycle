@@ -1,5 +1,8 @@
 # Planters Cycle
 
+```
+cargo prisma generate
+```
 
 
 ## Getting started

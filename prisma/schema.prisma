@@ -1,16 +1,50 @@
 datasource db {
-    provider = "sqlite"
-    url      = "file:dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
- 
+
 generator client {
-    // Corresponds to the cargo alias created earlier
-    provider      = "cargo prisma"
-    // The location to generate the client. Is relative to the position of the schema
-    output        = "../src/prisma.rs"
+  // Corresponds to the cargo alias created earlier
+  provider = "cargo prisma"
+  // The location to generate the client. Is relative to the position of the schema
+  output   = "../src/prisma.rs"
 }
- 
+
 model User {
-    id          String  @id
-    displayName String
+  id          String @id @default(uuid())
+  displayName String
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  published Boolean
+  title     String
+  content   String?
+  desc      String?
+
+  comments Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  content   String
+
+  post   Post   @relation(fields: [postID], references: [id])
+  postID String
+}
+
+model Plant {
+  id        String  @id @default(uuid())
+  name      String
+  genetic   Genetic @relation(fields: [geneticId], references: [id])
+  geneticId String
+}
+
+model Genetic {
+  id    String  @id @default(uuid())
+  name  String
+  Plant Plant[]
 }
