@@ -6,3 +6,6 @@ directory = "vendor"
 
 [build]
 incremental = true
+
+[alias]
+prisma = "run -p prisma-cli"

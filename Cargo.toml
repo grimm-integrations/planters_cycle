@@ -1,26 +1,12 @@
 [workspace]
-members = ["crates/api", "crates/core", "crates/entity", "crates/migration", "crates/service"]
-resolver = "2"
+members = [".", "prisma-cli"]
 
-default-members = ["crates/api", "crates/core", "crates/entity", "crates/service"]
+[package]
+name = "planters_cycle"
+version = "0.1.0"
+edition = "2021"
 
-[workspace.dependencies]
-tokio = { version = "1", features = ["full"] }
-actix-web = "4.5.1"
-[workspace.dependencies.sea-orm]
-version = "1.0.0-rc.3"
-features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros", "debug-print"]
+[dependencies]
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.11" }
+serde = "1.0.201"
 
-[workspace.dependencies.sea-orm-migration]
-version = "1.0.0-rc.3"
-features = [
-    "runtime-tokio-native-tls",
-    "sqlx-postgres",
-]
-
-
-[profile.release]
-codegen-units = 1 # Compile crates one after another so the compiler can optimize better
-lto = true        # Enables link to optimizations
-opt-level = "s"   # Optimize for binary size
-debug = false      # Enable debug symbols, for profiling
