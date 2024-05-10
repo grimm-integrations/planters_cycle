@@ -4,9 +4,8 @@
 
 use std::{env, net::TcpListener};
 
-use actix_web::{HttpMessage, Responder, Result};
+use actix_web::{Result};
 use prisma_client_rust::NewClientError;
-use serde::{Deserialize, Serialize};
 
 use prisma::PrismaClient;
 

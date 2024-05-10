@@ -3,6 +3,7 @@
  */
 
 use crate::prisma::PrismaClient;
+use crate::route::auth::auth_controller_init;
 use crate::route::health_check::health_check;
 use crate::route::users::user_controller_init;
 use actix_identity::{Identity, IdentityMiddleware};
@@ -14,7 +15,6 @@ use actix_web::dev::Server;
 use actix_web::web::{scope, ServiceConfig};
 use actix_web::{error, get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use std::net::TcpListener;
-use crate::route::auth::auth_controller_init;
 
 #[allow(dead_code)]
 async fn not_found() -> HttpResponse {
@@ -38,6 +38,7 @@ async fn index(identity: Option<Identity>, session: Session) -> actix_web::Resul
     Ok(HttpResponse::Ok().body(format!("Hello {id}, session: {counter}")))
 }
 
+#[allow(dead_code)]
 #[doc = "Setup the service served by the application."]
 fn get_config(conf: &mut ServiceConfig) {
     conf.service(

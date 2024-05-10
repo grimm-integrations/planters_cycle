@@ -25,11 +25,13 @@ pub struct ErrorResponse {
 }
 
 impl ErrorResponse {
+    #[allow(dead_code)]
     #[doc = "Create new error response"]
     pub fn new(code: ErrorCode) -> Self {
         Self { code }
     }
 
+    #[allow(dead_code)]
     #[doc = "Mapping error responses to status codes"]
     pub fn build(code: ErrorCode) -> HttpResponse {
         match code {

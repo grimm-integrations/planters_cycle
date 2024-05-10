@@ -45,6 +45,7 @@ async fn create_user(
         .create(
             body.display_name.as_ref().unwrap().to_string(),
             "".to_owned(),
+            "".to_owned(),
             vec![],
         )
         .exec()

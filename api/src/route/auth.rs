@@ -7,11 +7,11 @@ use crate::prisma::PrismaClient;
 use crate::service::authentication::login_user;
 use actix_identity::Identity;
 use actix_session::Session;
-use actix_web::{get, post, web, HttpMessage, HttpRequest, HttpResponse};
+use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use serde::{Deserialize, Serialize};
 
 #[allow(dead_code)]
-pub fn auth_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
+pub fn auth_controller_init(cfg: &mut web::ServiceConfig) {
     cfg.service(web::scope("/auth"));
 }
 
@@ -24,11 +24,11 @@ pub struct IndexResponse {
 #[post("/login")]
 async fn login(
     body: web::Json<LoginRequest>,
-    req: HttpRequest,
+    _req: HttpRequest,
     data: web::Data<PrismaClient>,
 ) -> actix_web::Result<HttpResponse> {
-    let login_result = login_user(body.into_inner(), data);
-
+    let _login_result = login_user(body.into_inner(), data);
+    Ok(HttpResponse::Ok().finish())
     //    Identity::login(&req.extensions(), id.clone()).unwrap();
 
     //  Ok(HttpResponse::Ok().json(IndexResponse {
