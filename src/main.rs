@@ -3,7 +3,9 @@ mod prisma;
 
 use std::env;
 
-use actix_web::{delete, get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
+use serde::{Deserialize, Serialize};
+use actix_session::{storage::RedisActorSessionStore, Session, SessionMiddleware};
+use actix_web::{delete, get, middleware, post, web, App, HttpResponse, HttpServer, Responder, Result};
 use prisma::PrismaClient;
 use prisma_client_rust::NewClientError;
 
@@ -16,10 +18,7 @@ async fn get_users(data: web::Data<PrismaClient>) -> impl Responder {
 }
 
 #[get("/users/{id}")]
-async fn get_user_by_id(
-    data: web::Data<PrismaClient>,
-    id: web::Path<String>,
-) -> impl Responder {
+async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) -> impl Responder {
     let user = data
         .user()
         .find_unique(user::id::equals(id.to_string()))
@@ -29,9 +28,7 @@ async fn get_user_by_id(
     HttpResponse::Ok().json(user.unwrap())
 }
 
-user::partial_unchecked!(UserUpdateData {
-    display_name
-});
+user::partial_unchecked!(UserUpdateData { display_name });
 
 #[post("/users")]
 async fn create_user(
@@ -49,11 +46,13 @@ async fn create_user(
 }
 
 #[delete("/users/{id}")]
-async fn delete_user(
-    data: web::Data<PrismaClient>,
-    id: web::Path<String>,
-) -> impl Responder {
-    match data.user().delete(user::id::equals(id.to_string())).exec().await {
+async fn delete_user(data: web::Data<PrismaClient>, id: web::Path<String>) -> impl Responder {
+    match data
+        .user()
+        .delete(user::id::equals(id.to_string()))
+        .exec()
+        .await
+    {
         Err(_) => {
             return HttpResponse::NotFound().body("User not found");
         }
@@ -62,10 +61,72 @@ async fn delete_user(
         }
     }
 }
-    
+
 #[allow(dead_code)]
 async fn not_found() -> HttpResponse {
     HttpResponse::NotFound().body("Not Found")
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct IndexResponse {
+    user_id: Option<String>,
+    counter: i32,
+}
+
+#[derive(Deserialize)]
+struct Identity {
+    user_id: String,
+}
+
+#[post("/login")]
+async fn login(user_id: web::Json<Identity>, session: Session) -> Result<HttpResponse> {
+    let id = user_id.into_inner().user_id;
+    session.insert("user_id", &id)?;
+    session.renew();
+
+    let counter: i32 = session
+        .get::<i32>("counter")
+        .unwrap_or(Some(0))
+        .unwrap_or(0);
+
+    Ok(HttpResponse::Ok().json(IndexResponse {
+        user_id: Some(id),
+        counter,
+    }))
+}
+
+#[post("/logout")]
+async fn logout(session: Session) -> Result<String> {
+    let id: Option<String> = session.get("user_id")?;
+    if let Some(id) = id {
+        session.purge();
+        Ok(format!("Logged out: {id}"))
+    } else {
+        Ok("Could not log out anonymous user".into())
+    }
+}
+
+#[get("/")]
+async fn index(session: Session) -> Result<HttpResponse> {
+    let user_id: Option<String> = session.get::<String>("user_id").unwrap();
+    let counter: i32 = session
+        .get::<i32>("counter")
+        .unwrap_or(Some(0))
+        .unwrap_or(0);
+
+    Ok(HttpResponse::Ok().json(IndexResponse { user_id, counter }))
+}
+
+#[get("/do_something")]
+async fn do_something(session: Session) -> Result<HttpResponse> {
+    let user_id: Option<String> = session.get::<String>("user_id").unwrap();
+    let counter: i32 = session
+        .get::<i32>("counter")
+        .unwrap_or(Some(0))
+        .map_or(1, |inner| inner + 1);
+    session.insert("counter", counter)?;
+
+    Ok(HttpResponse::Ok().json(IndexResponse { user_id, counter }))
 }
 
 #[tokio::main]
@@ -77,11 +138,24 @@ async fn main() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "actix_web=debug");
     let data = web::Data::new(client);
 
+    let priv_key = actix_web::cookie::Key::generate();
+
     HttpServer::new(move || {
         App::new()
+            .wrap(
+                SessionMiddleware::builder(
+                    RedisActorSessionStore::new("127.0.0.1:6379"),
+                    priv_key.clone(),
+                )
+                .build(),
+            )
             .wrap(middleware::Logger::default())
             .app_data(data.clone())
             .default_service(web::route().to(not_found))
+            .service(index)
+            .service(do_something)
+            .service(login)
+            .service(logout)
             .service(get_users)
             .service(get_user_by_id)
             .service(create_user)
