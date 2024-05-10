@@ -1,16 +1,37 @@
 use crate::prisma::PrismaClient;
 use crate::route::health_check::health_check;
 use crate::route::users::user_controller_init;
-use crate::{do_something, index, login, logout, not_found};
-use actix_identity::IdentityMiddleware;
+use actix_identity::{Identity, IdentityMiddleware};
 use actix_session::config::PersistentSession;
 use actix_session::storage::RedisActorSessionStore;
-use actix_session::SessionMiddleware;
+use actix_session::{Session, SessionMiddleware};
 use actix_web::cookie::time::Duration;
 use actix_web::dev::Server;
 use actix_web::web::{scope, ServiceConfig};
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{error, get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use std::net::TcpListener;
+
+#[allow(dead_code)]
+async fn not_found() -> HttpResponse {
+    HttpResponse::NotFound().body("Not Found")
+}
+
+#[get("/")]
+async fn index(identity: Option<Identity>, session: Session) -> actix_web::Result<impl Responder> {
+    // let user_id: Option<String> = session.get::<String>("user_id").unwrap();
+    let counter: i32 = session
+        .get::<i32>("counter")
+        .unwrap_or(Some(0))
+        .unwrap_or(0);
+
+    let id = match identity.map(|id| id.id()) {
+        None => "anonymous".to_owned(),
+        Some(Ok(id)) => id,
+        Some(Err(err)) => return Err(error::ErrorInternalServerError(err)),
+    };
+
+    Ok(HttpResponse::Ok().body(format!("Hello {id}, session: {counter}")))
+}
 
 #[doc = "Setup the service served by the application."]
 fn get_config(conf: &mut ServiceConfig) {
@@ -43,9 +64,6 @@ pub async fn run(tcp_listener: TcpListener, data: PrismaClient) -> Result<Server
             .app_data(data.clone())
             .default_service(web::route().to(not_found))
             .service(index)
-            .service(do_something)
-            .service(login)
-            .service(logout)
     })
     .listen(tcp_listener)?
     .run();
