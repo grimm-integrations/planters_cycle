@@ -4,8 +4,9 @@ mod prisma;
 use std::env;
 
 use serde::{Deserialize, Serialize};
-use actix_session::{storage::RedisActorSessionStore, Session, SessionMiddleware};
-use actix_web::{delete, get, middleware, post, web, App, HttpResponse, HttpServer, Responder, Result};
+use actix_identity::{Identity, IdentityMiddleware};
+use actix_session::{config::PersistentSession, storage::RedisActorSessionStore, Session, SessionMiddleware};
+use actix_web::{cookie::time::Duration, delete, get, middleware, post, web, App, HttpResponse, HttpServer, Responder, Result};
 use prisma::PrismaClient;
 use prisma_client_rust::NewClientError;
 
@@ -74,12 +75,12 @@ pub struct IndexResponse {
 }
 
 #[derive(Deserialize)]
-struct Identity {
+struct IdentityLog {
     user_id: String,
 }
 
 #[post("/login")]
-async fn login(user_id: web::Json<Identity>, session: Session) -> Result<HttpResponse> {
+async fn login(user_id: web::Json<IdentityLog>, session: Session) -> Result<HttpResponse> {
     let id = user_id.into_inner().user_id;
     session.insert("user_id", &id)?;
     session.renew();
@@ -147,6 +148,9 @@ async fn main() -> std::io::Result<()> {
                     RedisActorSessionStore::new("127.0.0.1:6379"),
                     priv_key.clone(),
                 )
+                .cookie_name("plnt_auth".to_owned())
+                // .cookie_secure(secure) // Requires HTTPS
+                .session_lifecycle(PersistentSession::default().session_ttl(Duration::hours(24)))
                 .build(),
             )
             .wrap(middleware::Logger::default())
