@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 use crate::prisma::PrismaClient;
 use crate::route::health_check::health_check;
 use crate::route::users::user_controller_init;
@@ -10,6 +14,7 @@ use actix_web::dev::Server;
 use actix_web::web::{scope, ServiceConfig};
 use actix_web::{error, get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use std::net::TcpListener;
+use crate::route::auth::auth_controller_init;
 
 #[allow(dead_code)]
 async fn not_found() -> HttpResponse {
@@ -38,7 +43,8 @@ fn get_config(conf: &mut ServiceConfig) {
     conf.service(
         scope("/api")
             .service(health_check)
-            .configure(user_controller_init),
+            .configure(user_controller_init)
+            .configure(auth_controller_init),
     );
 }
 

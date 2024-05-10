@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 use std::{env, net::TcpListener};
 
 use actix_web::{HttpMessage, Responder, Result};

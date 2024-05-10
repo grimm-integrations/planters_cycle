@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 use crate::prisma::{user, PrismaClient};
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 

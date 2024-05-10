@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 use actix_web::{get, HttpResponse, Responder};
 
 #[tracing::instrument(name = "Checking the application health")]

@@ -1,12 +1,17 @@
-use crate::prisma::PrismaClient;
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 use crate::model::dto::auth::LoginRequest;
+use crate::prisma::PrismaClient;
+use crate::service::authentication::login_user;
 use actix_identity::Identity;
 use actix_session::Session;
 use actix_web::{get, post, web, HttpMessage, HttpRequest, HttpResponse};
 use serde::{Deserialize, Serialize};
 
 #[allow(dead_code)]
-pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
+pub fn auth_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(web::scope("/auth"));
 }
 
@@ -18,24 +23,18 @@ pub struct IndexResponse {
 
 #[post("/login")]
 async fn login(
-    body: web::Json,
+    body: web::Json<LoginRequest>,
     req: HttpRequest,
     data: web::Data<PrismaClient>,
 ) -> actix_web::Result<HttpResponse> {
     let login_result = login_user(body.into_inner(), data);
 
-    let id = user_id.into_inner().user_id;
-    let counter: i32 = session
-        .get::<i32>("counter")
-        .unwrap_or(Some(0))
-        .unwrap_or(0);
+    //    Identity::login(&req.extensions(), id.clone()).unwrap();
 
-    Identity::login(&req.extensions(), id.clone()).unwrap();
-
-    Ok(HttpResponse::Ok().json(IndexResponse {
-        user_id: Some(id),
-        counter,
-    }))
+    //  Ok(HttpResponse::Ok().json(IndexResponse {
+    //    user_id: Some(id),
+    //    counter,
+    //}))
 }
 
 #[post("/logout")]

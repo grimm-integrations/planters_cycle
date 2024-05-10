@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 pub mod auth {
     use serde::Deserialize;
 
