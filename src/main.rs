@@ -6,7 +6,7 @@ use std::env;
 use serde::{Deserialize, Serialize};
 use actix_identity::{Identity, IdentityMiddleware};
 use actix_session::{config::PersistentSession, storage::RedisActorSessionStore, Session, SessionMiddleware};
-use actix_web::{cookie::time::Duration, delete, get, middleware, post, web, App, HttpResponse, HttpServer, Responder, Result};
+use actix_web::{cookie::time::Duration, delete, error, get, middleware, post, web, App, HttpMessage, HttpRequest, HttpResponse, HttpServer, Responder, Result};
 use prisma::PrismaClient;
 use prisma_client_rust::NewClientError;
 
@@ -80,7 +80,7 @@ struct IdentityLog {
 }
 
 #[post("/login")]
-async fn login(user_id: web::Json<IdentityLog>, session: Session) -> Result<HttpResponse> {
+async fn login(user_id: web::Json<IdentityLog>, req: HttpRequest, session: Session) -> Result<HttpResponse> {
     let id = user_id.into_inner().user_id;
     session.insert("user_id", &id)?;
     session.renew();
@@ -90,6 +90,8 @@ async fn login(user_id: web::Json<IdentityLog>, session: Session) -> Result<Http
         .unwrap_or(Some(0))
         .unwrap_or(0);
 
+    Identity::login(&req.extensions(), id.clone()).unwrap();
+
     Ok(HttpResponse::Ok().json(IndexResponse {
         user_id: Some(id),
         counter,
@@ -97,7 +99,8 @@ async fn login(user_id: web::Json<IdentityLog>, session: Session) -> Result<Http
 }
 
 #[post("/logout")]
-async fn logout(session: Session) -> Result<String> {
+async fn logout(session: Session, ident: Identity) -> Result<String> {
+    ident.logout();
     let id: Option<String> = session.get("user_id")?;
     if let Some(id) = id {
         session.purge();
@@ -108,14 +111,21 @@ async fn logout(session: Session) -> Result<String> {
 }
 
 #[get("/")]
-async fn index(session: Session) -> Result<HttpResponse> {
-    let user_id: Option<String> = session.get::<String>("user_id").unwrap();
+async fn index(identity: Option<Identity>, session: Session) -> Result<impl Responder> {
+
+    // let user_id: Option<String> = session.get::<String>("user_id").unwrap();
     let counter: i32 = session
         .get::<i32>("counter")
         .unwrap_or(Some(0))
         .unwrap_or(0);
 
-    Ok(HttpResponse::Ok().json(IndexResponse { user_id, counter }))
+    let id = match identity.map(|id| id.id()) {
+        None => "anonymous".to_owned(),
+        Some(Ok(id)) => id,
+        Some(Err(err)) => return Err(error::ErrorInternalServerError(err))
+    };
+
+    Ok(HttpResponse::Ok().body(format!("Hello {id}, session: {counter}")))
 }
 
 #[get("/do_something")]
@@ -136,6 +146,7 @@ async fn main() -> std::io::Result<()> {
 
     let client = client.unwrap();
 
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
     env::set_var("RUST_LOG", "actix_web=debug");
     let data = web::Data::new(client);
 
@@ -143,6 +154,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(IdentityMiddleware::default())
             .wrap(
                 SessionMiddleware::builder(
                     RedisActorSessionStore::new("127.0.0.1:6379"),
@@ -153,6 +165,7 @@ async fn main() -> std::io::Result<()> {
                 .session_lifecycle(PersistentSession::default().session_ttl(Duration::hours(24)))
                 .build(),
             )
+            .wrap(middleware::NormalizePath::trim())
             .wrap(middleware::Logger::default())
             .app_data(data.clone())
             .default_service(web::route().to(not_found))
