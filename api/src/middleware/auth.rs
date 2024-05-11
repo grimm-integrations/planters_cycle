@@ -2,15 +2,11 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use std::future::{ready, Future};
-use std::pin::Pin;
+use std::future::ready;
 
 use actix_identity::Identity;
 use actix_web::dev::Payload;
-use actix_web::error::ErrorUnauthorized;
-use actix_web::{web, FromRequest, HttpRequest};
-
-use crate::prisma::{user, PrismaClient};
+use actix_web::{FromRequest, HttpRequest};
 
 #[derive(Debug)]
 pub struct AuthDetails {
