@@ -69,7 +69,8 @@ pub async fn register_user(
     let verify_password = Argon2::default()
         .verify_password(&pw, &parsed_hash)
         .map_or(false, |_| true);
-    println!("{:?}", verify_password);
+
+    assert!(verify_password, "Password verification failed");
 
     let user = data
         .user()
