@@ -22,7 +22,6 @@ mod service;
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
     let data: Result<PrismaClient, NewClientError> = PrismaClient::_builder().build().await;
-
     let data = data.unwrap();
 
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));

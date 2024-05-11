@@ -4,6 +4,7 @@
 
 pub mod auth {
     use serde::Deserialize;
+    use crate::prisma::user;
 
     #[doc = "User Login"]
     #[derive(Debug, Deserialize)]
@@ -11,4 +12,10 @@ pub mod auth {
         pub identifier: String,
         pub password: String,
     }
+    
+    user::partial_unchecked!(RegisterRequest { 
+        display_name
+        email
+        password
+    });
 }
