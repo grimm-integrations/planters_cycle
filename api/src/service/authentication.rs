@@ -27,7 +27,15 @@ pub async fn login_user(
     }
 
     let valid_password: bool = user.to_owned().map_or(false, |usr| {
-        let hash: PasswordHash = PasswordHash::new(&usr.password).unwrap();
+        let hash = PasswordHash::new(&usr.password);
+        let hash = match hash {
+            Ok(h) => Some(h),
+            Err(e) => {
+                println!("Error: {:?}", e);
+                None
+            }
+        };
+        let hash = hash.unwrap();
         Argon2::default()
             .verify_password(login_request.password.as_bytes(), &hash)
             .map_or(false, |_| true)
@@ -50,15 +58,25 @@ pub async fn register_user(
     data: web::Data<PrismaClient>,
 ) -> Result<user::Data, ErrorCode> {
     let salt: SaltString = SaltString::generate(&mut OsRng);
-    let hashed_password =
-        Argon2::default().hash_password(register_request.password.unwrap().as_bytes(), &salt);
+    let pw = register_request.password.unwrap();
+    let pw = pw.as_bytes();
+    let hashed_password = Argon2::default()
+        .hash_password(&pw, &salt)
+        .unwrap()
+        .to_string();
+
+    let parsed_hash = PasswordHash::new(&hashed_password).unwrap();
+    let verify_password = Argon2::default()
+        .verify_password(&pw, &parsed_hash)
+        .map_or(false, |_| true);
+    println!("{:?}", verify_password);
 
     let user = data
         .user()
         .create(
             register_request.display_name.unwrap(),
             register_request.email.unwrap(),
-            hashed_password.unwrap().hash.unwrap().to_string(),
+            hashed_password,
             vec![],
         )
         .exec()

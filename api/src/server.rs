@@ -71,6 +71,7 @@ pub async fn run(tcp_listener: TcpListener, data: PrismaClient) -> Result<Server
             .app_data(data.clone())
             .default_service(web::route().to(not_found))
             .service(index)
+            .configure(get_config)
     })
     .listen(tcp_listener)?
     .run();

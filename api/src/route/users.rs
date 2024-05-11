@@ -16,13 +16,13 @@ pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     );
 }
 
-#[get("/users")]
+#[get("/")]
 async fn get_users(data: web::Data<PrismaClient>) -> impl Responder {
     let users = data.user().find_many(vec![]).exec().await.unwrap();
     HttpResponse::Ok().json(users)
 }
 
-#[get("/users/{id}")]
+#[get("/{id}")]
 async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) -> impl Responder {
     let user = data
         .user()
@@ -35,7 +35,7 @@ async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) ->
 
 user::partial_unchecked!(UserUpdateData { display_name });
 
-#[post("/users")]
+#[post("/")]
 async fn create_user(
     data: web::Data<PrismaClient>,
     body: web::Json<UserUpdateData>,
@@ -55,7 +55,7 @@ async fn create_user(
     HttpResponse::Ok().json(user)
 }
 
-#[delete("/users/{id}")]
+#[delete("/{id}")]
 async fn delete_user(data: web::Data<PrismaClient>, id: web::Path<String>) -> impl Responder {
     match data
         .user()

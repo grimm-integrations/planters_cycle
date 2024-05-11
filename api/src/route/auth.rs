@@ -4,16 +4,22 @@
 
 use crate::model::dto::auth::{LoginRequest, RegisterRequest};
 use crate::model::error::ErrorResponse;
-use crate::prisma::PrismaClient;
+use crate::prisma::{user, PrismaClient};
 use crate::service::authentication::{login_user, register_user};
 
+use crate::middleware::auth::AuthDetails;
 use actix_identity::Identity;
 use actix_web::web::Json;
-use actix_web::{post, web, HttpMessage, HttpRequest, HttpResponse, Responder};
+use actix_web::{get, post, web, HttpMessage, HttpRequest, HttpResponse, Responder};
 
 #[allow(dead_code)]
 pub fn auth_controller_init(cfg: &mut web::ServiceConfig) {
-    cfg.service(web::scope("/auth").service(login).service(logout));
+    cfg.service(
+        web::scope("/auth")
+            .service(login)
+            .service(logout)
+            .service(register),
+    );
 }
 
 #[post("/login")]
@@ -47,5 +53,20 @@ async fn register(body: Json<RegisterRequest>, data: web::Data<PrismaClient>) ->
             HttpResponse::Ok().json(user)
         }
         Err(e) => ErrorResponse::build(e),
+    }
+}
+
+#[get("/profile")]
+async fn profile(usr: Option<Identity>, data: web::Data<PrismaClient>) -> impl Responder {
+    if let Some(usr) = usr {
+        let usr = data
+            .user()
+            .find_unique(user::id::equals(usr.id().unwrap()))
+            .exec()
+            .await
+            .unwrap();
+        HttpResponse::Ok().json(usr.unwrap())
+    } else {
+        HttpResponse::Unauthorized().finish()
     }
 }
