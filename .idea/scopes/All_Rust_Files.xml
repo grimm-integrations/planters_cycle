@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="All Rust Files" pattern="file:*.rs&amp;&amp;!file[plntcycl]:api/target//*" />
+</component>

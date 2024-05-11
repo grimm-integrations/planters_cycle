@@ -4,13 +4,14 @@
 
 use std::{env, net::TcpListener};
 
-use actix_web::{Result};
+use actix_web::Result;
 use prisma_client_rust::NewClientError;
 
 use prisma::PrismaClient;
 
 use crate::server::run;
 
+mod middleware;
 mod model;
 #[allow(warnings, unused)]
 mod prisma;

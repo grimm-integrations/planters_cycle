@@ -3,54 +3,36 @@
  */
 
 use crate::model::dto::auth::LoginRequest;
+use crate::model::error::ErrorResponse;
 use crate::prisma::PrismaClient;
 use crate::service::authentication::login_user;
+
 use actix_identity::Identity;
-use actix_session::Session;
-use actix_web::{get, post, web, HttpRequest, HttpResponse};
-use serde::{Deserialize, Serialize};
+use actix_web::{post, web, HttpMessage, HttpRequest, HttpResponse, Responder};
 
 #[allow(dead_code)]
 pub fn auth_controller_init(cfg: &mut web::ServiceConfig) {
-    cfg.service(web::scope("/auth"));
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
-pub struct IndexResponse {
-    user_id: Option<String>,
-    counter: i32,
+    cfg.service(web::scope("/auth").service(login).service(logout));
 }
 
 #[post("/login")]
 async fn login(
     body: web::Json<LoginRequest>,
-    _req: HttpRequest,
+    req: HttpRequest,
     data: web::Data<PrismaClient>,
-) -> actix_web::Result<HttpResponse> {
-    let _login_result = login_user(body.into_inner(), data);
-    Ok(HttpResponse::Ok().finish())
-    //    Identity::login(&req.extensions(), id.clone()).unwrap();
-
-    //  Ok(HttpResponse::Ok().json(IndexResponse {
-    //    user_id: Some(id),
-    //    counter,
-    //}))
+) -> impl Responder {
+    let login_result = login_user(body.into_inner(), data).await;
+    match login_result {
+        Ok(user) => {
+            Identity::login(&req.extensions(), user.id.clone()).unwrap();
+            HttpResponse::Ok().finish()
+        }
+        Err(e) => ErrorResponse::build(e),
+    }
 }
 
 #[post("/logout")]
-async fn logout(ident: Identity) -> actix_web::Result<String> {
+async fn logout(ident: Identity) -> impl Responder {
     ident.logout();
-    Ok("logged out".to_owned())
-}
-
-#[get("/do_something")]
-async fn do_something(session: Session) -> actix_web::Result<HttpResponse> {
-    let user_id: Option<String> = session.get::<String>("user_id").unwrap();
-    let counter: i32 = session
-        .get::<i32>("counter")
-        .unwrap_or(Some(0))
-        .map_or(1, |inner| inner + 1);
-    session.insert("counter", counter)?;
-
-    Ok(HttpResponse::Ok().json(IndexResponse { user_id, counter }))
+    HttpResponse::Ok().finish()
 }

@@ -1,3 +1,7 @@
 <component name="CopyrightManager">
-  <settings default="Default" />
+  <settings default="Default">
+    <module2copyright>
+      <element module="All Rust Files" copyright="Default" />
+    </module2copyright>
+  </settings>
 </component>
