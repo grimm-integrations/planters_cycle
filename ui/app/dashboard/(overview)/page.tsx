@@ -1,3 +1,4 @@
+import { ModeToggle } from '@/app/ui/theme-toggler';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -5,5 +6,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  return <main></main>;
+  return (
+    <main>
+      <ModeToggle />
+    </main>
+  );
 }
