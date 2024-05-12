@@ -14,6 +14,7 @@ use actix_web::cookie::time::Duration;
 use actix_web::dev::Server;
 use actix_web::web::{scope, ServiceConfig};
 use actix_web::{error, get, middleware, web, App, HttpResponse, HttpServer, Responder};
+use std::env;
 use std::net::TcpListener;
 
 #[allow(dead_code)]
@@ -52,7 +53,11 @@ fn get_config(conf: &mut ServiceConfig) {
 #[doc = "Create the server instance."]
 pub async fn run(tcp_listener: TcpListener, data: PrismaClient) -> Result<Server, std::io::Error> {
     let data = web::Data::new(data);
+
+    let secret_key = env::var("SECRET").expect("SECRET is not set");
     let private_key = actix_web::cookie::Key::generate();
+    let private_key = actix_web::cookie::Key::from(secret_key.as_bytes());
+    
     let server = HttpServer::new(move || {
         App::new()
             .wrap(IdentityMiddleware::default())

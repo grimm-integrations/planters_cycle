@@ -26,7 +26,7 @@ async fn main() -> Result<(), std::io::Error> {
 
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
     env::set_var("RUST_LOG", "actix_web=debug");
-
+    
     let listener = TcpListener::bind("127.0.0.1:8004").expect("Failed to bind address");
 
     run(listener, data).await?.await?;

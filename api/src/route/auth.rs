@@ -7,7 +7,6 @@ use crate::model::error::ErrorResponse;
 use crate::prisma::{user, PrismaClient};
 use crate::service::authentication::{login_user, register_user};
 
-use crate::middleware::auth::AuthDetails;
 use actix_identity::Identity;
 use actix_web::web::Json;
 use actix_web::{get, post, web, HttpMessage, HttpRequest, HttpResponse, Responder};
@@ -18,7 +17,8 @@ pub fn auth_controller_init(cfg: &mut web::ServiceConfig) {
         web::scope("/auth")
             .service(login)
             .service(logout)
-            .service(register),
+            .service(register)
+            .service(profile),
     );
 }
 
@@ -32,7 +32,7 @@ async fn login(
     match login_result {
         Ok(user) => {
             Identity::login(&req.extensions(), user.id.clone()).unwrap();
-            HttpResponse::Ok().finish()
+            HttpResponse::Ok().json(user)
         }
         Err(e) => ErrorResponse::build(e),
     }

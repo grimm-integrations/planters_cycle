@@ -21,7 +21,7 @@ impl FromRequest for AuthDetails {
 
     fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
         // Clone early to get a "static" reference for later use in async block
-        let req_clone = HttpRequest::clone(req);
+        // let req_clone = HttpRequest::clone(req);
         let i = Identity::from_request(req, payload).into_inner();
 
         let user_id = i.map(|i| i.id().unwrap());
