@@ -55,7 +55,6 @@ pub async fn run(tcp_listener: TcpListener, data: PrismaClient) -> Result<Server
     let data = web::Data::new(data);
 
     let secret_key = env::var("SECRET").expect("SECRET is not set");
-    let private_key = actix_web::cookie::Key::generate();
     let private_key = actix_web::cookie::Key::from(secret_key.as_bytes());
 
     let server = HttpServer::new(move || {
