@@ -2,8 +2,6 @@ import NextAuth from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import Credentials from 'next-auth/providers/credentials';
 
-
-
 const providers: Provider[] = [
   Credentials({
     name: 'credentials',
@@ -28,17 +26,17 @@ const providers: Provider[] = [
 
       return null;
     },
-  })
-]
+  }),
+];
 
 export const providerMap = providers.map((provider) => {
-  if (typeof provider === "function") {
-    const providerData = provider()
-    return { id: providerData.id, name: providerData.name }
+  if (typeof provider === 'function') {
+    const providerData = provider();
+    return { id: providerData.id, name: providerData.name };
   } else {
-    return { id: provider.id, name: provider.name }
+    return { id: provider.id, name: provider.name };
   }
-})
+});
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   // debug: true,
