@@ -7,11 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import {
-  LifeBuoy,
-  Settings,
-  Users,
-} from 'lucide-react';
+import { LifeBuoy, Settings, Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import Link from 'next/link';
@@ -57,7 +53,7 @@ export default function SideNav() {
           })}
         </nav>
         <nav className='mt-auto grid gap-1 p-2'>
-        {bottom_links.map((link) => {
+          {bottom_links.map((link) => {
             const LinkIcon = link.icon;
             return (
               <Tooltip key={link.name}>

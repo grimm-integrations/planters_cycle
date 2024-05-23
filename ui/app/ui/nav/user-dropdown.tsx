@@ -12,7 +12,6 @@ import { signOut } from '@/auth';
 import AdminButton from './admin-button';
 
 export default function UserDropdown() {
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,7 +36,6 @@ export default function UserDropdown() {
           >
             <button type='submit'>Sign in</button>
           </form>
-          {/* <button onClick={() => signOut()}>Logout</button> */}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

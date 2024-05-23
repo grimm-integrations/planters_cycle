@@ -7,11 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className='grid h-screen w-full pl-[56px]'>
         <SideNav />
         <TopNav />
-        <div className='flex min-h-screen w-full flex-col'>
-          <div className='flex-grow p-6 md:overflow-y-auto md:p-12'>
-            {children}
-          </div>
-        </div>
+        <div className='flex min-h-screen w-full flex-col'>{children}</div>
       </div>
     </main>
   );
