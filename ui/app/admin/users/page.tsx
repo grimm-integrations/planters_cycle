@@ -33,9 +33,10 @@ import BreadCrumb from '@/components/bread-crumb';
 import { Metadata } from 'next';
 import { auth } from '@/auth';
 import { fetchUsers } from '@/lib/data';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Invoices',
+  title: 'Users',
 };
 
 export default async function Page({
@@ -95,10 +96,10 @@ export default async function Page({
                     </TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>eMail</TableHead>
-                    <TableHead className='hidden md:table-cell'>
+                    <TableHead className='hidden xl:table-cell'>
                       Last Login
                     </TableHead>
-                    <TableHead className='hidden md:table-cell'>
+                    <TableHead className='hidden xl:table-cell'>
                       Created at
                     </TableHead>
                     <TableHead>
@@ -123,10 +124,10 @@ export default async function Page({
                           {user.displayName}
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
-                        <TableCell className='hidden md:table-cell'>
+                        <TableCell className='hidden xl:table-cell'>
                           {user.lastLogin}
                         </TableCell>
-                        <TableCell className='hidden md:table-cell'>
+                        <TableCell className='hidden xl:table-cell'>
                           {user.createdAt}
                         </TableCell>
                         <TableCell>
@@ -143,7 +144,7 @@ export default async function Page({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end'>
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <Link href='/admin/users/create'><DropdownMenuItem>Edit</DropdownMenuItem></Link>
                               <DropdownMenuItem>Delete</DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -154,11 +155,6 @@ export default async function Page({
                 </TableBody>
               </Table>
             </CardContent>
-            <CardFooter>
-              <div className='text-xs text-muted-foreground'>
-                Showing <strong>1-10</strong> of <strong>32</strong> products
-              </div>
-            </CardFooter>
           </Card>
         </main>
       </div>
