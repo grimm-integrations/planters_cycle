@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { CircleUser } from 'lucide-react';
-import { auth, signOut } from '@/auth';
+import { signOut } from '@/auth';
 import AdminButton from './admin-button';
 
 export default function UserDropdown() {

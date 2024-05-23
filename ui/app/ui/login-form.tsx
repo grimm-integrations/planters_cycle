@@ -24,7 +24,6 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card';
-import { Label } from '@radix-ui/react-dropdown-menu';
 
 const formSchema = z.object({
   identifier: z.string().min(2, {
@@ -36,7 +35,6 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,10 +42,7 @@ export function LoginForm() {
       password: '',
     },
   });
-
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     await authenticate(values);
   }
   return (

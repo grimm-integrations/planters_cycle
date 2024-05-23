@@ -6,7 +6,6 @@ import {
   DollarSign,
   Users,
 } from 'lucide-react';
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Metadata } from 'next';
-import TopNav from '@/app/ui/top-nav';
 
 export const metadata: Metadata = {
   title: 'Dashboard',

@@ -4,8 +4,8 @@ import { ModeToggle } from '@/app/ui/theme-toggler';
 import Link from 'next/link';
 import { Menu, Package2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
 import UserDropdown from './user-dropdown';
+
 
 export default async function TopNav() {
   return (
