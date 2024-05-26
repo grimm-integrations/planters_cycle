@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -23,29 +22,25 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { UserModel } from '@/prisma/zod';
+import { User } from '@prisma/client';
 
-const formSchema = z.object({
-  displayName: z.string().min(2, {
-    message: 'identifier must be at least 2 characters.',
-  }),
-  email: z.string().email({
-    message: 'Please enter a valid email address.',
-  }),
-  password: z.string().min(2, {
-    message: 'Password must be at least 2 characters.',
-  }).optional(),
+const editUserSchema = UserModel.partial({
+  id: true,
+  createdAt: true,
+  lastLogin: true,
+  password: true,
 });
 
-export default function EditUserForm({user}) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+export default function EditUserForm({ user }: { user: User }) {
+  const form = useForm<z.infer<typeof editUserSchema>>({
+    resolver: zodResolver(editUserSchema),
     defaultValues: {
       displayName: user.displayName,
       email: user.email,
-      password: '',
     },
   });
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof editUserSchema>) {
     await editUser(values);
   }
   return (
@@ -69,7 +64,7 @@ export default function EditUserForm({user}) {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder='shadcn' {...field} />
+                        <Input placeholder='Max Mustermann' {...field} />
                       </FormControl>
                       <FormDescription>
                         This is your public display name.

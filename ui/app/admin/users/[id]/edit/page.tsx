@@ -1,31 +1,11 @@
 import { auth } from '@/auth';
-import BreadCrumb from '@/components/bread-crumb';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { fetchUser } from '@/lib/data';
 import { Metadata } from 'next';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import BreadCrumb from '@/components/bread-crumb';
 import EditUserForm from '@/app/ui/admin/user/edit-form';
 
 export const metadata: Metadata = {
-  title: 'Create User',
+  title: 'Edit User',
 };
 
 export default async function Page({ params }: { params: { id: string } }) {

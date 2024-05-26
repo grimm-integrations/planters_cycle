@@ -11,10 +11,10 @@ generator client {
 }
 
 model User {
-  id           String         @id @default(uuid())
-  displayName  String
-  email        String         @unique
-  password     String
+  id           String         @id @default(uuid())  /// @zod.uuid()
+  displayName  String                               /// @zod.min(2, "Display name must be at least 2 characters long")
+  email        String         @unique               /// @zod.email("Invalid email address")
+  password     String                               /// @zod.min(8, "Password must be at least 8 characters long")
   lastLogin    DateTime?
   createdAt    DateTime       @default(now())
   roles        UsersInRoles[]

@@ -53,7 +53,6 @@ export default async function Page({
   const currentPage = Number(searchParams?.page) || 1;
 
   const users = await fetchUsers(session.user.auth, query);
-  console.log(users);
 
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
