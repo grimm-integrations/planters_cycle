@@ -4,4 +4,5 @@
 
 pub(crate) mod auth;
 pub(crate) mod health_check;
+pub(crate) mod roles;
 pub(crate) mod users;

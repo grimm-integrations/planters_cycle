@@ -3,12 +3,12 @@
  */
 
 use crate::{
+    model::dto::auth::RegisterRequest,
     prisma::{user, PrismaClient},
-    service::user::edit_user_by_id,
+    service::{authentication::register_user, user::edit_user_by_id},
 };
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 
-#[allow(dead_code)]
 pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(
         web::scope("/users")
@@ -20,7 +20,7 @@ pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     );
 }
 
-#[get("/list")]
+#[get("")]
 async fn get_users(data: web::Data<PrismaClient>) -> impl Responder {
     let users = data
         .user()
@@ -39,7 +39,7 @@ async fn get_users(data: web::Data<PrismaClient>) -> impl Responder {
     HttpResponse::Ok().json(users)
 }
 
-#[get("/byId/{id}")]
+#[get("/{id}")]
 async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) -> impl Responder {
     let user = data
         .user()
@@ -58,30 +58,20 @@ async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) ->
     HttpResponse::Ok().json(user.unwrap())
 }
 
-user::partial_unchecked!(UserCreateData { display_name });
-
-#[post("/")]
+#[post("")]
 async fn create_user(
     data: web::Data<PrismaClient>,
-    body: web::Json<UserCreateData>,
+    body: web::Json<RegisterRequest>,
 ) -> impl Responder {
-    let user = data
-        .user()
-        .create(
-            body.display_name.as_ref().unwrap().to_string(),
-            "".to_owned(),
-            "".to_owned(),
-            vec![],
-        )
-        .exec()
-        .await
-        .unwrap();
-
-    HttpResponse::Ok().json(user)
+    let register_result = register_user(body.into_inner(), data).await;
+    match register_result {
+        Ok(user) => HttpResponse::Ok().json(user),
+        Err(_) => HttpResponse::BadRequest().finish(),
+    }
 }
 
 user::partial_unchecked!(UserUpdateData { display_name email password });
-#[post("/byId/{id}")]
+#[post("/{id}")]
 async fn edit_user(
     data: web::Data<PrismaClient>,
     id: web::Path<String>,
@@ -93,7 +83,7 @@ async fn edit_user(
     }
 }
 
-#[delete("/byId/{id}")]
+#[delete("/{id}")]
 async fn delete_user(data: web::Data<PrismaClient>, id: web::Path<String>) -> impl Responder {
     match data
         .user()

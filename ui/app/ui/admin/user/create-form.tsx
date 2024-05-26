@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -23,55 +22,72 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { UserModel } from '@/prisma/zod';
+import { createUser } from '@/lib/actions';
 
-const formSchema = z.object({
-  displayName: z.string().min(2, {
-    message: 'identifier must be at least 2 characters.',
-  }),
-  email: z.string().email({
-    message: 'Please enter a valid email address.',
-  }),
-  password: z.string().min(2, {
-    message: 'Password must be at least 2 characters.',
-  }),
+const editUserSchema = UserModel.partial({
+  id: true,
+  createdAt: true,
+  lastLogin: true,
+  password: true,
 });
 
 export default function CreateUserForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof editUserSchema>>({
+    resolver: zodResolver(editUserSchema),
     defaultValues: {
       displayName: '',
       email: '',
       password: '',
     },
   });
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+
+  async function onSubmit(values: z.infer<typeof editUserSchema>) {
     await createUser(values);
   }
+
   return (
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-          <Card className='w-full max-w-sm'>
+          <Card>
             <CardHeader>
-              <CardTitle className='text-2xl'>Login</CardTitle>
+              <CardTitle>Create User</CardTitle>
               <CardDescription>
-                Enter your email below to login to your account.
+                Create a new user account.
               </CardDescription>
             </CardHeader>
             <CardContent className='grid gap-4'>
               <div className='grid gap-2'>
                 <FormField
                   control={form.control}
-                  name='identifier'
+                  name='displayName'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>identifier</FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder='shadcn' {...field} />
+                        <Input placeholder='Max Mustermann' {...field} />
                       </FormControl>
                       <FormDescription>
                         This is your public display name.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className='grid gap-2'>
+                <FormField
+                  control={form.control}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>eMail</FormLabel>
+                      <FormControl>
+                        <Input placeholder='dev@r4p1d.xyz' {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        This is your email address.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -103,7 +119,7 @@ export default function CreateUserForm() {
             </CardContent>
             <CardFooter>
               <Button type='submit' className='w-full'>
-                Sign in
+                Create
               </Button>
             </CardFooter>
           </Card>

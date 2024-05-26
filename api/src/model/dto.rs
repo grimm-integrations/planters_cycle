@@ -19,3 +19,7 @@ pub mod auth {
         password
     });
 }
+
+crate::prisma::role::partial_unchecked!(Role {
+    name
+});

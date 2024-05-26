@@ -33,15 +33,7 @@ const editUserSchema = UserModel.partial({
   password: true,
 });
 
-export default function EditUserForm({
-  auth,
-  id,
-  user,
-}: {
-  auth: string;
-  id: string;
-  user: User;
-}) {
+export default function EditUserForm({ id, user }: { id: string; user: User }) {
   const form = useForm<z.infer<typeof editUserSchema>>({
     resolver: zodResolver(editUserSchema),
     defaultValues: {
@@ -51,7 +43,7 @@ export default function EditUserForm({
   });
 
   async function onSubmit(values: z.infer<typeof editUserSchema>) {
-    await editUser(auth, id, values);
+    await editUser(id, values);
   }
 
   return (

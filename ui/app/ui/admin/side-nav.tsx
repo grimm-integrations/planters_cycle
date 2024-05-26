@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { LifeBuoy, Settings, Users } from 'lucide-react';
+import { KeyRound, LifeBuoy, Settings, Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import Link from 'next/link';
@@ -15,6 +15,7 @@ import Link from 'next/link';
 const links = [
   { name: 'Settings', href: '/admin', icon: Settings },
   { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Roles', href: '/admin/roles', icon: KeyRound },
 ];
 
 const bottom_links = [

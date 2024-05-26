@@ -5,6 +5,7 @@
 use crate::prisma::PrismaClient;
 use crate::route::auth::auth_controller_init;
 use crate::route::health_check::health_check;
+use crate::route::roles::role_controller_init;
 use crate::route::users::user_controller_init;
 use actix_identity::{Identity, IdentityMiddleware};
 use actix_session::config::PersistentSession;
@@ -24,7 +25,6 @@ async fn not_found() -> HttpResponse {
 
 #[get("/")]
 async fn index(identity: Option<Identity>, session: Session) -> actix_web::Result<impl Responder> {
-    // let user_id: Option<String> = session.get::<String>("user_id").unwrap();
     let counter: i32 = session
         .get::<i32>("counter")
         .unwrap_or(Some(0))
@@ -46,6 +46,7 @@ fn get_config(conf: &mut ServiceConfig) {
         scope("/api")
             .service(health_check)
             .configure(user_controller_init)
+            .configure(role_controller_init)
             .configure(auth_controller_init),
     );
 }

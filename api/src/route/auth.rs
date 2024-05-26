@@ -48,10 +48,7 @@ async fn logout(ident: Identity) -> impl Responder {
 async fn register(body: Json<RegisterRequest>, data: web::Data<PrismaClient>) -> impl Responder {
     let register_result = register_user(body.into_inner(), data).await;
     match register_result {
-        Ok(user) => {
-            // Identity::login(&req.extensions(), user.id.clone()).unwrap();
-            HttpResponse::Ok().json(user)
-        }
+        Ok(user) => HttpResponse::Ok().json(user),
         Err(e) => ErrorResponse::build(e),
     }
 }

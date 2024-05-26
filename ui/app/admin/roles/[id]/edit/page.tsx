@@ -1,12 +1,17 @@
 import { Metadata } from 'next';
 import BreadCrumb from '@/components/bread-crumb';
-import CreateUserForm from '@/app/ui/admin/user/create-form';
+import EditRoleForm from '@/app/ui/admin/roles/edit-form';
+import { fetchRole } from '@/lib/data';
 
 export const metadata: Metadata = {
-  title: 'Create User',
+  title: 'Edit Role',
 };
 
-export default async function Page() {
+export default async function Page({ params }: { params: { id: string } }) {
+  const id = params.id;
+
+  const role = await fetchRole(id);
+
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
       <div className='flex flex-col sm:gap-4 sm:py-4 '>
@@ -14,7 +19,7 @@ export default async function Page() {
           <BreadCrumb />
         </header>
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-          <CreateUserForm />
+          <EditRoleForm role={role} id={id} />
         </main>
       </div>
     </div>

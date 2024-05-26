@@ -61,7 +61,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-      if (isOnDashboard) {
+      const isOnAdmin = nextUrl.pathname.startsWith('/admin');
+      if (isOnDashboard || isOnAdmin) {
         if (isLoggedIn) return true;
         return false;
       }

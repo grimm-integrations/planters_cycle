@@ -1,23 +1,17 @@
-import Image from 'next/image';
 import { MoreHorizontal, PlusCircle, Search } from 'lucide-react';
-
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -31,11 +25,12 @@ import {
 } from '@/components/ui/table';
 import BreadCrumb from '@/components/bread-crumb';
 import { Metadata } from 'next';
-import { fetchUsers } from '@/lib/data';
+
 import Link from 'next/link';
+import { fetchRoles } from '@/lib/data';
 
 export const metadata: Metadata = {
-  title: 'Users',
+  title: 'Roles',
 };
 
 export default async function Page({
@@ -49,7 +44,7 @@ export default async function Page({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const users = await fetchUsers(query);
+  const roles = await fetchRoles(query);
 
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
@@ -66,11 +61,11 @@ export default async function Page({
           </div>
           <div className='flex items-center'>
             <div className='ml-auto flex items-center gap-2'>
-              <Link href='/admin/users/create'>
+              <Link href='/admin/roles/create'>
                 <Button size='sm' className='h-8 gap-1'>
                   <PlusCircle className='h-3.5 w-3.5' />
                   <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-                    Add User
+                    Add Roles
                   </span>
                 </Button>
               </Link>
@@ -80,55 +75,29 @@ export default async function Page({
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
           <Card>
             <CardHeader>
-              <CardTitle>Users</CardTitle>
+              <CardTitle>Roles</CardTitle>
               <CardDescription>
-                Manage your users here. You can add, edit, and delete users.
+                Manage your roles here. You can add, edit, and delete roles.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className='hidden w-[100px] sm:table-cell'>
-                      <span className='sr-only'>Image</span>
-                    </TableHead>
                     <TableHead>Name</TableHead>
-                    <TableHead>eMail</TableHead>
-                    <TableHead className='hidden xl:table-cell'>
-                      Last Login
-                    </TableHead>
-                    <TableHead className='hidden xl:table-cell'>
-                      Created at
-                    </TableHead>
-                    <TableHead>
+                    <TableHead className="text-right">
                       <span className='sr-only'>Actions</span>
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users?.map((user) => {
+                  {roles?.map((role) => {
                     return (
-                      <TableRow key={user.id}>
-                        <TableCell className='hidden sm:table-cell'>
-                          <Image
-                            alt='User image'
-                            className='aspect-square rounded-md object-cover'
-                            height='64'
-                            src='/placeholder.svg'
-                            width='64'
-                          />
-                        </TableCell>
+                      <TableRow key={role.id}>
                         <TableCell className='font-medium'>
-                          {user.displayName}
+                          {role.name}
                         </TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell className='hidden xl:table-cell'>
-                          {user.lastLogin}
-                        </TableCell>
-                        <TableCell className='hidden xl:table-cell'>
-                          {user.createdAt}
-                        </TableCell>
-                        <TableCell>
+                        <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -142,7 +111,7 @@ export default async function Page({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end'>
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <Link href={`/admin/users/${user.id}/edit`}>
+                              <Link href={`/admin/roles/${role.id}/edit`}>
                                 <DropdownMenuItem>Edit</DropdownMenuItem>
                               </Link>
                               <DropdownMenuItem>Delete</DropdownMenuItem>
