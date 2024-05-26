@@ -8,6 +8,8 @@ use actix_web::web;
 use chrono::Utc;
 use prisma_client_rust::or;
 
+use super::authentication::change_password;
+
 pub async fn find_by_identifier(
     identifier: &str,
     data: &web::Data<PrismaClient>,
@@ -43,12 +45,23 @@ pub async fn edit_user_by_id(
     data: &web::Data<PrismaClient>,
     user: crate::route::users::UserUpdateData,
 ) -> Result<user::Data, ErrorCode> {
+    let mut user: crate::route::users::UserUpdateData = crate::route::users::UserUpdateData {
+        display_name: user.display_name.clone(),
+        email: user.email.clone(),
+        password: user.password.clone(),
+    };
+
+    if user.password.is_some() {
+        match change_password(id, &user.password.clone().unwrap(), data).await {
+            Ok(_) => {
+                user.password = None;
+            }
+            Err(e) => return Err(e),
+        }
+    }
     match data
         .user()
-        .update_unchecked(
-            user::id::equals(id.to_string()),
-            user.to_params()
-        )
+        .update_unchecked(user::id::equals(id.to_string()), user.to_params())
         .exec()
         .await
         .map_err(|_| ErrorCode::INTERNAL001)
