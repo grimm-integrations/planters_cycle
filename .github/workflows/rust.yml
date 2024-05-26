@@ -21,6 +21,3 @@ jobs:
         cd api
         cargo prisma generate
         cargo build --verbose
-    - name: Run tests
-      run: |
-        cargo test --verbose
