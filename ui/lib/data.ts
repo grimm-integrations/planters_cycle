@@ -31,3 +31,22 @@ export async function fetchUsers(auth: string, query: string) {
     throw new Error('Failed to fetch user pages');
   }
 }
+
+export async function fetchUser(auth: string, id: string) {
+  noStore();
+  try {
+    const data = await fetch(`http://127.0.0.1:8004/api/users/byId/${id}`, {
+      method: 'GET',
+      headers: {
+        Cookie: auth,
+      },
+    });
+    return data.json();
+  }
+  catch (error) {
+    console.error('Fetch ERROR:', error);
+    throw new Error('Failed to fetch user');
+  }
+}
+
+// export async function editUser(auth: string, user: )

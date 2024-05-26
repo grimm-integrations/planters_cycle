@@ -144,7 +144,7 @@ export default async function Page({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end'>
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <Link href='/admin/users/create'><DropdownMenuItem>Edit</DropdownMenuItem></Link>
+                              <Link href={`/admin/users/${user.id}/edit`}><DropdownMenuItem>Edit</DropdownMenuItem></Link>
                               <DropdownMenuItem>Delete</DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
