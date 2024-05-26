@@ -29,7 +29,7 @@ export async function editUser(id: string, user: User) {
   noStore();
 
   const session = await auth();
-  if (!session.user) throw new Error('Not authenticated');
+  if (!session || !session.user) throw new Error('Not authenticated');
 
   const jsonObject = JSON.stringify(user);
   try {
@@ -54,7 +54,7 @@ export async function createUser(user: User) {
   noStore();
 
   const session = await auth();
-  if (!session.user) throw new Error('Not authenticated');
+  if (!session || !session.user) throw new Error('Not authenticated');
 
   const jsonObject = JSON.stringify(user);
   try {
@@ -79,7 +79,7 @@ export async function editRole(id: string, role: Role) {
   noStore();
 
   const session = await auth();
-  if (!session.user) throw new Error('Not authenticated');
+  if (!session || !session.user) throw new Error('Not authenticated');
 
   const jsonObject = JSON.stringify(role);
   try {
@@ -91,8 +91,7 @@ export async function editRole(id: string, role: Role) {
       },
       body: jsonObject,
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to edit role');
   }
@@ -105,7 +104,7 @@ export async function createRole(role: Role) {
   noStore();
 
   const session = await auth();
-  if (!session.user) throw new Error('Not authenticated');
+  if (!session || !session.user) throw new Error('Not authenticated');
 
   const jsonObject = JSON.stringify(role);
   try {
@@ -117,12 +116,56 @@ export async function createRole(role: Role) {
       },
       body: jsonObject,
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to create role');
   }
 
   revalidatePath('/admin/roles');
   redirect('/admin/roles');
+}
+
+export async function deleteRole(id: number) {
+  noStore();
+
+  const session = await auth();
+  if (!session || !session.user) throw new Error('Not authenticated');
+
+  try {
+    const data = await fetch(`http://127.0.0.1:8004/api/roles/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Cookie: session.user.auth,
+      },
+    });
+  } catch (error) {
+    console.error('Fetch ERROR:', error);
+    throw new Error('Failed to delete role');
+  }
+
+  revalidatePath('/admin/roles');
+  redirect('/admin/roles');
+}
+
+export async function deleteUser(id: string) {
+  noStore();
+
+  const session = await auth();
+  if (!session || !session.user) throw new Error('Not authenticated');
+
+  try {
+    const data = await fetch(`http://127.0.0.1:8004/api/users/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Cookie: session.user.auth,
+      },
+    });
+  }
+  catch (error) {
+    console.error('Fetch ERROR:', error);
+    throw new Error('Failed to delete user');
+  }
+
+  revalidatePath('/admin/users');
+  redirect('/admin/users');
 }

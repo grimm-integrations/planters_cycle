@@ -1,6 +1,40 @@
-import NextAuth from 'next-auth';
+import NextAuth, {type DefaultSession } from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import Credentials from 'next-auth/providers/credentials';
+
+
+// The `JWT` interface can be found in the `next-auth/jwt` submodule
+import { JWT } from "next-auth/jwt"
+ 
+declare module "next-auth/jwt" {
+  /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
+  interface JWT {
+    id: string;
+    name?: string | null;
+    roles?: string[] | null;
+    auth: string;
+  }
+}
+
+declare module 'next-auth' {
+  interface User {
+    id?: string;
+    displayName?: string | null;
+    email?: string | null;
+    auth: string;
+    roles?: string[] | null;
+  }
+
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      roles?: string[] | null;
+      auth: string;
+    } & DefaultSession['user'];
+  }
+}
+
 
 const providers: Provider[] = [
   Credentials({
@@ -15,7 +49,7 @@ const providers: Provider[] = [
         body: JSON.stringify(credentials),
         headers: { 'Content-Type': 'application/json' },
       });
-      const user = await res.json();
+      const user = (await res.json());
       user.auth = res.headers.getSetCookie().find((a) => {
         return a.includes('plnt_auth');
       });

@@ -1,30 +1,17 @@
-import Image from 'next/image';
-import { MoreHorizontal, PlusCircle, Search } from 'lucide-react';
+import { PlusCircle, Search } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -33,6 +20,7 @@ import BreadCrumb from '@/components/bread-crumb';
 import { Metadata } from 'next';
 import { fetchUsers } from '@/lib/data';
 import Link from 'next/link';
+import UserTableRow from '@/app/ui/admin/user/table-row';
 
 export const metadata: Metadata = {
   title: 'Users',
@@ -107,50 +95,7 @@ export default async function Page({
                 </TableHeader>
                 <TableBody>
                   {users?.map((user) => {
-                    return (
-                      <TableRow key={user.id}>
-                        <TableCell className='hidden sm:table-cell'>
-                          <Image
-                            alt='User image'
-                            className='aspect-square rounded-md object-cover'
-                            height='64'
-                            src='/placeholder.svg'
-                            width='64'
-                          />
-                        </TableCell>
-                        <TableCell className='font-medium'>
-                          {user.displayName}
-                        </TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell className='hidden xl:table-cell'>
-                          {user.lastLogin}
-                        </TableCell>
-                        <TableCell className='hidden xl:table-cell'>
-                          {user.createdAt}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup='true'
-                                size='icon'
-                                variant='ghost'
-                              >
-                                <MoreHorizontal className='h-4 w-4' />
-                                <span className='sr-only'>Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align='end'>
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <Link href={`/admin/users/${user.id}/edit`}>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                              </Link>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
+                    return <UserTableRow key={user.id} user={user} />;
                   })}
                 </TableBody>
               </Table>

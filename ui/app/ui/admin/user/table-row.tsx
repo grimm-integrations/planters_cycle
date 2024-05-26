@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Role } from '@prisma/client';
+import { User } from '@prisma/client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,22 +18,34 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  TableCell,
-  TableRow,
-} from '@/components/ui/table';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
-import { deleteRole } from '@/lib/actions';
-export default function RoleTableRow({ role }: { role: Role }) {
+import Image from 'next/image';
+
+import { deleteUser } from '@/lib/actions';
+
+export default function UserTableRow({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
 
   return (
     <TableRow>
-      <TableCell className='font-medium'>{role.name}</TableCell>
-      <TableCell className='text-right'>
+      <TableCell className='hidden sm:table-cell'>
+        <Image
+          alt='User image'
+          className='aspect-square rounded-md object-cover'
+          height='64'
+          src='/placeholder.svg'
+          width='64'
+        />
+      </TableCell>
+      <TableCell className='font-medium'>{user.displayName}</TableCell>
+      <TableCell>{user.email}</TableCell>
+      <TableCell className='hidden xl:table-cell'>{user.lastLogin}</TableCell>
+      <TableCell className='hidden xl:table-cell'>{user.createdAt}</TableCell>
+      <TableCell>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button aria-haspopup='true' size='icon' variant='ghost'>
@@ -43,10 +55,9 @@ export default function RoleTableRow({ role }: { role: Role }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Link href={`/admin/roles/${role.id}/edit`}>
+            <Link href={`/admin/users/${user.id}/edit`}>
               <DropdownMenuItem>Edit</DropdownMenuItem>
             </Link>
-
             <DropdownMenuItem onClick={() => setOpen(true)}>
               Delete
             </DropdownMenuItem>
@@ -57,12 +68,17 @@ export default function RoleTableRow({ role }: { role: Role }) {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the {role.name} role from the servers.
+                This action cannot be undone. This will permanently delete the
+                {user.displayName} user from the servers.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => deleteRole(role.id)}>Continue</AlertDialogAction>
+              <AlertDialogCancel onClick={() => setOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={() => deleteUser(user.id)}>
+                Continue
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

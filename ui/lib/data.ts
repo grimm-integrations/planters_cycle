@@ -55,7 +55,7 @@ export async function fetchUser(id: string): Promise<User> {
   noStore();
 
   const session = await auth();
-  if (!session.user) throw new Error('Not authenticated');
+  if (!session || !session.user) throw new Error('Not authenticated');
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/users/${id}`, {
@@ -83,8 +83,7 @@ export async function fetchRoles(query: string): Promise<Role[]> {
   noStore();
 
   const session = await auth();
-  if (!session.user) throw new Error('Not authenticated');
-
+  if (!session || !session.user) throw new Error('Not authenticated');
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/roles?query=${query}`, {
@@ -111,7 +110,7 @@ export async function fetchRole(id: string): Promise<Role> {
   noStore();
 
   const session = await auth();
-  if (!session.user) throw new Error('Not authenticated');
+  if (!session || !session.user) throw new Error('Not authenticated');
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/roles/${id}`, {
