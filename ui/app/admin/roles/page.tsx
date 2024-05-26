@@ -7,13 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -29,6 +23,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { fetchRoles } from '@/lib/data';
 
+import RoleTableRow from '@/app/ui/admin/roles/table-row';
 export const metadata: Metadata = {
   title: 'Roles',
 };
@@ -85,7 +80,7 @@ export default async function Page({
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className='text-right'>
                       <span className='sr-only'>Actions</span>
                     </TableHead>
                   </TableRow>
@@ -93,32 +88,7 @@ export default async function Page({
                 <TableBody>
                   {roles?.map((role) => {
                     return (
-                      <TableRow key={role.id}>
-                        <TableCell className='font-medium'>
-                          {role.name}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup='true'
-                                size='icon'
-                                variant='ghost'
-                              >
-                                <MoreHorizontal className='h-4 w-4' />
-                                <span className='sr-only'>Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align='end'>
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <Link href={`/admin/roles/${role.id}/edit`}>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                              </Link>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
+                      <RoleTableRow key={role.id} role={role} />
                     );
                   })}
                 </TableBody>
