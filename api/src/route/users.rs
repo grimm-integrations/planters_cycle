@@ -8,10 +8,13 @@ use crate::{
     service::{authentication::register_user, user::edit_user_by_id},
 };
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
+use prisma_client_rust::or;
+use serde::Deserialize;
 
 pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(
         web::scope("/users")
+            .service(count_users)
             .service(get_users)
             .service(get_user_by_id)
             .service(create_user)
@@ -20,11 +23,38 @@ pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     );
 }
 
-#[get("")]
-async fn get_users(data: web::Data<PrismaClient>) -> impl Responder {
+#[derive(Debug, Deserialize)]
+struct UserSearchQuery {
+    query: String,
+}
+#[post("/count")]
+async fn count_users(
+    data: web::Data<PrismaClient>,
+    query: web::Query<UserSearchQuery>,
+) -> impl Responder {
     let users = data
         .user()
-        .find_many(vec![])
+        .count(vec![or![
+            user::display_name::contains(query.query.clone()),
+            user::email::contains(query.query.clone())
+        ]])
+        .exec()
+        .await
+        .unwrap();
+    HttpResponse::Ok().body(users.to_string())
+}
+
+#[get("")]
+async fn get_users(
+    data: web::Data<PrismaClient>,
+    query: web::Query<UserSearchQuery>,
+) -> impl Responder {
+    let users = data
+        .user()
+        .find_many(vec![or![
+            user::display_name::contains(query.query.clone()),
+            user::email::contains(query.query.clone())
+        ]])
         .select(user::select!({
             id
             display_name
@@ -55,7 +85,11 @@ async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) ->
         .exec()
         .await
         .unwrap();
-    HttpResponse::Ok().json(user.unwrap())
+
+    match user {
+        None => return HttpResponse::NotFound().body("User not found"),
+        Some(user) => HttpResponse::Ok().json(user),
+    }
 }
 
 #[post("")]

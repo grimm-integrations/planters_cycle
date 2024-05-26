@@ -1,4 +1,4 @@
-import { PlusCircle, Search } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -18,9 +17,12 @@ import {
 } from '@/components/ui/table';
 import BreadCrumb from '@/components/bread-crumb';
 import { Metadata } from 'next';
-import { fetchUsers } from '@/lib/data';
+import { fetchTotalUserPages, fetchUsers } from '@/lib/data';
 import Link from 'next/link';
 import UserTableRow from '@/app/ui/admin/user/table-row';
+import SearchBar from '@/app/ui/search-bar';
+import { DataTable } from '@/app/ui/data-table';
+import { columns } from '@/app/ui/admin/user/colums';
 
 export const metadata: Metadata = {
   title: 'Users',
@@ -37,6 +39,8 @@ export default async function Page({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
+  const totalPages = await fetchTotalUserPages(query);
+  
   const users = await fetchUsers(query);
 
   return (
@@ -44,14 +48,7 @@ export default async function Page({
       <div className='flex flex-col sm:gap-4 sm:py-4 '>
         <header className='sticky top-0 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6'>
           <BreadCrumb />
-          <div className='relative ml-auto flex-1 md:grow-0'>
-            <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
-            <Input
-              type='search'
-              placeholder='Search...'
-              className='w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]'
-            />
-          </div>
+          <SearchBar placeholder='Search...' />
           <div className='flex items-center'>
             <div className='ml-auto flex items-center gap-2'>
               <Link href='/admin/users/create'>
@@ -74,7 +71,8 @@ export default async function Page({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
+              <DataTable columns={columns} data={users} />
+              {/* <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className='hidden w-[100px] sm:table-cell'>
@@ -98,7 +96,7 @@ export default async function Page({
                     return <UserTableRow key={user.id} user={user} />;
                   })}
                 </TableBody>
-              </Table>
+              </Table> */}
             </CardContent>
           </Card>
         </main>

@@ -134,3 +134,26 @@ export async function fetchRole(id: string): Promise<Role> {
     throw new Error('Failed to fetch role');
   }
 }
+
+export async function fetchTotalUserPages(query: string): Promise<number> {
+  noStore();
+
+  const session = await auth();
+  if (!session?.user) throw new Error('Not authenticated');
+
+  try {
+    const data = await fetch(`http://127.0.0.1:8004/api/users/count?query=${query}`, {
+      method: 'POST',
+      headers: {
+        Cookie: session.user.auth,
+      },
+    });
+    const nums = await data.text();
+    const totalPages = Math.ceil(Number(nums) / 10);
+    return totalPages;
+  }
+  catch (error) {
+    console.error('Fetch ERROR:', error);
+    throw new Error('Failed to fetch user pages');
+  }
+}
