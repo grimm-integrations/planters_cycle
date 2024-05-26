@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from 'next/cache';
-import { User } from '@prisma/client'
+import { User } from '@prisma/client';
 
 export async function fetchProfile(auth: string) {
   noStore();
@@ -42,20 +42,17 @@ export async function fetchUser(auth: string, id: string): Promise<User> {
         Cookie: auth,
       },
     })
-    .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      let user = data as User;
-      return user;
-    });
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        let user = data as User;
+        return user;
+      });
 
     return data;
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch user');
   }
 }
-
-// export async function editUser(auth: string, user: )

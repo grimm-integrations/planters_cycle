@@ -15,9 +15,11 @@ export default async function AdminButton() {
     <>
       <DropdownMenuSeparator />
       <Link
-          href='/admin'
-          className='text-foreground transition-colors hover:text-foreground'
-        ><DropdownMenuItem>Admin</DropdownMenuItem></Link>
+        href='/admin'
+        className='text-foreground transition-colors hover:text-foreground'
+      >
+        <DropdownMenuItem>Admin</DropdownMenuItem>
+      </Link>
     </>
   );
 }

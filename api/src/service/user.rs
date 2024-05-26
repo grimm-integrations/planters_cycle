@@ -37,3 +37,23 @@ pub async fn update_last_login(id: &str, data: &web::Data<PrismaClient>) -> Resu
         Err(e) => Err(e),
     }
 }
+
+pub async fn edit_user_by_id(
+    id: &str,
+    data: &web::Data<PrismaClient>,
+    user: crate::route::users::UserUpdateData,
+) -> Result<user::Data, ErrorCode> {
+    match data
+        .user()
+        .update_unchecked(
+            user::id::equals(id.to_string()),
+            user.to_params()
+        )
+        .exec()
+        .await
+        .map_err(|_| ErrorCode::INTERNAL001)
+    {
+        Ok(u) => Ok(u),
+        Err(e) => Err(e),
+    }
+}

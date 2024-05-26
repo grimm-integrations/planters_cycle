@@ -2,7 +2,10 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use crate::prisma::{user, PrismaClient};
+use crate::{
+    prisma::{user, PrismaClient},
+    service::user::edit_user_by_id,
+};
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 
 #[allow(dead_code)]
@@ -12,7 +15,8 @@ pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
             .service(get_users)
             .service(get_user_by_id)
             .service(create_user)
-            .service(delete_user),
+            .service(delete_user)
+            .service(edit_user),
     );
 }
 
@@ -54,12 +58,12 @@ async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) ->
     HttpResponse::Ok().json(user.unwrap())
 }
 
-user::partial_unchecked!(UserUpdateData { display_name });
+user::partial_unchecked!(UserCreateData { display_name });
 
 #[post("/")]
 async fn create_user(
     data: web::Data<PrismaClient>,
-    body: web::Json<UserUpdateData>,
+    body: web::Json<UserCreateData>,
 ) -> impl Responder {
     let user = data
         .user()
@@ -74,6 +78,19 @@ async fn create_user(
         .unwrap();
 
     HttpResponse::Ok().json(user)
+}
+
+user::partial_unchecked!(UserUpdateData { display_name email password });
+#[post("/byId/{id}")]
+async fn edit_user(
+    data: web::Data<PrismaClient>,
+    id: web::Path<String>,
+    body: web::Json<UserUpdateData>,
+) -> impl Responder {
+    match edit_user_by_id(&id.to_string(), &data, body.into_inner()).await {
+        Err(_) => HttpResponse::NotFound().body("User not found"),
+        Ok(usr) => HttpResponse::Ok().json(usr),
+    }
 }
 
 #[delete("/byId/{id}")]

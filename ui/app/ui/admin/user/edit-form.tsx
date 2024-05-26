@@ -24,6 +24,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { UserModel } from '@/prisma/zod';
 import { User } from '@prisma/client';
+import { editUser } from '@/lib/actions';
 
 const editUserSchema = UserModel.partial({
   id: true,
@@ -32,7 +33,15 @@ const editUserSchema = UserModel.partial({
   password: true,
 });
 
-export default function EditUserForm({ user }: { user: User }) {
+export default function EditUserForm({
+  auth,
+  id,
+  user,
+}: {
+  auth: string;
+  id: string;
+  user: User;
+}) {
   const form = useForm<z.infer<typeof editUserSchema>>({
     resolver: zodResolver(editUserSchema),
     defaultValues: {
@@ -40,15 +49,16 @@ export default function EditUserForm({ user }: { user: User }) {
       email: user.email,
     },
   });
+
   async function onSubmit(values: z.infer<typeof editUserSchema>) {
-    await editUser(values);
+    await editUser(auth, id, values);
   }
+
   return (
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-
-        <Card>
+          <Card>
             <CardHeader>
               <CardTitle>Edit User</CardTitle>
               <CardDescription>
@@ -121,7 +131,6 @@ export default function EditUserForm({ user }: { user: User }) {
               </Button>
             </CardFooter>
           </Card>
-
         </form>
       </Form>
     </>
