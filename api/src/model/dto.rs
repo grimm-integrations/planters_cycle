@@ -20,6 +20,4 @@ pub mod auth {
     });
 }
 
-crate::prisma::role::partial_unchecked!(Role {
-    name
-});
+crate::prisma::role::partial_unchecked!(Role { name });
