@@ -26,6 +26,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { deleteUser } from '@/lib/actions';
+import { formatDateToLocal } from '@/lib/utils';
 
 export default function UserTableRow({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
@@ -43,8 +44,8 @@ export default function UserTableRow({ user }: { user: User }) {
       </TableCell>
       <TableCell className='font-medium'>{user.displayName}</TableCell>
       <TableCell>{user.email}</TableCell>
-      <TableCell className='hidden xl:table-cell'>{user.lastLogin}</TableCell>
-      <TableCell className='hidden xl:table-cell'>{user.createdAt}</TableCell>
+      <TableCell className='hidden xl:table-cell'>{formatDateToLocal(user.lastLogin)}</TableCell>
+      <TableCell className='hidden xl:table-cell'>{formatDateToLocal(user.createdAt)}</TableCell>
       <TableCell>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
