@@ -18,7 +18,20 @@ pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
 
 #[get("/list")]
 async fn get_users(data: web::Data<PrismaClient>) -> impl Responder {
-    let users = data.user().find_many(vec![]).exec().await.unwrap();
+    let users = data
+        .user()
+        .find_many(vec![])
+        .select(user::select!({
+            id
+            display_name
+            email
+            last_login
+            created_at
+            roles
+        }))
+        .exec()
+        .await
+        .unwrap();
     HttpResponse::Ok().json(users)
 }
 
@@ -27,6 +40,14 @@ async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) ->
     let user = data
         .user()
         .find_unique(user::id::equals(id.to_string()))
+        .select(user::select!({
+            id
+            display_name
+            email
+            last_login
+            created_at
+            roles
+        }))
         .exec()
         .await
         .unwrap();
