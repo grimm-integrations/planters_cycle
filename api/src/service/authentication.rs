@@ -86,3 +86,34 @@ pub async fn register_user(
 
     Ok(user)
 }
+
+pub async fn change_password(
+    user_id: &str,
+    new_password: &str,
+    data: &web::Data<PrismaClient>,
+) -> Result<(), ErrorCode> {
+    let salt: SaltString = SaltString::generate(&mut OsRng);
+    let pw = new_password.as_bytes();
+    let hashed_password = Argon2::default()
+        .hash_password(&pw, &salt)
+        .unwrap()
+        .to_string();
+
+    let parsed_hash = PasswordHash::new(&hashed_password).unwrap();
+    let verify_password = Argon2::default()
+        .verify_password(&pw, &parsed_hash)
+        .map_or(false, |_| true);
+
+    assert!(verify_password, "Password verification failed");
+
+    data.user()
+        .update(
+            user::id::equals(user_id.to_string()),
+            vec![user::password::set(hashed_password)],
+        )
+        .exec()
+        .await
+        .unwrap();
+
+    Ok(())
+}
