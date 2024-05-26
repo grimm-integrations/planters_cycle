@@ -14,14 +14,10 @@ export default async function AdminButton() {
   return (
     <>
       <DropdownMenuSeparator />
-      <DropdownMenuItem>
-        <Link
+      <Link
           href='/admin'
           className='text-foreground transition-colors hover:text-foreground'
-        >
-          Admin
-        </Link>
-      </DropdownMenuItem>
+        ><DropdownMenuItem>Admin</DropdownMenuItem></Link>
     </>
   );
 }
