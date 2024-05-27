@@ -20,7 +20,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./api
     steps:
       - uses: actions/checkout@v4
 
@@ -44,6 +46,5 @@ jobs:
 
       - name: Build
         run: |
-          cd api
           cargo prisma generate
           cargo build --verbose
