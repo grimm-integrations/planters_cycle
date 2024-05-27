@@ -1,11 +1,17 @@
 'use server';
 
 import { auth, signIn } from '@/auth';
+import { RoleModel } from '@/prisma/zod/role';
 import { Role, User } from '@prisma/client';
 import { AuthError } from 'next-auth';
 import { unstable_noStore as noStore } from 'next/cache';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
+
+interface FormData {
+  redirectTo: string;
+}
 
 export async function authenticate(formData: FormData) {
   formData.redirectTo = '/dashboard';
@@ -74,7 +80,11 @@ export async function createUser(user: User) {
   redirect('/admin/users');
 }
 
-export async function editRole(id: string, role: Role) {
+const editRoleSchema = RoleModel.partial({
+  id: true,
+});
+
+export async function editRole(id: string, role: z.infer<typeof editRoleSchema>) {
   noStore();
 
   const session = await auth();
