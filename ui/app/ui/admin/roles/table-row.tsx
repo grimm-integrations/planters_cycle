@@ -24,11 +24,29 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { useToast } from '@/components/ui/use-toast';
 
-import { deleteRole } from '@/lib/actions';
+import { deleteRole, redirectToRoles } from '@/lib/actions';
 
 export default function RoleTableRow({ role }: { role: Role }) {
   const [open, setOpen] = useState(false);
+
+  const { toast } = useToast();
+  async function onDeleteClick(role: Role) {
+    try {
+      await deleteRole(role.id);
+      toast({
+        title: 'Success 🎉',
+        description: `Deleted role ${role.name}.`,
+      });
+      await redirectToRoles();
+    } catch (error) {
+      toast({
+        title: 'Uh oh! Something went wrong.',
+        description: `There was a problem with your request.\n${error}`,
+      });
+    }
+  }
 
   return (
     <TableRow>
@@ -65,7 +83,7 @@ export default function RoleTableRow({ role }: { role: Role }) {
               <AlertDialogCancel onClick={() => setOpen(false)}>
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction onClick={() => deleteRole(role.id)}>
+              <AlertDialogAction onClick={() => onDeleteClick(role)}>
                 Continue
               </AlertDialogAction>
             </AlertDialogFooter>

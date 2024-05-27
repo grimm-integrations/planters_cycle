@@ -2,6 +2,8 @@
 
 import { RoleModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -25,7 +27,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { createRole } from '@/lib/actions';
+import { createRole, redirectToRoles } from '@/lib/actions';
+import { useToast } from '@/components/ui/use-toast';
 
 const editRoleSchema = RoleModel.partial({
   id: true,
@@ -38,9 +41,22 @@ export default function CreateRoleForm() {
       name: '',
     },
   });
+  const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof editRoleSchema>) {
-    await createRole(values);
+    try {
+      await createRole(values);
+      toast({
+        title: "Succsess 🎉",
+        description: `Created role ${values.name}.`,
+      })
+      await redirectToRoles();
+    } catch (error) {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: `There was a problem with your request.\n${error}`,
+      })
+    }
   }
 
   return (

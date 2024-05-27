@@ -3,7 +3,6 @@
 import { auth, signIn } from '@/auth';
 import { RoleModel } from '@/prisma/zod/role';
 import { UserModel } from '@/prisma/zod/user';
-import { Role, User } from '@prisma/client';
 import { AuthError } from 'next-auth';
 import { unstable_noStore as noStore } from 'next/cache';
 import { revalidatePath } from 'next/cache';
@@ -18,7 +17,6 @@ const loginSchema = z.object({
   password: z.string().min(2, {
     message: 'Password must be at least 2 characters.',
   }),
-  redirectTo: z.string().optional(),
 });
 
 export async function authenticate(formData: z.infer<typeof loginSchema>) {
@@ -119,9 +117,6 @@ export async function editRole(id: string, role: z.infer<typeof editRoleSchema>)
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to edit role');
   }
-
-  revalidatePath('/admin/roles');
-  redirect('/admin/roles');
 }
 
 export async function createRole(role: z.infer<typeof editRoleSchema>) {
@@ -144,9 +139,6 @@ export async function createRole(role: z.infer<typeof editRoleSchema>) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to create role');
   }
-
-  revalidatePath('/admin/roles');
-  redirect('/admin/roles');
 }
 
 export async function deleteRole(id: number) {
@@ -166,7 +158,9 @@ export async function deleteRole(id: number) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to delete role');
   }
+}
 
+export async function redirectToRoles() {
   revalidatePath('/admin/roles');
   redirect('/admin/roles');
 }

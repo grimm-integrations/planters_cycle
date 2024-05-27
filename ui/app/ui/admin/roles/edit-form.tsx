@@ -26,7 +26,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { editRole } from '@/lib/actions';
+import { editRole, redirectToRoles } from '@/lib/actions';
+import { useToast } from '@/components/ui/use-toast';
 
 const editRoleSchema = RoleModel.partial({
   id: true,
@@ -39,9 +40,22 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
       name: role.name,
     },
   });
+  const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof editRoleSchema>) {
-    await editRole(id, values);
+    try {
+      await editRole(id, values);
+      toast({
+        title: 'Succsess 🎉',
+        description: `Edited role ${values.name}.`,
+      });
+      await redirectToRoles();
+    } catch (error) {
+      toast({
+        title: 'Uh oh! Something went wrong.',
+        description: `There was a problem with your request.\n${error}`,
+      });
+    }
   }
 
   return (
