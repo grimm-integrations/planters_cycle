@@ -52,7 +52,7 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
             <CardHeader>
               <CardTitle>Edit Role</CardTitle>
               <CardDescription>
-                Edit the role's information below.
+                Edit the role&apos;s information below.
               </CardDescription>
             </CardHeader>
             <CardContent className='grid gap-4'>

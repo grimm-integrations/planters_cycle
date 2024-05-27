@@ -56,7 +56,7 @@ export default function EditUserForm({ id, user }: { id: string; user: User }) {
             <CardHeader>
               <CardTitle>Edit User</CardTitle>
               <CardDescription>
-                Edit the user's information below.
+                Edit the user&apos;s information below.
               </CardDescription>
             </CardHeader>
             <CardContent className='grid gap-4'>
