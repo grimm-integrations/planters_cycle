@@ -3,7 +3,14 @@ name: Build UI
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: [$default-branch, "dev"]
+    branches: ["dev"]
+    paths:
+      - "ui/**"
+
+  pull_request:
+    branches: ["dev"]
+    paths:
+      - "api/**"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,8 +26,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
-        run:
-          working-directory: ./ui
+      run:
+        working-directory: ./ui
     steps:
       - name: Checkout
         uses: actions/checkout@v4

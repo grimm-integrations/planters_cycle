@@ -2,22 +2,36 @@ name: Rust
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: ["dev"]
+    paths:
+      - "api/**"
   pull_request:
-    branches: [ "dev" ]
+    branches: ["dev"]
+    paths:
+      - "api/**"
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: |
-        cd api
-        cargo prisma generate
-        cargo build --verbose
+      - uses: actions/checkout@v4
+
+      # Install dependencies
+      - name: "Install dependencies Ubuntu"
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends openssl build-essential libmariadb-dev-compat libpq-dev libssl-dev pkg-config
+
+      # Show environment
+      - name: "Show environment"
+        run: |
+          rustc -vV
+          cargo -vV
+
+      - name: Build
+        run: |
+          cd api
+          cargo prisma generate
+          cargo build --verbose
