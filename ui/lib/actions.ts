@@ -10,11 +10,18 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-interface FormData {
-  redirectTo: string;
-}
 
-export async function authenticate(formData: FormData) {
+const loginSchema = z.object({
+  identifier: z.string().min(2, {
+    message: 'identifier must be at least 2 characters.',
+  }),
+  password: z.string().min(2, {
+    message: 'Password must be at least 2 characters.',
+  }),
+  redirectTo: z.string().optional(),
+});
+
+export async function authenticate(formData: z.infer<typeof loginSchema>) {
   formData.redirectTo = '/dashboard';
   try {
     await signIn('credentials', formData);
