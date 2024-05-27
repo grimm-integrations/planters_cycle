@@ -1,0 +1,174 @@
+name: Rust
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag name for release"
+        required: false
+        default: nightly
+env:
+  CARGO_TERM_COLOR: always
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  tagname:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.tag.outputs.tag }}
+    steps:
+      - id: vars
+        shell: bash
+        run: echo "sha_short=${GITHUB_SHA::7}" | tee -a $GITHUB_OUTPUT
+
+      - run: echo "TAG_NAME=${{ github.event.inputs.tag_name }}" | tee -a $GITHUB_ENV
+
+      - id: tag
+        run: echo "tag=$TAG_NAME" | tee -a $GITHUB_OUTPUT
+  dist:
+    name: Dist
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # don't fail other jobs if one fails
+      matrix:
+        build: [x86_64-linux, x86_64-windows] #, x86_64-win-gnu, win32-msvc
+        include:
+          - build: x86_64-linux
+            os: ubuntu-20.04
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+            cross: false
+          - build: x86_64-windows
+            os: windows-2019
+            rust: stable
+            target: x86_64-pc-windows-msvc
+            cross: false
+    defaults:
+      run:
+        working-directory: ./api
+    env:
+      RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install dependencies
+      - name: "Install dependencies Ubuntu"
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends openssl build-essential libmariadb-dev-compat libpq-dev libssl-dev pkg-config
+
+      - name: Install ${{ matrix.rust }} toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.target }}
+          override: true
+
+      # Show environment
+      - name: "Show environment"
+        run: |
+          rustc -vV
+          cargo -vV
+
+      # Enable Rust Caching
+      - uses: Swatinem/rust-cache@v2.7.3
+        with:
+          # Use a custom prefix-key to force a fresh start. This is sometimes needed with bigger changes.
+          # Like changing the build host from Ubuntu 20.04 to 22.04 for example.
+          # Only update when really needed! Use a <year>.<month>[.<inc>] format.
+          prefix-key: "v2024.05-rust"
+          workspaces: ./api
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
+      - name: Set Rust caching env vars only on non-release runs
+        run: |
+          echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
+          echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
+
+      - name: Generate prisma schemes
+        run: cargo prisma generate
+
+      - name: Build release binary
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: ${{ matrix.cross }}
+          command: build
+          args: --release --locked --target ${{ matrix.target }}
+
+      - name: Build deb package (linux only)
+        if: contains(matrix.build, 'linux')
+        run: |
+          cargo install cargo-deb
+          cargo deb --target ${{ matrix.target }} --deb-version $RELEASE_TAG_NAME
+
+      - name: Build archive
+        shell: bash
+        run: |
+          mkdir dist
+          if [[ "${{ matrix.build }}" =~ "windows" ]]; then
+            cp "target/${{ matrix.target }}/release/$BIN_NAME.exe" "dist/"
+          else
+            cp "target/${{ matrix.target }}/release/$BIN_NAME" "dist/"
+          fi
+
+          if [[ "${{ matrix.build }}" =~ "linux" ]]; then
+            cp "target/${{ matrix.target }}/debian/rustscan_${TAG}_amd64.deb" "dist/"
+          fi
+      - uses: actions/upload-artifact@v4.3.3
+        with:
+          name: bins-${{ matrix.build }}
+          path: dist
+
+  publish:
+    name: Publish
+    needs: [dist]
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        
+      - uses: actions/download-artifact@v4
+
+      - run: ls -al bins-*
+
+      - name: Build archive
+        shell: bash
+        run: |
+          set -ex
+          rm -rf tmp
+          mkdir tmp
+          mkdir dist
+          for dir in bins-* ; do
+              platform=${dir#"bins-"}
+              unset exe
+              if [[ $platform =~ "windows" ]]; then
+                  exe=".exe"
+              fi
+              pkgname=$PROJECT_NAME-$TAG-$platform
+              mkdir tmp/$pkgname
+              # cp LICENSE README.md tmp/$pkgname
+              mv bins-$platform/$BIN_NAME$exe tmp/$pkgname
+              chmod +x tmp/$pkgname/$BIN_NAME$exe
+
+              if [[ $platform =~ "linux" ]]; then
+                  mv "bins-$platform/rustscan_${TAG}_amd64.deb" dist/
+              fi
+
+              if [ "$exe" = "" ]; then
+                  tar cJf dist/$pkgname.tar.xz -C tmp $pkgname
+              else
+                  (cd tmp && 7z a -r ../dist/$pkgname.zip $pkgname)
+              fi
+          done
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/*
+          file_glob: true
+          tag: ${{ needs.tagname.outputs.tag_name }}
+          overwrite: true
