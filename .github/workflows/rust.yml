@@ -11,7 +11,7 @@ on:
     paths:
       - "api/**"
       - ".github/workflows/rust.yml"
-      
+
   workflow_dispatch:
 
 env:
@@ -43,6 +43,14 @@ jobs:
           # Like changing the build host from Ubuntu 20.04 to 22.04 for example.
           # Only update when really needed! Use a <year>.<month>[.<inc>] format.
           prefix-key: "v2024.05-rust"
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
+      - name: Set Rust caching env vars only on non-release runs
+        run: |
+          echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
+          echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
 
       - name: Build
         run: |
