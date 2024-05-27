@@ -33,6 +33,7 @@ const formSchema = z.object({
   password: z.string().min(2, {
     message: 'Password must be at least 2 characters.',
   }),
+  redirectTo: z.string().optional(),
 });
 
 export function LoginForm() {
