@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false # don't fail other jobs if one fails
       matrix:
-        build: [x86_64-linux, x86_64-windows] #, x86_64-win-gnu, win32-msvc
+        build: [x86_64-linux, x86_64-windows]
         include:
           - build: x86_64-linux
             os: ubuntu-20.04
@@ -53,6 +53,7 @@ jobs:
 
       # Install dependencies
       - name: "Install dependencies Ubuntu"
+        if: contains(matrix.build, 'linux')
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends openssl build-essential libmariadb-dev-compat libpq-dev libssl-dev pkg-config
 
       - name: Install ${{ matrix.rust }} toolchain
@@ -90,11 +91,7 @@ jobs:
         run: cargo prisma generate
 
       - name: Build release binary
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: ${{ matrix.cross }}
-          command: build
-          args: --release --locked --target ${{ matrix.target }}
+        run: cargo build --release --locked --target ${{ matrix.target }}
 
       - name: Build deb package (linux only)
         if: contains(matrix.build, 'linux')
