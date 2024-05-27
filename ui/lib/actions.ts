@@ -2,6 +2,7 @@
 
 import { auth, signIn } from '@/auth';
 import { RoleModel } from '@/prisma/zod/role';
+import { UserModel } from '@/prisma/zod/user';
 import { Role, User } from '@prisma/client';
 import { AuthError } from 'next-auth';
 import { unstable_noStore as noStore } from 'next/cache';
@@ -30,7 +31,14 @@ export async function authenticate(formData: FormData) {
   }
 }
 
-export async function editUser(id: string, user: User) {
+const editUserSchema = UserModel.partial({
+  id: true,
+  createdAt: true,
+  lastLogin: true,
+  password: true,
+});
+
+export async function editUser(id: string, user: z.infer<typeof editUserSchema>) {
   noStore();
 
   const session = await auth();
