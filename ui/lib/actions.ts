@@ -63,7 +63,7 @@ export async function editUser(id: string, user: z.infer<typeof editUserSchema>)
   redirect('/admin/users');
 }
 
-export async function createUser(user: User) {
+export async function createUser(user: z.infer<typeof editUserSchema>) {
   noStore();
 
   const session = await auth();
@@ -117,7 +117,7 @@ export async function editRole(id: string, role: z.infer<typeof editRoleSchema>)
   redirect('/admin/roles');
 }
 
-export async function createRole(role: Role) {
+export async function createRole(role: z.infer<typeof editRoleSchema>) {
   noStore();
 
   const session = await auth();
