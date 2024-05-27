@@ -50,9 +50,9 @@ jobs:
       RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
     steps:
           
-      - run: echo $RELEASE_TAG_NAME
       - uses: actions/checkout@v4
-
+      - run: echo $RELEASE_TAG_NAME
+      
       # Install dependencies
       - name: "Install dependencies Ubuntu"
         if: contains(matrix.build, 'linux')
