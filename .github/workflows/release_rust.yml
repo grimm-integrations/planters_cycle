@@ -49,6 +49,8 @@ jobs:
     env:
       RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
     steps:
+          
+      - run: echo $RELEASE_TAG_NAME
       - uses: actions/checkout@v4
 
       # Install dependencies
