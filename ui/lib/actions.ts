@@ -17,6 +17,7 @@ const loginSchema = z.object({
   password: z.string().min(2, {
     message: 'Password must be at least 2 characters.',
   }),
+  redirectTo: z.string(),
 });
 
 export async function authenticate(formData: z.infer<typeof loginSchema>) {
