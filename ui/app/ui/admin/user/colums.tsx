@@ -62,7 +62,6 @@ export const columns: ColumnDef<User>[] = [
   {
     id: 'actions',
     cell: ({ row }) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       const user = row.original;
       return <DeleteDropdown user={user} />;
     },
