@@ -5,11 +5,13 @@ on:
     branches: ["dev"]
     paths:
       - "api/**"
+      - ".github/workflows/rust.yml"
   pull_request:
     branches: ["dev"]
     paths:
       - "api/**"
-
+      - ".github/workflows/rust.yml"
+      
   workflow_dispatch:
 
 env:
@@ -31,6 +33,14 @@ jobs:
         run: |
           rustc -vV
           cargo -vV
+
+      # Enable Rust Caching
+      - uses: Swatinem/rust-cache@v2.7.3
+        with:
+          # Use a custom prefix-key to force a fresh start. This is sometimes needed with bigger changes.
+          # Like changing the build host from Ubuntu 20.04 to 22.04 for example.
+          # Only update when really needed! Use a <year>.<month>[.<inc>] format.
+          prefix-key: "v2024.05-rust"
 
       - name: Build
         run: |
