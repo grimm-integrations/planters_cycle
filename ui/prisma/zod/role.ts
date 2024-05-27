@@ -1,4 +1,5 @@
 import * as z from 'zod';
+
 import { CompleteUsersInRoles, RelatedUsersInRolesModel } from './index';
 
 export const RoleModel = z.object({

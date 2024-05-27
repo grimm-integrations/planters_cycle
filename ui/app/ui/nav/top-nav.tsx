@@ -1,10 +1,13 @@
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ModeToggle } from '@/app/ui/theme-toggler';
-import Link from 'next/link';
 import { Menu, Package2 } from 'lucide-react';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
-import UserDropdown from './user-dropdown';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+
+import { ModeToggle } from '@/app/ui/theme-toggler';
+
 import NavLinks from './nav-links';
+import UserDropdown from './user-dropdown';
 
 export default function TopNav() {
   const links = [

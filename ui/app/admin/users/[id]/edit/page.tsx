@@ -1,6 +1,9 @@
-import { fetchUser } from '@/lib/data';
 import { Metadata } from 'next';
+
 import BreadCrumb from '@/components/bread-crumb';
+
+import { fetchUser } from '@/lib/data';
+
 import EditUserForm from '@/app/ui/admin/user/edit-form';
 
 export const metadata: Metadata = {

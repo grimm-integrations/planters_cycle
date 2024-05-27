@@ -1,13 +1,12 @@
-import { unstable_noStore as noStore } from 'next/cache';
-import { Role, User } from '@prisma/client';
 import { auth } from '@/auth';
+import { Role, User } from '@prisma/client';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export async function fetchProfile() {
   noStore();
 
   const session = await auth();
   if (!session?.user) throw new Error('Not authenticated');
-
 
   try {
     const data = await fetch('http://127.0.0.1:8004/api/auth/profile', {
@@ -29,7 +28,6 @@ export async function fetchUsers(query: string): Promise<User[]> {
   const session = await auth();
   if (!session?.user) throw new Error('Not authenticated');
 
-
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/users?query=${query}`, {
       method: 'GET',
@@ -37,13 +35,13 @@ export async function fetchUsers(query: string): Promise<User[]> {
         Cookie: session.user.auth,
       },
     })
-    .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      let users = data as User[];
-      return users;
-    });
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        let users = data as User[];
+        return users;
+      });
     return data;
   } catch (error) {
     console.error('Fetch ERROR:', error);
@@ -92,13 +90,13 @@ export async function fetchRoles(query: string): Promise<Role[]> {
         Cookie: session.user.auth,
       },
     })
-    .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      let roles = data as Role[];
-      return roles;
-    });
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        let roles = data as Role[];
+        return roles;
+      });
     return data;
   } catch (error) {
     console.error('Fetch ERROR:', error);
@@ -128,8 +126,7 @@ export async function fetchRole(id: string): Promise<Role> {
       });
 
     return data;
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch role');
   }
@@ -142,17 +139,19 @@ export async function fetchTotalUserPages(query: string): Promise<number> {
   if (!session?.user) throw new Error('Not authenticated');
 
   try {
-    const data = await fetch(`http://127.0.0.1:8004/api/users/count?query=${query}`, {
-      method: 'POST',
-      headers: {
-        Cookie: session.user.auth,
-      },
-    });
+    const data = await fetch(
+      `http://127.0.0.1:8004/api/users/count?query=${query}`,
+      {
+        method: 'POST',
+        headers: {
+          Cookie: session.user.auth,
+        },
+      }
+    );
     const nums = await data.text();
     const totalPages = Math.ceil(Number(nums) / 10);
     return totalPages;
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch user pages');
   }

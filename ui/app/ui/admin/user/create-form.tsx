@@ -1,8 +1,19 @@
 'use client';
 
+import { UserModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -13,16 +24,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { UserModel } from '@/prisma/zod';
+
 import { createUser } from '@/lib/actions';
 
 const editUserSchema = UserModel.partial({
@@ -53,9 +55,7 @@ export default function CreateUserForm() {
           <Card>
             <CardHeader>
               <CardTitle>Create User</CardTitle>
-              <CardDescription>
-                Create a new user account.
-              </CardDescription>
+              <CardDescription>Create a new user account.</CardDescription>
             </CardHeader>
             <CardContent className='grid gap-4'>
               <div className='grid gap-2'>

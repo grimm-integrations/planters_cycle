@@ -23,6 +23,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "@tanstack/match-sorter-utils": "^8.15.1",
     "@tanstack/react-table": "^8.17.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -40,6 +41,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

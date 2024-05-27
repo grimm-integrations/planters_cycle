@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export const formatDateToLocal = (
   date?: Date | null,
-  locale: string = 'en-US',
+  locale: string = 'en-US'
 ) => {
   if (!date || date == undefined) return '';
   date = new Date(date.toLocaleString());

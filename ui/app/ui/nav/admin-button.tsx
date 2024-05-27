@@ -1,9 +1,10 @@
 import { auth } from '@/auth';
+import Link from 'next/link';
+
 import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
 
 export default async function AdminButton() {
   const session = await auth();

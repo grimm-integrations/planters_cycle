@@ -1,5 +1,10 @@
 'use client';
 
+import clsx from 'clsx';
+import { KeyRound, LifeBuoy, Settings, Users } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -7,10 +12,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { KeyRound, LifeBuoy, Settings, Users } from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
-import Link from 'next/link';
 
 const links = [
   { name: 'Settings', href: '/admin', icon: Settings },

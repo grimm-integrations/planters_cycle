@@ -1,15 +1,16 @@
 'use client';
 
-import React from 'react';
-import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React from 'react';
+
 import {
   Breadcrumb,
-  BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
+  BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from './ui/breadcrumb';
 
 export default function BreadCrumb() {

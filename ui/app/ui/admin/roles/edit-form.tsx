@@ -1,8 +1,20 @@
 'use client';
 
+import { RoleModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Role } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -13,28 +25,18 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { RoleModel } from '@/prisma/zod';
-import { Role } from '@prisma/client';
+
 import { editRole } from '@/lib/actions';
 
 const editRoleSchema = RoleModel.partial({
-  id: true
+  id: true,
 });
 
 export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
   const form = useForm<z.infer<typeof editRoleSchema>>({
     resolver: zodResolver(editRoleSchema),
     defaultValues: {
-      name: role.name
+      name: role.name,
     },
   });
 
@@ -64,9 +66,7 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
                       <FormControl>
                         <Input placeholder='Admin' {...field} />
                       </FormControl>
-                      <FormDescription>
-                        This is the role name.
-                      </FormDescription>
+                      <FormDescription>This is the role name.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

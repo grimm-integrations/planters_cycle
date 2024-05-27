@@ -1,3 +1,7 @@
+import { signOut } from '@/auth';
+import { CircleUser } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,9 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { CircleUser } from 'lucide-react';
-import { signOut } from '@/auth';
+
 import AdminButton from './admin-button';
 
 export default function UserDropdown() {

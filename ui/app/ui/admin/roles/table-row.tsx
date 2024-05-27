@@ -1,6 +1,10 @@
-"use client";
+'use client';
 
 import { Role } from '@prisma/client';
+import { MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,15 +23,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  TableCell,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { MoreHorizontal } from 'lucide-react';
-import { useState } from 'react';
+import { TableCell, TableRow } from '@/components/ui/table';
+
 import { deleteRole } from '@/lib/actions';
+
 export default function RoleTableRow({ role }: { role: Role }) {
   const [open, setOpen] = useState(false);
 
@@ -57,12 +57,17 @@ export default function RoleTableRow({ role }: { role: Role }) {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the {role.name} role from the servers.
+                This action cannot be undone. This will permanently delete the{' '}
+                {role.name} role from the servers.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => deleteRole(role.id)}>Continue</AlertDialogAction>
+              <AlertDialogCancel onClick={() => setOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={() => deleteRole(role.id)}>
+                Continue
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

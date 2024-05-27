@@ -1,8 +1,20 @@
 'use client';
 
+import { UserModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { User } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -13,17 +25,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { UserModel } from '@/prisma/zod';
-import { User } from '@prisma/client';
+
 import { editUser } from '@/lib/actions';
 
 const editUserSchema = UserModel.partial({

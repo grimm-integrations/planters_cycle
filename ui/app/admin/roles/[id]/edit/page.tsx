@@ -1,7 +1,10 @@
 import { Metadata } from 'next';
+
 import BreadCrumb from '@/components/bread-crumb';
-import EditRoleForm from '@/app/ui/admin/roles/edit-form';
+
 import { fetchRole } from '@/lib/data';
+
+import EditRoleForm from '@/app/ui/admin/roles/edit-form';
 
 export const metadata: Metadata = {
   title: 'Edit Role',

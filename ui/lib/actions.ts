@@ -1,10 +1,9 @@
 'use server';
 
-import { signIn, auth } from '@/auth';
+import { auth, signIn } from '@/auth';
 import { Role, User } from '@prisma/client';
 import { AuthError } from 'next-auth';
 import { unstable_noStore as noStore } from 'next/cache';
-
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -160,8 +159,7 @@ export async function deleteUser(id: string) {
         Cookie: session.user.auth,
       },
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to delete user');
   }

@@ -1,4 +1,5 @@
 import * as z from 'zod';
+
 import { CompletePlant, RelatedPlantModel } from './index';
 
 export const GeneticModel = z.object({

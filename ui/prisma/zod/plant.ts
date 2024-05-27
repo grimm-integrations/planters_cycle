@@ -1,8 +1,9 @@
 import * as z from 'zod';
+
 import {
   CompleteGenetic,
-  RelatedGeneticModel,
   CompletePlantHistory,
+  RelatedGeneticModel,
   RelatedPlantHistoryModel,
 } from './index';
 

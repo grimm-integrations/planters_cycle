@@ -1,4 +1,8 @@
 import { MoreHorizontal, PlusCircle, Search } from 'lucide-react';
+import { Metadata } from 'next';
+import Link from 'next/link';
+
+import BreadCrumb from '@/components/bread-crumb';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -7,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -17,13 +20,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import BreadCrumb from '@/components/bread-crumb';
-import { Metadata } from 'next';
 
-import Link from 'next/link';
 import { fetchRoles } from '@/lib/data';
 
 import RoleTableRow from '@/app/ui/admin/roles/table-row';
+
 export const metadata: Metadata = {
   title: 'Roles',
 };
@@ -87,9 +88,7 @@ export default async function Page({
                 </TableHeader>
                 <TableBody>
                   {roles?.map((role) => {
-                    return (
-                      <RoleTableRow key={role.id} role={role} />
-                    );
+                    return <RoleTableRow key={role.id} role={role} />;
                   })}
                 </TableBody>
               </Table>

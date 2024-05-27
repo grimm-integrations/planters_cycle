@@ -1,9 +1,10 @@
 import * as z from 'zod';
+
 import {
-  CompleteUsersInRoles,
-  RelatedUsersInRolesModel,
   CompletePlantHistory,
+  CompleteUsersInRoles,
   RelatedPlantHistoryModel,
+  RelatedUsersInRolesModel,
 } from './index';
 
 export const UserModel = z.object({

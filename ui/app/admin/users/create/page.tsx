@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
+
 import BreadCrumb from '@/components/bread-crumb';
+
 import CreateUserForm from '@/app/ui/admin/user/create-form';
 
 export const metadata: Metadata = {

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import {
   Activity,
   ArrowUpRight,
@@ -6,6 +5,9 @@ import {
   DollarSign,
   Users,
 } from 'lucide-react';
+import { Metadata } from 'next';
+import Link from 'next/link';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,7 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Dashboard',

@@ -1,4 +1,7 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -7,10 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Metadata } from 'next';
-import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export const metadata: Metadata = {
   title: 'Admin',
