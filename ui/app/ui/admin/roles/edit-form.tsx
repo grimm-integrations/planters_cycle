@@ -25,9 +25,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
 
 import { editRole, redirectToRoles } from '@/lib/actions';
-import { useToast } from '@/components/ui/use-toast';
 
 const editRoleSchema = RoleModel.partial({
   id: true,

@@ -9,7 +9,6 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-
 const loginSchema = z.object({
   identifier: z.string().min(2, {
     message: 'identifier must be at least 2 characters.',
@@ -44,7 +43,10 @@ const editUserSchema = UserModel.partial({
   password: true,
 });
 
-export async function editUser(id: string, user: z.infer<typeof editUserSchema>) {
+export async function editUser(
+  id: string,
+  user: z.infer<typeof editUserSchema>
+) {
   noStore();
 
   const session = await auth();
@@ -89,16 +91,16 @@ export async function createUser(user: z.infer<typeof editUserSchema>) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch user');
   }
-
-  revalidatePath('/admin/users');
-  redirect('/admin/users');
 }
 
 const editRoleSchema = RoleModel.partial({
   id: true,
 });
 
-export async function editRole(id: string, role: z.infer<typeof editRoleSchema>) {
+export async function editRole(
+  id: string,
+  role: z.infer<typeof editRoleSchema>
+) {
   noStore();
 
   const session = await auth();
@@ -183,7 +185,9 @@ export async function deleteUser(id: string) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to delete user');
   }
+}
 
+export async function redirectToUsers() {
   revalidatePath('/admin/users');
   redirect('/admin/users');
 }

@@ -24,8 +24,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
 
-import { createUser } from '@/lib/actions';
+import { createUser, redirectToUsers } from '@/lib/actions';
 
 const editUserSchema = UserModel.partial({
   id: true,
@@ -44,8 +45,22 @@ export default function CreateUserForm() {
     },
   });
 
+  const { toast } = useToast();
+
   async function onSubmit(values: z.infer<typeof editUserSchema>) {
-    await createUser(values);
+    try {
+      await createUser(values);
+      toast({
+        title: 'Success 🎉',
+        description: `Created user ${values.displayName}.`,
+      });
+      redirectToUsers();
+    } catch (error) {
+      toast({
+        title: 'Uh oh! Something went wrong.',
+        description: `There was a problem with your request.\n${error}`,
+      });
+    }
   }
 
   return (

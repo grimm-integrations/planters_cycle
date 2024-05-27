@@ -3,6 +3,7 @@
 import { UserModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { User } from '@prisma/client';
+import { redirect } from 'next/dist/server/api-utils';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -25,8 +26,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
 
-import { editUser } from '@/lib/actions';
+import { editUser, redirectToUsers } from '@/lib/actions';
 
 const editUserSchema = UserModel.partial({
   id: true,
@@ -44,8 +46,22 @@ export default function EditUserForm({ id, user }: { id: string; user: User }) {
     },
   });
 
+  const { toast } = useToast();
+
   async function onSubmit(values: z.infer<typeof editUserSchema>) {
-    await editUser(id, values);
+    try {
+      await editUser(id, values);
+      toast({
+        title: 'Success 🎉',
+        description: `Updated user ${values.displayName}.`,
+      });
+      redirectToUsers();
+    } catch (error) {
+      toast({
+        title: 'Uh oh! Something went wrong.',
+        description: `There was a problem with your request.\n${error}`,
+      });
+    }
   }
 
   return (
