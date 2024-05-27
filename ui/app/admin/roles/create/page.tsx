@@ -9,9 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await auth();
-  if (!session) return <div>Not authenticated</div>;
-
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
       <div className='flex flex-col sm:gap-4 sm:py-4 '>
