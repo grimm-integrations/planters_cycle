@@ -83,6 +83,16 @@ export default function EditUserForm({
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof relatedUserModel>) {
+    values = {
+      ...values,
+      id: user.id,
+      createdAt: user.createdAt,
+      lastLogin: user.lastLogin,
+    }
+    if (values.password == undefined)
+      values.password = '';
+
+    console.log(JSON.stringify(values, null, 2))
     try {
       await editUser(id, values);
       toast({
@@ -99,11 +109,11 @@ export default function EditUserForm({
   }
 
   function toggleRole(role: Role): UsersInRoles[] {
-    const roles = form.getValues('roles');
-    const index = roles.findIndex((r) => r.roleId === role.id);
+    const formRoles = form.getValues('roles');
+    const index = formRoles.findIndex((r) => r.roleId === role.id);
     if (index === -1) {
       return [
-        ...roles,
+        ...formRoles,
         {
           roleId: role.id,
           userId: user.id,
@@ -112,11 +122,15 @@ export default function EditUserForm({
         },
       ];
     } else {
-      return roles.filter((r) => r.roleId !== role.id);
+      return formRoles.filter((r) => r.roleId !== role.id);
     }
   }
 
-  console.table(roles);  
+  function isRoleActive(role: Role): boolean {
+    return form.getValues('roles').some((r) => r.roleId === role.id);
+  }
+
+  // roles = [];
 
   return (
     <>
@@ -192,7 +206,7 @@ export default function EditUserForm({
                   name='roles'
                   render={({ field }) => (
                     <FormItem className='flex flex-col'>
-                      <FormLabel>Language</FormLabel>
+                      <FormLabel>Roles</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -219,31 +233,33 @@ export default function EditUserForm({
                             <CommandInput placeholder='Search role...' />
                             <CommandEmpty>No role found.</CommandEmpty>
                             <CommandGroup>
-                              {roles.map((role) => (
-                                <CommandItem
-                                  value={role.name}
-                                  key={role.name}
-                                  onSelect={() => {
-                                    form.setValue('roles', toggleRole(role));
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      'mr-2 h-4 w-4',
-                                      role.name === field.name
-                                        ? 'opacity-100'
-                                        : 'opacity-0'
-                                    )}
-                                  />
-                                  {role.name}
-                                </CommandItem>
-                              ))}
+                              {roles.map((role) => {
+                                return (
+                                  <CommandItem
+                                    value={role.name}
+                                    key={role.name}
+                                    onSelect={() => {
+                                      form.setValue('roles', toggleRole(role));
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        'mr-2 h-4 w-4',
+                                        isRoleActive(role)
+                                          ? 'opacity-100'
+                                          : 'opacity-0'
+                                      )}
+                                    />
+                                    {role.name}
+                                  </CommandItem>
+                                );
+                              })}
                             </CommandGroup>
                           </Command>
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        This is the language that will be used in the dashboard.
+                        This are the roles the user get assigned to.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -252,7 +268,7 @@ export default function EditUserForm({
               </div>
             </CardContent>
             <CardFooter>
-              <Button type='submit' className='w-full'>
+              <Button type='submit' className='w-full' onClick={() => console.log(JSON.stringify(form.getValues('roles'), null, 2))}>
                 Save
               </Button>
             </CardFooter>

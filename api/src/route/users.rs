@@ -104,12 +104,11 @@ async fn create_user(
     }
 }
 
-user::partial_unchecked!(UserUpdateData { display_name email password });
 #[post("/{id}")]
 async fn edit_user(
     data: web::Data<PrismaClient>,
     id: web::Path<String>,
-    body: web::Json<UserUpdateData>,
+    body: web::Json<user::Data>,
 ) -> impl Responder {
     match edit_user_by_id(&id.to_string(), &data, body.into_inner()).await {
         Err(_) => HttpResponse::NotFound().body("User not found"),

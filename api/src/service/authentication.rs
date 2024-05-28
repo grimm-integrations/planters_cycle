@@ -91,7 +91,7 @@ pub async fn change_password(
     user_id: &str,
     new_password: &str,
     data: &web::Data<PrismaClient>,
-) -> Result<(), ErrorCode> {
+) -> Result<String, ErrorCode> {
     let salt: SaltString = SaltString::generate(&mut OsRng);
     let pw = new_password.as_bytes();
     let hashed_password = Argon2::default()
@@ -109,11 +109,11 @@ pub async fn change_password(
     data.user()
         .update(
             user::id::equals(user_id.to_string()),
-            vec![user::password::set(hashed_password)],
+            vec![user::password::set(hashed_password.clone())],
         )
         .exec()
         .await
         .unwrap();
 
-    Ok(())
+    Ok(hashed_password)
 }

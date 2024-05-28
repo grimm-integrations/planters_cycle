@@ -40,7 +40,7 @@ model User {
   id           String         @id @default(uuid())  /// @zod.uuid()
   displayName  String                               /// @zod.min(2, "Display name must be at least 2 characters long")
   email        String         @unique               /// @zod.email("Invalid email address")
-  password     String                               /// @zod.min(8, "Password must be at least 8 characters long")
+  password     String                               /// @zod.min(8, "Password must be at least 8 characters long").or(z.literal(''))
   lastLogin    DateTime?
   createdAt    DateTime       @default(now())
   roles        UsersInRoles[]

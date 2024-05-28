@@ -5,7 +5,7 @@ export const UserModel = z.object({
   id: z.string().uuid(),
   displayName: z.string().min(2, "Display name must be at least 2 characters long"),
   email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
+  password: z.string().min(8, "Password must be at least 8 characters long").or(z.literal('')),
   lastLogin: z.date().nullish(),
   createdAt: z.date(),
 })
