@@ -6,6 +6,7 @@ name = "planters_cycle"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+authors = ["Johannes Grimm <grimmjohannes1998@gmail.com>"]
 
 [dependencies]
 actix-identity = "0.7.1"
