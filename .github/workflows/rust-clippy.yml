@@ -50,6 +50,9 @@ jobs:
       - name: Install required cargo
         run: cargo install clippy-sarif sarif-fmt
 
+      - name: Generate primsa scheme
+        run: cargo prisma generate
+
       - name: Run rust-clippy
         run:
           cargo clippy
