@@ -69,8 +69,11 @@ jobs:
           --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
         continue-on-error: true
 
+      - name: show dir structure
+        run: pwd && ls -a
+
       - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: rust-clippy-results.sarif
+          sarif_file: api/rust-clippy-results.sarif
           wait-for-processing: true
