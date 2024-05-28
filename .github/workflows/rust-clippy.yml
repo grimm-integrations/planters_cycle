@@ -69,8 +69,13 @@ jobs:
           --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
         continue-on-error: true
 
-      - name: show dir structure
-        run: pwd && ls -a
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Prepend api path to the sarif
+        run: |
+          bash  ./../scripts/prepend-api-path-to-sarif.sh rust-clippy-results.sarif tmp.json;
+          mv tmp.json rust-clippy-results.sarif
 
       - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@v3
