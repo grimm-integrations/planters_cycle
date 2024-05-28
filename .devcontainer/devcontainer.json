@@ -3,6 +3,8 @@
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": "true",
+      "configureZshAsDefaultShell": "true",
+      "installOhMyZsh": "true",
       "upgradePackages": "true"
     },
     "ghcr.io/devcontainers/features/rust:1": "latest",
@@ -13,7 +15,26 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": []
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "donjayamanne.githistory",
+        "christian-kohler.npm-intellisense",
+        "esbenp.prettier-vscode",
+        "prisma.prisma",
+        "bradlc.vscode-tailwindcss",
+        "davidanson.vscode-markdownlint"
+      ],
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/zsh",
+        "typescript.tsdk": "ui/node_modules/typescript/lib",
+        "tailwindCSS.experimental.classRegex": [
+          [
+            "cva\\(([^)]*)\\)",
+            "[\"'`]([^\"'`]*).*?[\"'`]"
+          ]
+        ]
+      }
     }
   }
 }
