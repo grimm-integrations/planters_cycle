@@ -1,14 +1,13 @@
-import * as z from 'zod';
-
-import { CompletePlant, RelatedPlantModel } from './index';
+import * as z from "zod"
+import { CompletePlant, RelatedPlantModel } from "./index"
 
 export const GeneticModel = z.object({
   id: z.string(),
   name: z.string(),
-});
+})
 
 export interface CompleteGenetic extends z.infer<typeof GeneticModel> {
-  Plant: CompletePlant[];
+  Plant: CompletePlant[]
 }
 
 /**
@@ -16,8 +15,6 @@ export interface CompleteGenetic extends z.infer<typeof GeneticModel> {
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const RelatedGeneticModel: z.ZodSchema<CompleteGenetic> = z.lazy(() =>
-  GeneticModel.extend({
-    Plant: RelatedPlantModel.array(),
-  })
-);
+export const RelatedGeneticModel: z.ZodSchema<CompleteGenetic> = z.lazy(() => GeneticModel.extend({
+  Plant: RelatedPlantModel.array(),
+}))
