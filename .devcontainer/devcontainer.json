@@ -5,7 +5,7 @@
       "installZsh": "true",
       "configureZshAsDefaultShell": "true",
       "installOhMyZsh": "false",
-      "upgradePackages": "true"
+      "upgradePackages": "false"
     },
     "ghcr.io/devcontainers/features/rust:1": "latest",
     "ghcr.io/devcontainers/features/git:1": {
