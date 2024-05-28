@@ -1,5 +1,5 @@
 {
-  "image": "ghcr.io/Metratrj/template-planters_cycle/rust-bun:latest",
+  "image": "ghcr.io/metratrj/template-planters_cycle/rust-bun:latest",
   "mounts": [
     "source=${localWorkspaceFolder}/.devcontainer/.p10k.zsh,target=/home/codespace/.p10k.zsh,type=bind,consistency=cached"
   ],
