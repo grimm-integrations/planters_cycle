@@ -2,9 +2,10 @@ import { Metadata } from 'next';
 
 import BreadCrumb from '@/components/bread-crumb';
 
-import { fetchUser } from '@/lib/data';
+import { fetchRoles, fetchUser } from '@/lib/data';
 
 import EditUserForm from '@/app/ui/admin/user/edit-form';
+import { auth } from '@/auth';
 
 export const metadata: Metadata = {
   title: 'Edit User',
@@ -13,6 +14,10 @@ export const metadata: Metadata = {
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
   const user = await fetchUser(id);
+  const roles = await fetchRoles('');
+
+  const session = await auth();
+  if (!session || !session.user) throw new Error('Not authenticated');
 
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
@@ -21,7 +26,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           <BreadCrumb />
         </header>
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-          <EditUserForm user={user} id={id} />
+          <EditUserForm user={user} id={id} roles={roles} sessionUserId={session.user.id}/>
         </main>
       </div>
     </div>

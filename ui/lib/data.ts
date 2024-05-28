@@ -1,5 +1,5 @@
 import { auth } from '@/auth';
-import { Role, User } from '@prisma/client';
+import { Role, User, UsersInRoles } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export async function fetchProfile() {
@@ -49,7 +49,7 @@ export async function fetchUsers(query: string): Promise<User[]> {
   }
 }
 
-export async function fetchUser(id: string): Promise<User> {
+export async function fetchUser(id: string): Promise<User  & { roles: UsersInRoles[]}> {
   noStore();
 
   const session = await auth();
@@ -66,7 +66,7 @@ export async function fetchUser(id: string): Promise<User> {
         return res.json();
       })
       .then((data) => {
-        let user = data as User;
+        let user = data as User & { roles: UsersInRoles[]};
         return user;
       });
 

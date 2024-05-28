@@ -1,8 +1,7 @@
 'use server';
 
 import { auth, signIn } from '@/auth';
-import { RoleModel } from '@/prisma/zod/role';
-import { UserModel } from '@/prisma/zod/user';
+import { RoleModel, UserModel } from '@/prisma/zod';
 import { AuthError } from 'next-auth';
 import { unstable_noStore as noStore } from 'next/cache';
 import { revalidatePath } from 'next/cache';

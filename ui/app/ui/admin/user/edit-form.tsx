@@ -1,9 +1,9 @@
 'use client';
 
-import { UserModel } from '@/prisma/zod';
+import { UserModel, UsersInRolesModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { User } from '@prisma/client';
-import { redirect } from 'next/dist/server/api-utils';
+import { Role, User, UsersInRoles } from '@prisma/client';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -17,6 +17,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from '@/components/ui/command';
+import {
   Form,
   FormControl,
   FormDescription,
@@ -26,9 +33,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useToast } from '@/components/ui/use-toast';
 
 import { editUser, redirectToUsers } from '@/lib/actions';
+import { cn } from '@/lib/utils';
 
 const editUserSchema = UserModel.partial({
   id: true,
@@ -37,18 +50,39 @@ const editUserSchema = UserModel.partial({
   password: true,
 });
 
-export default function EditUserForm({ id, user }: { id: string; user: User }) {
-  const form = useForm<z.infer<typeof editUserSchema>>({
-    resolver: zodResolver(editUserSchema),
+interface CompleteUser extends z.infer<typeof editUserSchema> {
+  roles: UsersInRoles[];
+}
+
+const relatedUserModel: z.ZodSchema<CompleteUser> = z.lazy(() =>
+  editUserSchema.extend({
+    roles: UsersInRolesModel.array(),
+  })
+);
+
+export default function EditUserForm({
+  id,
+  user,
+  roles,
+  sessionUserId,
+}: {
+  id: string;
+  user: User & { roles: UsersInRoles[] };
+  roles: Role[];
+  sessionUserId: string;
+}) {
+  const form = useForm<z.infer<typeof relatedUserModel>>({
+    resolver: zodResolver(relatedUserModel),
     defaultValues: {
       displayName: user.displayName,
       email: user.email,
+      roles: user.roles,
     },
   });
 
   const { toast } = useToast();
 
-  async function onSubmit(values: z.infer<typeof editUserSchema>) {
+  async function onSubmit(values: z.infer<typeof relatedUserModel>) {
     try {
       await editUser(id, values);
       toast({
@@ -63,6 +97,26 @@ export default function EditUserForm({ id, user }: { id: string; user: User }) {
       });
     }
   }
+
+  function toggleRole(role: Role): UsersInRoles[] {
+    const roles = form.getValues('roles');
+    const index = roles.findIndex((r) => r.roleId === role.id);
+    if (index === -1) {
+      return [
+        ...roles,
+        {
+          roleId: role.id,
+          userId: user.id,
+          assignedBy: sessionUserId,
+          assignedAt: new Date(),
+        },
+      ];
+    } else {
+      return roles.filter((r) => r.roleId !== role.id);
+    }
+  }
+
+  console.table(roles);  
 
   return (
     <>
@@ -128,6 +182,68 @@ export default function EditUserForm({ id, user }: { id: string; user: User }) {
                       </FormControl>
                       <FormDescription>
                         This is your private password.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='roles'
+                  render={({ field }) => (
+                    <FormItem className='flex flex-col'>
+                      <FormLabel>Language</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant='outline'
+                              role='combobox'
+                              className={cn(
+                                'w-[200px] justify-between',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              Roles
+                              {/* field.value
+                                ? roles.find(
+                                    (role) => language.value === field.value
+                                  )?.label
+                                : 'Roles' */}
+                              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className='w-[200px] p-0'>
+                          <Command>
+                            <CommandInput placeholder='Search role...' />
+                            <CommandEmpty>No role found.</CommandEmpty>
+                            <CommandGroup>
+                              {roles.map((role) => (
+                                <CommandItem
+                                  value={role.name}
+                                  key={role.name}
+                                  onSelect={() => {
+                                    form.setValue('roles', toggleRole(role));
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      'mr-2 h-4 w-4',
+                                      role.name === field.name
+                                        ? 'opacity-100'
+                                        : 'opacity-0'
+                                    )}
+                                  />
+                                  {role.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <FormDescription>
+                        This is the language that will be used in the dashboard.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
