@@ -5,6 +5,7 @@ members = [".", "prisma-cli"]
 name = "planters_cycle"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 
 [dependencies]
 actix-identity = "0.7.1"
