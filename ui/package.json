@@ -29,7 +29,7 @@
     "@tanstack/react-table": "^8.17.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "cmdk": "^1.0.0",
+    "cmdk": "0.2.1",
     "lucide-react": "^0.378.0",
     "next": "14.2.3",
     "next-auth": "^5.0.0-beta.18",
