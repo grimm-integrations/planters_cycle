@@ -98,7 +98,7 @@ jobs:
           fi
 
           if [[ "${{ matrix.build }}" =~ "linux" ]]; then
-            cp "target/${{ matrix.target }}/debian/planters_cycle_${TAG}_amd64.deb" "dist/"
+            cp "target/${{ matrix.target }}/debian/planters-cycle_$TAG_amd64.deb" "dist/"
           fi
       - uses: actions/upload-artifact@v4.3.3
         with:
@@ -137,7 +137,7 @@ jobs:
               chmod +x tmp/$pkgname/$BIN_NAME$exe
 
               if [[ $platform =~ "linux" ]]; then
-                  mv "bins-$platform/planters_cycle_${TAG}_amd64.deb" dist/
+                  mv "bins-$platform/planters-cycle_$TAG_amd64.deb" dist/
               fi
 
               if [ "$exe" = "" ]; then
