@@ -1,4 +1,4 @@
-name: Rust
+name: Release Rust
 
 on:
   workflow_dispatch:
@@ -12,19 +12,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  tagname:
-    runs-on: ubuntu-latest
-    outputs:
-      tag_name: ${{ steps.tag.outputs.tag }}
-    steps:
-      - id: vars
-        shell: bash
-        run: echo "sha_short=${GITHUB_SHA::7}" | tee -a $GITHUB_OUTPUT
-
-      - run: echo "TAG_NAME=${{ github.event.inputs.tag_name }}" | tee -a $GITHUB_ENV
-
-      - id: tag
-        run: echo "tag=$TAG_NAME" | tee -a $GITHUB_OUTPUT
   dist:
     name: Dist
     runs-on: ${{ matrix.os }}
@@ -46,12 +33,9 @@ jobs:
     defaults:
       run:
         working-directory: ./api
-    env:
-      RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
     steps:
           
       - uses: actions/checkout@v4
-      - run: echo $RELEASE_TAG_NAME
       
       # Install dependencies
       - name: "Install dependencies Ubuntu"
@@ -99,7 +83,7 @@ jobs:
         if: contains(matrix.build, 'linux')
         run: |
           cargo install cargo-deb
-          cargo deb --target ${{ matrix.target }} --deb-version $RELEASE_TAG_NAME
+          cargo deb --target ${{ matrix.target }} --deb-version ${{ github.event.inputs.tag_name }}
 
       - name: Build archive
         shell: bash
@@ -123,8 +107,6 @@ jobs:
     name: Publish
     needs: [dist]
     runs-on: ubuntu-latest
-    env:
-      RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -169,5 +151,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: dist/*
           file_glob: true
-          tag: ${{ needs.tagname.outputs.tag_name }}
+          tag: ${{ github.event.inputs.tag_name }}
           overwrite: true
