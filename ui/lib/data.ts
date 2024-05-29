@@ -49,7 +49,9 @@ export async function fetchUsers(query: string): Promise<User[]> {
   }
 }
 
-export async function fetchUser(id: string): Promise<User  & { roles: UsersInRoles[]}> {
+export async function fetchUser(
+  id: string
+): Promise<User & { roles: UsersInRoles[] }> {
   noStore();
 
   const session = await auth();
@@ -66,7 +68,7 @@ export async function fetchUser(id: string): Promise<User  & { roles: UsersInRol
         return res.json();
       })
       .then((data) => {
-        let user = data as User & { roles: UsersInRoles[]};
+        let user = data as User & { roles: UsersInRoles[] };
         return user;
       });
 

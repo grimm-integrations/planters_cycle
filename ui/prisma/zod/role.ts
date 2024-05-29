@@ -1,13 +1,14 @@
-import * as z from "zod"
-import { CompleteUsersInRoles, RelatedUsersInRolesModel } from "./index"
+import * as z from 'zod';
+
+import { CompleteUsersInRoles, RelatedUsersInRolesModel } from './index';
 
 export const RoleModel = z.object({
   id: z.number().int(),
-  name: z.string().min(2, "Role name must be at least 2 characters long"),
-})
+  name: z.string().min(2, 'Role name must be at least 2 characters long'),
+});
 
 export interface CompleteRole extends z.infer<typeof RoleModel> {
-  users: CompleteUsersInRoles[]
+  users: CompleteUsersInRoles[];
 }
 
 /**
@@ -15,6 +16,8 @@ export interface CompleteRole extends z.infer<typeof RoleModel> {
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const RelatedRoleModel: z.ZodSchema<CompleteRole> = z.lazy(() => RoleModel.extend({
-  users: RelatedUsersInRolesModel.array(),
-}))
+export const RelatedRoleModel: z.ZodSchema<CompleteRole> = z.lazy(() =>
+  RoleModel.extend({
+    users: RelatedUsersInRolesModel.array(),
+  })
+);
