@@ -26,7 +26,15 @@
         "esbenp.prettier-vscode",
         "prisma.prisma",
         "bradlc.vscode-tailwindcss",
-        "davidanson.vscode-markdownlint"
+        "davidanson.vscode-markdownlint",
+        "rust-lang.rust-analyzer",
+        "dustypomerleau.rust-syntax",
+        "Prisma.prisma",
+        "PKief.material-icon-theme",
+        "tamasfe.even-better-toml",
+        "vadimcn.vscode-lldb",
+        "DaltonMenezes.aura-theme",
+        "GitHub.copilot"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",

@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "bradlc.vscode-tailwindcss",
+        "rust-lang.rust-analyzer",
+        "prisma.prisma",
+        "esbenp.prettier-vscode",
+        "christian-kohler.npm-intellisense",
+        "pkief.material-icon-theme",
+        "tamasfe.even-better-toml",
+        "dbaeumer.vscode-eslint",
+        "ms-azuretools.vscode-docker",
+        "serayuzgur.crates",
+        "vadimcn.vscode-lldb",
+        "daltonmenezes.aura-theme"
+    ]
+}
