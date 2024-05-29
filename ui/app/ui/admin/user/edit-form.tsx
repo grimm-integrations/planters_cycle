@@ -76,10 +76,16 @@ export default function EditUserForm({
     defaultValues: {
       displayName: user.displayName,
       email: user.email,
-      roles: user.roles,
+      roles: user.roles.map((role) => {
+        return {
+          roleId: role.roleId,
+          userId: role.userId,
+          assignedBy: role.assignedBy,
+          assignedAt: new Date(role.assignedAt),
+        };
+      }),
     },
   });
-
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof relatedUserModel>) {
@@ -88,11 +94,9 @@ export default function EditUserForm({
       id: user.id,
       createdAt: user.createdAt,
       lastLogin: user.lastLogin,
-    }
-    if (values.password == undefined)
-      values.password = '';
+    };
+    if (values.password == undefined) values.password = '';
 
-    console.log(JSON.stringify(values, null, 2))
     try {
       await editUser(id, values);
       toast({
@@ -129,8 +133,6 @@ export default function EditUserForm({
   function isRoleActive(role: Role): boolean {
     return form.getValues('roles').some((r) => r.roleId === role.id);
   }
-
-  // roles = [];
 
   return (
     <>
@@ -268,7 +270,7 @@ export default function EditUserForm({
               </div>
             </CardContent>
             <CardFooter>
-              <Button type='submit' className='w-full' onClick={() => console.log(JSON.stringify(form.getValues('roles'), null, 2))}>
+              <Button type='submit' className='w-full'>
                 Save
               </Button>
             </CardFooter>
