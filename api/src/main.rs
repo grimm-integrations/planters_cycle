@@ -18,6 +18,7 @@ mod prisma;
 mod route;
 mod server;
 mod service;
+mod tests;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {

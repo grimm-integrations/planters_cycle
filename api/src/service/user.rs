@@ -76,7 +76,8 @@ pub async fn edit_user_by_id(
         };
 
         let previous_items: HashSet<i32> = org_user_roles.iter().map(|x| x.role_id).collect();
-        let added_roles: Vec<users_in_roles::Data> = user_roles.clone()
+        let added_roles: Vec<users_in_roles::Data> = user_roles
+            .clone()
             .into_iter()
             .filter(|item| !previous_items.contains(&item.role_id))
             .collect();

@@ -3,21 +3,25 @@
  */
 
 pub mod auth {
-    use crate::prisma::user;
-    use serde::Deserialize;
+    use serde::{Deserialize, Serialize};
 
     #[doc = "User Login"]
-    #[derive(Debug, Deserialize)]
+    #[derive(Serialize, Debug, Deserialize)]
     pub struct LoginRequest {
         pub identifier: String,
         pub password: String,
     }
 
-    user::partial_unchecked!(RegisterRequest {
-        display_name
-        email
-        password
-    });
+    #[doc = "User Register"]
+    #[derive(Serialize, Debug, Deserialize)]
+    pub struct RegisterRequest {
+        #[serde(rename = "displayName")]
+        pub display_name: String,
+        #[serde(rename = "email")]
+        pub email: String,
+        #[serde(rename = "password")]
+        pub password: String,
+    }
 }
 
 crate::prisma::role::partial_unchecked!(Role { name });

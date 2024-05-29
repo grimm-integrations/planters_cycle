@@ -18,9 +18,8 @@ use actix_web::{error, get, middleware, web, App, HttpResponse, HttpServer, Resp
 use std::env;
 use std::net::TcpListener;
 
-#[allow(dead_code)]
-async fn not_found() -> HttpResponse {
-    HttpResponse::NotFound().body("Not Found")
+pub async fn not_found() -> actix_web::Result<impl Responder> {
+    Ok(HttpResponse::NotFound().body("Not Found"))
 }
 
 #[get("/")]
@@ -39,9 +38,8 @@ async fn index(identity: Option<Identity>, session: Session) -> actix_web::Resul
     Ok(HttpResponse::Ok().body(format!("Hello {id}, session: {counter}")))
 }
 
-#[allow(dead_code)]
 #[doc = "Setup the service served by the application."]
-fn get_config(conf: &mut ServiceConfig) {
+pub fn get_config(conf: &mut ServiceConfig) {
     conf.service(
         scope("/api")
             .service(health_check)
