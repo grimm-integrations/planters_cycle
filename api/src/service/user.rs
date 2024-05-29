@@ -82,8 +82,8 @@ pub async fn edit_user_by_id(
             .filter(|item| !previous_items.contains(&item.role_id))
             .collect();
 
-        let previous_items: HashSet<i32> = org_user_roles.iter().map(|x| x.role_id).collect();
-        let deleted_roles: Vec<users_in_roles::Data> = user_roles
+        let previous_items: HashSet<i32> = user_roles.iter().map(|x| x.role_id).collect();
+        let deleted_roles: Vec<users_in_roles::Data> = org_user_roles
             .into_iter()
             .filter(|item| !previous_items.contains(&item.role_id))
             .collect();
