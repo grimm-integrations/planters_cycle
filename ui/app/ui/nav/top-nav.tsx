@@ -12,10 +12,8 @@ import UserDropdown from './user-dropdown';
 export default function TopNav() {
   const links = [
     { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Orders', href: '/orders' },
-    { name: 'Products', href: '/products' },
-    { name: 'Customers', href: '/customers' },
-    { name: 'Analytics', href: '/analytics' },
+    { name: 'Plants', href: '/plants' },
+    { name: 'Genetics', href: '/genetics' },
   ];
 
   return (
@@ -26,7 +24,7 @@ export default function TopNav() {
           className='flex items-center gap-2 text-lg font-semibold md:text-base'
         >
           <Package2 className='h-6 w-6' />
-          <span className='sr-only'>Acme Inc</span>
+          <span className='sr-only'>Planters Cycle</span>
         </Link>
 
         <NavLinks links={links} />
@@ -45,7 +43,7 @@ export default function TopNav() {
               className='flex items-center gap-2 text-lg font-semibold'
             >
               <Package2 className='h-6 w-6' />
-              <span className='sr-only'>Acme Inc</span>
+              <span className='sr-only'>Planters Cycle</span>
             </Link>
             <NavLinks links={links} />
           </nav>
