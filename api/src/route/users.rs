@@ -4,7 +4,7 @@
 
 use crate::{
     model::dto::auth::RegisterRequest,
-    prisma::{user, PrismaClient},
+    prisma::{user, users_in_roles, PrismaClient},
     service::{authentication::register_user, user::edit_user_by_id},
 };
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
@@ -55,14 +55,18 @@ async fn get_users(
             user::display_name::contains(query.query.clone()),
             user::email::contains(query.query.clone())
         ]])
-        .select(user::select!({
+        .with(user::roles::fetch(vec![]).with(users_in_roles::role::fetch()))
+/*         .select(user::select!({
             id
             display_name
             email
             last_login
             created_at
-            roles
-        }))
+            roles(vec![]): include {
+                user
+                role
+            }
+        })) */
         .exec()
         .await
         .unwrap();

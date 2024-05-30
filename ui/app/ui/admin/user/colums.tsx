@@ -1,16 +1,18 @@
 'use client';
 
+import { CompleteUser } from '@/prisma/zod';
 import { User } from '@prisma/client';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { formatDateToLocal } from '@/lib/utils';
 
 import DeleteDropdown from './delete-dropdown';
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<CompleteUser>[] = [
   {
     accessorKey: 'displayName',
     header: ({ column }) => {
@@ -57,6 +59,27 @@ export const columns: ColumnDef<User>[] = [
     },
     cell: ({ row }) => {
       return <div>{formatDateToLocal(row.original.createdAt)}</div>;
+    },
+  },
+  {
+    accessorKey: 'roles',
+    header: 'Roles',
+    cell: ({ row }) => {
+      const user = row.original;
+      return (
+        <>
+          {user.roles.map((role) => {
+            return (
+              <>
+                <Badge key={role.role.id}>{role.role.name}</Badge>
+                {/* <span  className='inline-block px-2 py-1 text-sm bg-primary text-white rounded-full'>
+                {role.role.name}
+              </span> */}
+              </>
+            );
+          })}
+        </>
+      );
     },
   },
   {

@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import { CompleteUser } from '@/prisma/zod';
 import { Role, User, UsersInRoles } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
 
@@ -22,7 +23,7 @@ export async function fetchProfile() {
   }
 }
 
-export async function fetchUsers(query: string): Promise<User[]> {
+export async function fetchUsers(query: string): Promise<CompleteUser[]> {
   noStore();
 
   const session = await auth();
@@ -39,9 +40,10 @@ export async function fetchUsers(query: string): Promise<User[]> {
         return res.json();
       })
       .then((data) => {
-        let users = data as User[];
+        let users = data as CompleteUser[];
         return users;
       });
+      console.log(JSON.stringify(data, null, 2))
     return data;
   } catch (error) {
     console.error('Fetch ERROR:', error);

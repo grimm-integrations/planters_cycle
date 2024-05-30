@@ -26,13 +26,14 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 
 import { deleteUser, redirectToUsers } from '@/lib/actions';
+import { CompleteUser } from '@/prisma/zod';
 
-export default function DeleteDropdown({ user }: { user: User }) {
+export default function DeleteDropdown({ user }: { user: CompleteUser }) {
   const [open, setOpen] = useState(false);
 
   const { toast } = useToast();
 
-  async function onClickDelete(user: User) {
+  async function onClickDelete(user: CompleteUser) {
     try {
       await deleteUser(user.id);
       toast({
