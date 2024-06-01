@@ -4,7 +4,6 @@
 
 'use client';
 
-import {User} from '@prisma/client';
 import {MoreHorizontal} from 'lucide-react';
 import Link from 'next/link';
 import {useState} from 'react';
@@ -44,6 +43,7 @@ export default function DeleteDropdown({user}: { user: CompleteUser }) {
                 title: 'Success 🎉',
                 description: `Deleted user ${user.displayName}.`,
             });
+            setOpen(false);
             await redirectToUsers();
         } catch (error) {
             toast({
