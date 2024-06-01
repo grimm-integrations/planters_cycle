@@ -47,7 +47,6 @@ export async function fetchUsers(query: string): Promise<CompleteUser[]> {
                 let users = data as CompleteUser[];
                 return users;
             });
-        console.log(JSON.stringify(data, null, 2))
         return data;
     } catch (error) {
         console.error('Fetch ERROR:', error);

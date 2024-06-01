@@ -80,7 +80,7 @@ export async function createUser(user: z.infer<typeof editUserSchema>) {
     const session = await auth();
     if (!session || !session.user) throw new Error('Not authenticated');
 
-    const jsonObject = JSON.stringify(user);
+    const jsonObject = JSON.stringify(user, null, 2);
     try {
         const data = await fetch(`http://127.0.0.1:8004/api/users`, {
             method: 'POST',
