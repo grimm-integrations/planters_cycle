@@ -2,8 +2,6 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use std::env;
-
 use actix_http::Request;
 use actix_identity::IdentityMiddleware;
 use actix_session::{
@@ -41,7 +39,7 @@ fn init_app_entry() -> App<
     App::new().wrap(IdentityMiddleware::default()).wrap(
         SessionMiddleware::builder(
             RedisActorSessionStore::new("127.0.0.1:6379"),
-            actix_web::cookie::Key::from(env::var("SECRET").expect("SECRET is not set").as_bytes())
+            actix_web::cookie::Key::from("Wg5iPpQstNgAcOSc7keT8F5uKkqAxGnd1T6kOMvi3llVzSF6Dg8OLLuxbuEKpHrcIo9BJKz3PZTAJvFOVZcfKQ==".as_bytes())
                 .clone(),
         )
         .cookie_name("plnt_test".to_owned())
