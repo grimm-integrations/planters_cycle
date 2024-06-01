@@ -6,11 +6,14 @@
       "[\"'`]([^\"'`]*).*?[\"'`]"
     ]
   ],
-  "editor.tabSize": 4,
+  "editor.tabSize": 2,
   "terminal.integrated.defaultProfile.linux": "zsh",
   "terminal.integrated.profiles.linux": {
     "zsh": {
       "path": "/bin/zsh"
     }
-  }
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
 }
