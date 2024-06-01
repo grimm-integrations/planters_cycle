@@ -12,7 +12,7 @@ pub mod auth {
         pub password: String,
     }
 
-    #[doc = "User Register"]
+    #[doc = "User Register Model"]
     #[derive(Serialize, Debug, Deserialize)]
     pub struct RegisterRequest {
         #[serde(rename = "displayName")]
@@ -21,6 +21,19 @@ pub mod auth {
         pub email: String,
         #[serde(rename = "password")]
         pub password: String,
+        pub roles: Option<Vec<RoleRegisterRequest>>,
+    }
+
+    #[doc = "Roles Register Model"]
+    #[derive(Serialize, Debug, Deserialize)]
+    pub struct RoleRegisterRequest {
+        #[serde(rename = "roleId")]
+        pub role_id: i32,
+        #[serde(rename = "assignedAt")]
+        pub assigned_at:
+            ::prisma_client_rust::chrono::DateTime<::prisma_client_rust::chrono::FixedOffset>,
+        #[serde(rename = "assignedBy")]
+        pub assigned_by: String,
     }
 }
 

@@ -4,13 +4,14 @@
 
 use std::collections::HashSet;
 
+use crate::model::dto::auth::RegisterRequest;
 use crate::model::error::ErrorCode;
 use crate::prisma::{user, users_in_roles, PrismaClient};
 use actix_web::web;
 use chrono::Utc;
 use prisma_client_rust::or;
 
-use super::authentication::change_password;
+use super::authentication::{change_password, register_user};
 
 pub async fn find_by_identifier(
     identifier: &str,
@@ -39,6 +40,48 @@ pub async fn update_last_login(id: &str, data: &web::Data<PrismaClient>) -> Resu
     {
         Ok(_) => Ok(()),
         Err(e) => Err(e),
+    }
+}
+
+pub async fn create_new_user(
+    user: RegisterRequest,
+    data: &web::Data<PrismaClient>,
+) -> Result<user::Data, ErrorCode> {
+    let new_user = match register_user(&user, &data).await {
+        Ok(u) => u,
+        Err(e) => return Err(e),
+    };
+
+    let user_roles = user.roles.unwrap_or(vec![]);
+
+    if !user_roles.is_empty() {
+        for item in user_roles {
+            match data
+                .users_in_roles()
+                .create_unchecked(
+                    new_user.id.to_owned(),
+                    item.role_id,
+                    item.assigned_by,
+                    vec![],
+                )
+                .exec()
+                .await
+                .map_err(|_| ErrorCode::INTERNAL001)
+            {
+                Ok(_) => (),
+                Err(e) => return Err(e),
+            }
+        }
+    }
+    match data
+        .user()
+        .find_unique(user::id::equals(new_user.id))
+        .exec()
+        .await
+        .map_err(|_| ErrorCode::INTERNAL001)
+    {
+        Ok(u) => Ok(u.unwrap()),
+        Err(e) => return Err(e),
     }
 }
 

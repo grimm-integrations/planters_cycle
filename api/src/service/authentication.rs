@@ -54,11 +54,11 @@ pub async fn login_user(
 }
 
 pub async fn register_user(
-    register_request: RegisterRequest,
-    data: web::Data<PrismaClient>,
+    register_request: &RegisterRequest,
+    data: &web::Data<PrismaClient>,
 ) -> Result<user::Data, ErrorCode> {
     let salt: SaltString = SaltString::generate(&mut OsRng);
-    let pw = register_request.password;
+    let pw = &register_request.password;
     let pw = pw.as_bytes();
     let hashed_password = Argon2::default()
         .hash_password(&pw, &salt)
@@ -75,8 +75,8 @@ pub async fn register_user(
     let user = data
         .user()
         .create(
-            register_request.display_name,
-            register_request.email,
+            register_request.display_name.clone(),
+            register_request.email.clone(),
             hashed_password,
             vec![],
         )

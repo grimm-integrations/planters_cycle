@@ -5,7 +5,10 @@
 use crate::{
     model::dto::auth::RegisterRequest,
     prisma::{user, users_in_roles, PrismaClient},
-    service::{authentication::register_user, user::edit_user_by_id},
+    service::{
+        authentication::register_user,
+        user::{create_new_user, edit_user_by_id},
+    },
 };
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 use prisma_client_rust::or;
@@ -56,17 +59,20 @@ async fn get_users(
             user::email::contains(query.query.clone())
         ]])
         .with(user::roles::fetch(vec![]).with(users_in_roles::role::fetch()))
-/*         .select(user::select!({
+        .select(user::select!({
             id
             display_name
             email
             last_login
             created_at
-            roles(vec![]): include {
-                user
+            roles(vec![]): select {
+                user_id
                 role
+                role_id
+                assigned_at
+                assigned_by
             }
-        })) */
+        }))
         .exec()
         .await
         .unwrap();
@@ -101,7 +107,7 @@ async fn create_user(
     data: web::Data<PrismaClient>,
     body: web::Json<RegisterRequest>,
 ) -> impl Responder {
-    let register_result = register_user(body.into_inner(), data).await;
+    let register_result = create_new_user(body.into_inner(), &data).await;
     match register_result {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(_) => HttpResponse::BadRequest().finish(),
