@@ -1,23 +1,27 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 import * as z from 'zod';
 
 import {
-  CompleteRole,
-  CompleteUser,
-  RelatedRoleModel,
-  RelatedUserModel,
+    CompleteRole,
+    CompleteUser,
+    RelatedRoleModel,
+    RelatedUserModel,
 } from './index';
 
 export const UsersInRolesModel = z.object({
-  userId: z.string(),
-  roleId: z.number().int(),
-  assignedAt: z.date(),
-  assignedBy: z.string(),
+    userId: z.string(),
+    roleId: z.number().int(),
+    assignedAt: z.date(),
+    assignedBy: z.string(),
 });
 
 export interface CompleteUsersInRoles
-  extends z.infer<typeof UsersInRolesModel> {
-  user: CompleteUser;
-  role: CompleteRole;
+    extends z.infer<typeof UsersInRolesModel> {
+    user: CompleteUser;
+    role: CompleteRole;
 }
 
 /**
@@ -26,9 +30,9 @@ export interface CompleteUsersInRoles
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedUsersInRolesModel: z.ZodSchema<CompleteUsersInRoles> =
-  z.lazy(() =>
-    UsersInRolesModel.extend({
-      user: RelatedUserModel,
-      role: RelatedRoleModel,
-    })
-  );
+    z.lazy(() =>
+        UsersInRolesModel.extend({
+            user: RelatedUserModel,
+            role: RelatedRoleModel,
+        })
+    );

@@ -1,3 +1,7 @@
-import { handlers } from '@/auth';
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
 
-export const { GET, POST } = handlers;
+import {handlers} from '@/auth';
+
+export const {GET, POST} = handlers;

@@ -1,24 +1,28 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 import * as z from 'zod';
 
 import {
-  CompletePlant,
-  CompleteUser,
-  RelatedPlantModel,
-  RelatedUserModel,
+    CompletePlant,
+    CompleteUser,
+    RelatedPlantModel,
+    RelatedUserModel,
 } from './index';
 
 export const PlantHistoryModel = z.object({
-  id: z.string(),
-  plantId: z.string(),
-  action: z.string(),
-  createdAt: z.date(),
-  userId: z.string(),
+    id: z.string(),
+    plantId: z.string(),
+    action: z.string(),
+    createdAt: z.date(),
+    userId: z.string(),
 });
 
 export interface CompletePlantHistory
-  extends z.infer<typeof PlantHistoryModel> {
-  plant: CompletePlant;
-  User: CompleteUser;
+    extends z.infer<typeof PlantHistoryModel> {
+    plant: CompletePlant;
+    User: CompleteUser;
 }
 
 /**
@@ -27,9 +31,9 @@ export interface CompletePlantHistory
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedPlantHistoryModel: z.ZodSchema<CompletePlantHistory> =
-  z.lazy(() =>
-    PlantHistoryModel.extend({
-      plant: RelatedPlantModel,
-      User: RelatedUserModel,
-    })
-  );
+    z.lazy(() =>
+        PlantHistoryModel.extend({
+            plant: RelatedPlantModel,
+            User: RelatedUserModel,
+        })
+    );

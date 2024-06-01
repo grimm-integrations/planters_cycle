@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 #[cfg(test)]
 mod tests {
     use actix_web::test;

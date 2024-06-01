@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 use crate::prisma::PrismaClient;
 
 mod controller;

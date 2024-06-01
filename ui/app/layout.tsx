@@ -1,46 +1,50 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
 
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
+import type {Metadata} from 'next';
+import {Inter} from 'next/font/google';
 
-import { cn } from '@/lib/utils';
+import {ThemeProvider} from '@/components/theme-provider';
+import {Toaster} from '@/components/ui/toaster';
+
+import {cn} from '@/lib/utils';
 
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const inter = Inter({subsets: ['latin'], variable: '--font-sans'});
 
 export const metadata: Metadata = {
-  title: {
-    template: '%s | Planters Cycle',
-    default: 'Planters Cycle',
-  },
-  description: 'The next generation of plant management software.',
+    title: {
+        template: '%s | Planters Cycle',
+        default: 'Planters Cycle',
+    },
+    description: 'The next generation of plant management software.',
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang='en' suppressHydrationWarning>
-      <body
-        className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          inter.variable
-        )}
-      >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
+    return (
+        <html lang='en' suppressHydrationWarning>
+        <body
+            className={cn(
+                'min-h-screen bg-background font-sans antialiased',
+                inter.variable
+            )}
         >
-          {children}
+        <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+        >
+            {children}
         </ThemeProvider>
-        <Toaster />
-      </body>
-    </html>
-  );
+        <Toaster/>
+        </body>
+        </html>
+    );
 }

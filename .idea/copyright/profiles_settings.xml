@@ -2,6 +2,7 @@
   <settings default="Default">
     <module2copyright>
       <element module="All Rust Files" copyright="Default" />
+      <element module="All frontend" copyright="Default" />
     </module2copyright>
   </settings>
 </component>

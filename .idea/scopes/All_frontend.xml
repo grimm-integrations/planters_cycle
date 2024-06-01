@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="All frontend" pattern="file[plntcycl]:ui//*&amp;&amp;!file:ui/tailwind.config.ts&amp;&amp;!file:ui/tsconfig.json&amp;&amp;!file:ui/postcss.config.mjs&amp;&amp;!file:ui/package.json&amp;&amp;!file:ui/next.config.mjs&amp;&amp;!file:ui/next-env.d.ts&amp;&amp;!file:ui/components.json&amp;&amp;!file:ui/bun.lockb&amp;&amp;!file:ui/.prettierrc.json&amp;&amp;!file:ui/.prettierignore&amp;&amp;!file:ui/.gitignore&amp;&amp;!file:ui/.eslintrc.json&amp;&amp;!file:ui/.env&amp;&amp;!file[plntcycl]:ui/components/ui//*" />
+</component>

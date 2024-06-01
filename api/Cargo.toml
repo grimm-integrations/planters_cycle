@@ -14,7 +14,7 @@ actix-http = "3.7.0"
 actix-identity = "0.7.1"
 actix-rt = "2.9.0"
 actix-session = { version = "0.9.0", features = ["redis-actor-session"] }
-actix-web = { version = "4.5.1" }
+actix-web = { version = "4.6.0" }
 argon2 = "0.5.3"
 chrono = "0.4.38"
 env_logger = "0.11.3"
