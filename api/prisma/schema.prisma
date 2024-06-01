@@ -14,7 +14,7 @@ model User {
   id           String         @id @default(uuid())  /// @zod.uuid()
   displayName  String                               /// @zod.min(2, "Display name must be at least 2 characters long")
   email        String         @unique               /// @zod.email("Invalid email address")
-  password     String                               /// @zod.min(8, "Password must be at least 8 characters long")
+  password     String                               /// @zod.min(8, "Password must be at least 8 characters long").or(z.literal(''))
   lastLogin    DateTime?
   createdAt    DateTime       @default(now())
   roles        UsersInRoles[]
@@ -29,11 +29,11 @@ model Role {
 
 model UsersInRoles {
   user       User     @relation(fields: [userId], references: [id])
-  userId     String
+  userId     String /// @zod.uuid("Invalid user id").optional()
   role       Role     @relation(fields: [roleId], references: [id])
-  roleId     Int
+  roleId     Int    /// @zod.min(1, "Role ID needs to be set")
   assignedAt DateTime @default(now())
-  assignedBy String
+  assignedBy String /// @zod.uuid("Assigner must be set")
 
   @@id([userId, roleId])
 }
