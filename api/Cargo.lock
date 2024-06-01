@@ -2600,6 +2600,7 @@ dependencies = [
  "serde-value",
  "serde_json",
  "thiserror",
+ "tokio",
  "user-facing-errors",
  "uuid",
 ]

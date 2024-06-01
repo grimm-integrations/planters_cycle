@@ -6,6 +6,10 @@ directory = "vendor"
 
 [build]
 incremental = true
+rustflags = ["-C", "symbol-mangling-version=v0"]
+
+[rust]
+debuginfo-level = 1
 
 [alias]
 prisma = "run -p prisma-cli"
