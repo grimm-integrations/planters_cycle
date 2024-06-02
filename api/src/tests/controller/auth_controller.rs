@@ -36,6 +36,7 @@ mod tests {
             display_name: "dev".to_owned(),
             email: "dev@dev.com".to_owned(),
             password: "dev".to_owned(),
+            roles: Some(vec![]),
         };
 
         let url = format!("{}/register", PATH);
@@ -51,7 +52,7 @@ mod tests {
     #[actix_rt::test]
     async fn test_login_user() {
         todo!("Fix the login test");
-
+        #[allow(unreachable_code)]
         let app_data = init_app_state().await;
         let app =
             test::init_service(init_app_entry().app_data(app_data).configure(get_config)).await;
