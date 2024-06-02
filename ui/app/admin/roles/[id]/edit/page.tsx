@@ -2,13 +2,11 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-import { Metadata } from 'next';
-
+import EditRoleForm from '@/app/ui/admin/roles/edit-form';
 import BreadCrumb from '@/components/bread-crumb';
-
 import { fetchRole } from '@/lib/data';
 
-import EditRoleForm from '@/app/ui/admin/roles/edit-form';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Edit Role',
@@ -26,7 +24,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           <BreadCrumb />
         </header>
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-          <EditRoleForm role={role} id={id} />
+          <EditRoleForm id={id} role={role} />
         </main>
       </div>
     </div>

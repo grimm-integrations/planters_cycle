@@ -1,14 +1,12 @@
 /*
  * Copyright (c) Johannes Grimm 2024.
  */
+import EditUserForm from '@/app/ui/admin/user/edit-form';
 import { auth } from '@/auth';
-import { Metadata } from 'next';
-
 import BreadCrumb from '@/components/bread-crumb';
-
 import { fetchRoles, fetchUser } from '@/lib/data';
 
-import EditUserForm from '@/app/ui/admin/user/edit-form';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Edit User',
@@ -31,11 +29,11 @@ export default async function Page({ params }: { params: { id: string } }) {
         <main className='grid flex-1 place-items-stretch items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
           <div className='size-full place-self-center lg:max-w-2xl'>
             <EditUserForm
-              user={user}
+              edit={true}
               id={id}
               roles={roles}
               sessionUserId={session.user.id}
-              edit={true}
+              user={user}
             />
           </div>
         </main>

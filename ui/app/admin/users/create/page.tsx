@@ -1,15 +1,13 @@
 /*
  * Copyright (c) Johannes Grimm 2024.
  */
+import EditUserForm from '@/app/ui/admin/user/edit-form';
 import { auth } from '@/auth';
-import { User, UsersInRoles } from '@prisma/client';
-import { Metadata } from 'next';
-
 import BreadCrumb from '@/components/bread-crumb';
-
 import { fetchRoles } from '@/lib/data';
 
-import EditUserForm from '@/app/ui/admin/user/edit-form';
+import type { User, UsersInRoles } from '@prisma/client';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Create User',
@@ -21,7 +19,7 @@ export default async function Page() {
   const session = await auth();
   if (!session || !session.user) throw new Error('Not authenticated');
 
-  const user: User & { roles: UsersInRoles[] } = {
+  const user: { roles: UsersInRoles[] } & User = {
     displayName: '',
     email: '',
     password: undefined,
@@ -37,11 +35,11 @@ export default async function Page() {
         <main className='grid flex-1 place-items-stretch items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
           <div className='size-full place-self-center lg:max-w-2xl'>
             <EditUserForm
-              user={user}
+              edit={false}
               id=''
               roles={roles}
               sessionUserId={session.user.id}
-              edit={false}
+              user={user}
             />
           </div>
         </main>

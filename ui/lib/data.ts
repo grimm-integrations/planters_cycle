@@ -3,9 +3,10 @@
  */
 
 import { auth } from '@/auth';
-import { CompleteUser } from '@/prisma/zod';
-import { Role, User, UsersInRoles } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
+
+import type { CompleteUser } from '@/prisma/zod';
+import type { Role, User, UsersInRoles } from '@prisma/client';
 
 export async function fetchProfile() {
   noStore();
@@ -15,10 +16,10 @@ export async function fetchProfile() {
 
   try {
     const data = await fetch('http://127.0.0.1:8004/api/auth/profile', {
-      method: 'GET',
       headers: {
         Cookie: session.user.auth,
       },
+      method: 'GET',
     });
     return data.json();
   } catch (error) {
@@ -35,16 +36,16 @@ export async function fetchUsers(query: string): Promise<CompleteUser[]> {
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/users?query=${query}`, {
-      method: 'GET',
       headers: {
         Cookie: session.user.auth,
       },
+      method: 'GET',
     })
       .then((res) => {
         return res.json();
       })
       .then((data) => {
-        let users = data as CompleteUser[];
+        const users = data as CompleteUser[];
         return users;
       });
     return data;
@@ -56,7 +57,7 @@ export async function fetchUsers(query: string): Promise<CompleteUser[]> {
 
 export async function fetchUser(
   id: string
-): Promise<User & { roles: UsersInRoles[] }> {
+): Promise<{ roles: UsersInRoles[] } & User> {
   noStore();
 
   const session = await auth();
@@ -64,16 +65,16 @@ export async function fetchUser(
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/users/${id}`, {
-      method: 'GET',
       headers: {
         Cookie: session.user.auth,
       },
+      method: 'GET',
     })
       .then((res) => {
         return res.json();
       })
       .then((data) => {
-        let user = data as User & { roles: UsersInRoles[] };
+        const user = data as { roles: UsersInRoles[] } & User;
         return user;
       });
 
@@ -92,16 +93,16 @@ export async function fetchRoles(query: string): Promise<Role[]> {
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/roles?query=${query}`, {
-      method: 'GET',
       headers: {
         Cookie: session.user.auth,
       },
+      method: 'GET',
     })
       .then((res) => {
         return res.json();
       })
       .then((data) => {
-        let roles = data as Role[];
+        const roles = data as Role[];
         return roles;
       });
     return data;
@@ -119,16 +120,16 @@ export async function fetchRole(id: string): Promise<Role> {
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/roles/${id}`, {
-      method: 'GET',
       headers: {
         Cookie: session.user.auth,
       },
+      method: 'GET',
     })
       .then((res) => {
         return res.json();
       })
       .then((data) => {
-        let role = data as Role;
+        const role = data as Role;
         return role;
       });
 
@@ -149,10 +150,10 @@ export async function fetchTotalUserPages(query: string): Promise<number> {
     const data = await fetch(
       `http://127.0.0.1:8004/api/users/count?query=${query}`,
       {
-        method: 'POST',
         headers: {
           Cookie: session.user.auth,
         },
+        method: 'POST',
       }
     );
     const nums = await data.text();

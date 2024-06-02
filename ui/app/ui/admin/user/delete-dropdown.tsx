@@ -4,10 +4,6 @@
 
 'use client';
 
-import { MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,9 +23,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
-
 import { deleteUser, redirectToUsers } from '@/lib/actions';
-import { CompleteUser } from '@/prisma/zod';
+import { MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+
+import type { CompleteUser } from '@/prisma/zod';
 
 export default function DeleteDropdown({ user }: { user: CompleteUser }) {
   const [open, setOpen] = useState(false);
@@ -40,15 +39,15 @@ export default function DeleteDropdown({ user }: { user: CompleteUser }) {
     try {
       await deleteUser(user.id);
       toast({
-        title: 'Success 🎉',
         description: `Deleted user ${user.displayName}.`,
+        title: 'Success 🎉',
       });
       setOpen(false);
       await redirectToUsers();
     } catch (error) {
       toast({
-        title: 'Uh oh! Something went wrong.',
         description: `There was a problem with your request.\n${error}`,
+        title: 'Uh oh! Something went wrong.',
       });
     }
   }
@@ -58,7 +57,7 @@ export default function DeleteDropdown({ user }: { user: CompleteUser }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button aria-haspopup='true' size='icon' variant='ghost'>
-            <MoreHorizontal className='h-4 w-4' />
+            <MoreHorizontal className='size-4' />
             <span className='sr-only'>Toggle menu</span>
           </Button>
         </DropdownMenuTrigger>

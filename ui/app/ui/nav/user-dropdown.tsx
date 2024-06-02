@@ -3,8 +3,6 @@
  */
 
 import { signOut } from '@/auth';
-import { CircleUser } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { CircleUser } from 'lucide-react';
 
 import AdminButton from './admin-button';
 
@@ -21,8 +20,8 @@ export default function UserDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='secondary' size='icon' className='rounded-full'>
-          <CircleUser className='h-5 w-5' />
+        <Button className='rounded-full' size='icon' variant='secondary'>
+          <CircleUser className='size-5' />
           <span className='sr-only'>Toggle user menu</span>
         </Button>
       </DropdownMenuTrigger>

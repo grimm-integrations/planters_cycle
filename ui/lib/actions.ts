@@ -40,8 +40,8 @@ export async function authenticate(formData: z.infer<typeof loginSchema>) {
 }
 
 const editUserSchema = UserModel.partial({
-  id: true,
   createdAt: true,
+  id: true,
   lastLogin: true,
   password: true,
 });
@@ -58,12 +58,12 @@ export async function editUser(
   const jsonObject = JSON.stringify(user);
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/users/${id}`, {
-      method: 'POST',
-      headers: {
-        Cookie: session.user.auth,
-        'Content-Type': 'application/json',
-      },
       body: jsonObject,
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: session.user.auth,
+      },
+      method: 'POST',
     });
   } catch (error) {
     console.error('Fetch ERROR:', error);
@@ -83,12 +83,12 @@ export async function createUser(user: z.infer<typeof editUserSchema>) {
   const jsonObject = JSON.stringify(user, null, 2);
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/users`, {
-      method: 'POST',
-      headers: {
-        Cookie: session.user.auth,
-        'Content-Type': 'application/json',
-      },
       body: jsonObject,
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: session.user.auth,
+      },
+      method: 'POST',
     });
   } catch (error) {
     console.error('Fetch ERROR:', error);
@@ -112,12 +112,12 @@ export async function editRole(
   const jsonObject = JSON.stringify(role);
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/roles/${id}`, {
-      method: 'POST',
-      headers: {
-        Cookie: session.user.auth,
-        'Content-Type': 'application/json',
-      },
       body: jsonObject,
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: session.user.auth,
+      },
+      method: 'POST',
     });
   } catch (error) {
     console.error('Fetch ERROR:', error);
@@ -134,12 +134,12 @@ export async function createRole(role: z.infer<typeof editRoleSchema>) {
   const jsonObject = JSON.stringify(role);
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/roles`, {
-      method: 'POST',
-      headers: {
-        Cookie: session.user.auth,
-        'Content-Type': 'application/json',
-      },
       body: jsonObject,
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: session.user.auth,
+      },
+      method: 'POST',
     });
   } catch (error) {
     console.error('Fetch ERROR:', error);
@@ -155,10 +155,10 @@ export async function deleteRole(id: number) {
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/roles/${id}`, {
-      method: 'DELETE',
       headers: {
         Cookie: session.user.auth,
       },
+      method: 'DELETE',
     });
   } catch (error) {
     console.error('Fetch ERROR:', error);
@@ -179,10 +179,10 @@ export async function deleteUser(id: string) {
 
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/users/${id}`, {
-      method: 'DELETE',
       headers: {
         Cookie: session.user.auth,
       },
+      method: 'DELETE',
     });
   } catch (error) {
     console.error('Fetch ERROR:', error);

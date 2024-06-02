@@ -4,29 +4,6 @@
 
 'use client';
 
-import {
-  RankingInfo,
-  compareItems,
-  rankItem,
-} from '@tanstack/match-sorter-utils';
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  FilterFn,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { ListFilter, PlusCircle, Search } from 'lucide-react';
-import Link from 'next/link';
-import * as React from 'react';
-import { useDebouncedCallback } from 'use-debounce';
-
 import BreadCrumb from '@/components/bread-crumb';
 import { Button } from '@/components/ui/button';
 import {
@@ -62,14 +39,35 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
 import { cn } from '@/lib/utils';
+import { compareItems, rankItem } from '@tanstack/match-sorter-utils';
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { ListFilter, PlusCircle, Search } from 'lucide-react';
+import Link from 'next/link';
+import * as React from 'react';
+import { useDebouncedCallback } from 'use-debounce';
+
+import type { RankingInfo } from '@tanstack/match-sorter-utils';
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  FilterFn,
+  SortingState,
+  VisibilityState,
+} from '@tanstack/react-table';
 
 declare module '@tanstack/table-core' {
   interface ColumnMeta<TData, TValue> {
-    headerClassName?: string;
     cellClassName?: string;
     className?: string;
+    headerClassName?: string;
   }
 }
 
@@ -98,21 +96,21 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 };
 
 interface ListDataProps<TData, TValue> {
-  name: string;
-  description: string;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  description: string;
+  name: string;
   searchParams?: {
-    query?: string;
     page?: string;
+    query?: string;
   };
 }
 
 export default function ListData<TData, TValue>({
-  name,
-  description,
   columns,
   data,
+  description,
+  name,
   searchParams,
 }: ListDataProps<TData, TValue>) {
   const query = searchParams?.query || '';
@@ -134,28 +132,28 @@ export default function ListData<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
     columns,
+    data,
     filterFns: {
       fuzzy: fuzzyFilter, //define as a filter function that can be used in column definitions
     },
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: 'fuzzy', //apply fuzzy filter to the global filter (most common use case for fuzzy filter)
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    globalFilterFn: 'fuzzy', //apply fuzzy filter to the global filter (most common use case for fuzzy filter)
+    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
+    onSortingChange: setSorting,
     state: {
-      sorting,
       columnFilters,
-      globalFilter,
       columnVisibility,
-      rowSelection,
+      globalFilter,
       pagination,
+      rowSelection,
+      sorting,
     },
   });
 
@@ -169,12 +167,12 @@ export default function ListData<TData, TValue>({
         <header className='sticky top-0 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6'>
           <BreadCrumb />
           <div className='relative ml-auto flex-1 md:grow-0'>
-            <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
+            <Search className='absolute left-2.5 top-2.5 size-4 text-muted-foreground' />
             <Input
-              type='search'
-              placeholder='Search...'
               className='w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]'
               onChange={(e) => handleSearch(e.target.value)}
+              placeholder='Search...'
+              type='search'
               value={globalFilter ?? ''}
             />
           </div>
@@ -182,8 +180,8 @@ export default function ListData<TData, TValue>({
             <div className='ml-auto flex items-center gap-2'>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='outline' size='sm' className='h-8 gap-1'>
-                    <ListFilter className='h-3.5 w-3.5' />
+                  <Button className='h-8 gap-1' size='sm' variant='outline'>
+                    <ListFilter className='size-3.5' />
                     <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
                       Columns
                     </span>
@@ -196,9 +194,9 @@ export default function ListData<TData, TValue>({
                     .map((column) => {
                       return (
                         <DropdownMenuCheckboxItem
-                          key={column.id}
-                          className='capitalize'
                           checked={column.getIsVisible()}
+                          className='capitalize'
+                          key={column.id}
                           onCheckedChange={(value) =>
                             column.toggleVisibility(!!value)
                           }
@@ -212,8 +210,8 @@ export default function ListData<TData, TValue>({
               </DropdownMenu>
 
               <Link href='/admin/users/create'>
-                <Button size='sm' className='h-8 gap-1'>
-                  <PlusCircle className='h-3.5 w-3.5' />
+                <Button className='h-8 gap-1' size='sm'>
+                  <PlusCircle className='size-3.5' />
                   <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
                     Add {name}
                   </span>
@@ -237,12 +235,12 @@ export default function ListData<TData, TValue>({
                         {headerGroup.headers.map((header) => {
                           return (
                             <TableHead
-                              key={header.id}
                               className={cn(
                                 header.column.columnDef.meta?.headerClassName ??
                                   '',
                                 header.column.columnDef.meta?.className ?? ''
                               )}
+                              key={header.id}
                             >
                               {header.isPlaceholder
                                 ? null
@@ -260,16 +258,16 @@ export default function ListData<TData, TValue>({
                     {table.getRowModel().rows?.length ? (
                       table.getRowModel().rows.map((row) => (
                         <TableRow
-                          key={row.id}
                           data-state={row.getIsSelected() && 'selected'}
+                          key={row.id}
                         >
                           {row.getVisibleCells().map((cell) => (
                             <TableCell
-                              key={cell.id}
                               className={cn(
                                 cell.column.columnDef.meta?.cellClassName ?? '',
                                 cell.column.columnDef.meta?.className ?? ''
                               )}
+                              key={cell.id}
                             >
                               {flexRender(
                                 cell.column.columnDef.cell,
@@ -282,8 +280,8 @@ export default function ListData<TData, TValue>({
                     ) : (
                       <TableRow>
                         <TableCell
-                          colSpan={columns.length}
                           className='h-24 text-center'
+                          colSpan={columns.length}
                         >
                           No results.
                         </TableCell>
@@ -302,14 +300,14 @@ export default function ListData<TData, TValue>({
                       <PaginationContent>
                         <PaginationItem>
                           <PaginationFirst
-                            href=''
-                            onClick={() => table.firstPage()}
+                            aria-disabled={!table.getCanPreviousPage()}
                             className={
                               !table.getCanPreviousPage()
                                 ? 'pointer-events-none'
                                 : ''
                             }
-                            aria-disabled={!table.getCanPreviousPage()}
+                            href=''
+                            onClick={() => table.firstPage()}
                             tabIndex={
                               !table.getCanPreviousPage() ? -1 : undefined
                             }
@@ -317,14 +315,14 @@ export default function ListData<TData, TValue>({
                         </PaginationItem>
                         <PaginationItem>
                           <PaginationPrevious
-                            href=''
-                            onClick={() => table.previousPage()}
+                            aria-disabled={!table.getCanPreviousPage()}
                             className={
                               !table.getCanPreviousPage()
                                 ? 'pointer-events-none'
                                 : ''
                             }
-                            aria-disabled={!table.getCanPreviousPage()}
+                            href=''
+                            onClick={() => table.previousPage()}
                             tabIndex={
                               !table.getCanPreviousPage() ? -1 : undefined
                             }
@@ -332,9 +330,9 @@ export default function ListData<TData, TValue>({
                         </PaginationItem>
                         <PaginationItem>
                           <PaginationLink
-                            href=''
-                            className={'pointer-events-none'}
                             aria-disabled={true}
+                            className={'pointer-events-none'}
+                            href=''
                             tabIndex={-1}
                           >
                             {table.getState().pagination.pageIndex + 1}
@@ -342,27 +340,27 @@ export default function ListData<TData, TValue>({
                         </PaginationItem>
                         <PaginationItem>
                           <PaginationNext
-                            href=''
-                            onClick={() => table.nextPage()}
+                            aria-disabled={!table.getCanNextPage()}
                             className={
                               !table.getCanNextPage()
                                 ? 'pointer-events-none'
                                 : ''
                             }
-                            aria-disabled={!table.getCanNextPage()}
+                            href=''
+                            onClick={() => table.nextPage()}
                             tabIndex={!table.getCanNextPage() ? -1 : undefined}
                           />
                         </PaginationItem>
                         <PaginationItem>
                           <PaginationLast
-                            href=''
-                            onClick={() => table.lastPage()}
+                            aria-disabled={!table.getCanNextPage()}
                             className={
                               !table.getCanNextPage()
                                 ? 'pointer-events-none'
                                 : ''
                             }
-                            aria-disabled={!table.getCanNextPage()}
+                            href=''
+                            onClick={() => table.lastPage()}
                             tabIndex={!table.getCanNextPage() ? -1 : undefined}
                           />
                         </PaginationItem>

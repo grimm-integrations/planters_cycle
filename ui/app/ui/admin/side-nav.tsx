@@ -4,11 +4,6 @@
 
 'use client';
 
-import clsx from 'clsx';
-import { KeyRound, LifeBuoy, Settings, Users } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -16,15 +11,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import clsx from 'clsx';
+import { KeyRound, LifeBuoy, Settings, Users } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const links = [
-  { name: 'Settings', href: '/admin', icon: Settings },
-  { name: 'Users', href: '/admin/users', icon: Users },
-  { name: 'Roles', href: '/admin/roles', icon: KeyRound },
+  { href: '/admin', icon: Settings, name: 'Settings' },
+  { href: '/admin/users', icon: Users, name: 'Users' },
+  { href: '/admin/roles', icon: KeyRound, name: 'Roles' },
 ];
 
 const bottom_links = [
-  { name: 'Help', href: 'https://r4p1d.xyz', icon: LifeBuoy },
+  { href: 'https://r4p1d.xyz', icon: LifeBuoy, name: 'Help' },
 ];
 
 export default function SideNav() {
@@ -40,12 +39,12 @@ export default function SideNav() {
                 <TooltipTrigger asChild>
                   <Link href={link.href}>
                     <Button
-                      variant='ghost'
-                      size='icon'
+                      aria-label='Playground'
                       className={clsx('rounded-lg', {
                         'bg-muted': pathname === link.href,
                       })}
-                      aria-label='Playground'
+                      size='icon'
+                      variant='ghost'
                     >
                       <LinkIcon className='size-5' />
                     </Button>
@@ -66,12 +65,12 @@ export default function SideNav() {
                 <TooltipTrigger asChild>
                   <Link href={link.href}>
                     <Button
-                      variant='ghost'
-                      size='icon'
+                      aria-label='Playground'
                       className={clsx('rounded-lg', {
                         'bg-muted': pathname === link.href,
                       })}
-                      aria-label='Playground'
+                      size='icon'
+                      variant='ghost'
                     >
                       <LinkIcon className='size-5' />
                     </Button>

@@ -4,11 +4,6 @@
 
 'use client';
 
-import { Role } from '@prisma/client';
-import { MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,8 +23,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
-
 import { deleteRole, redirectToRoles } from '@/lib/actions';
+import { MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+
+import type { Role } from '@prisma/client';
 
 export default function ActionDropdown({ role }: { role: Role }) {
   const [open, setOpen] = useState(false);
@@ -40,14 +39,14 @@ export default function ActionDropdown({ role }: { role: Role }) {
     try {
       await deleteRole(role.id);
       toast({
-        title: 'Success 🎉',
         description: `Deleted role ${role.name}.`,
+        title: 'Success 🎉',
       });
       await redirectToRoles();
     } catch (error) {
       toast({
-        title: 'Uh oh! Something went wrong.',
         description: `There was a problem with your request.\n${error}`,
+        title: 'Uh oh! Something went wrong.',
       });
     }
   }
@@ -57,7 +56,7 @@ export default function ActionDropdown({ role }: { role: Role }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button aria-haspopup='true' size='icon' variant='ghost'>
-            <MoreHorizontal className='h-4 w-4' />
+            <MoreHorizontal className='size-4' />
             <span className='sr-only'>Toggle menu</span>
           </Button>
         </DropdownMenuTrigger>

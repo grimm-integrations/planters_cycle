@@ -2,24 +2,23 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
-
 import { cn } from '@/lib/utils';
+import { Inter } from 'next/font/google';
+
+import type { Metadata } from 'next';
 
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: {
-    template: '%s | Planters Cycle',
-    default: 'Planters Cycle',
-  },
   description: 'The next generation of plant management software.',
+  title: {
+    default: 'Planters Cycle',
+    template: '%s | Planters Cycle',
+  },
 };
 
 export default function RootLayout({
@@ -38,8 +37,8 @@ export default function RootLayout({
         <ThemeProvider
           attribute='class'
           defaultTheme='system'
-          enableSystem
           disableTransitionOnChange
+          enableSystem
         >
           {children}
         </ThemeProvider>

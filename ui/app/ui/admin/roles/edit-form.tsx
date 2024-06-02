@@ -4,12 +4,6 @@
 
 'use client';
 
-import { RoleModel } from '@/prisma/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Role } from '@prisma/client';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -30,8 +24,13 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-
 import { editRole, redirectToRoles } from '@/lib/actions';
+import { RoleModel } from '@/prisma/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+
+import type { Role } from '@prisma/client';
+import type { z } from 'zod';
 
 const editRoleSchema = RoleModel.partial({
   id: true,
@@ -39,10 +38,10 @@ const editRoleSchema = RoleModel.partial({
 
 export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
   const form = useForm<z.infer<typeof editRoleSchema>>({
-    resolver: zodResolver(editRoleSchema),
     defaultValues: {
       name: role.name,
     },
+    resolver: zodResolver(editRoleSchema),
   });
   const { toast } = useToast();
 
@@ -50,14 +49,14 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
     try {
       await editRole(id, values);
       toast({
-        title: 'Succsess 🎉',
         description: `Edited role ${values.name}.`,
+        title: 'Succsess 🎉',
       });
       await redirectToRoles();
     } catch (error) {
       toast({
-        title: 'Uh oh! Something went wrong.',
         description: `There was a problem with your request.\n${error}`,
+        title: 'Uh oh! Something went wrong.',
       });
     }
   }
@@ -65,7 +64,7 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
           <Card>
             <CardHeader>
               <CardTitle>Edit Role</CardTitle>
@@ -92,7 +91,7 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type='submit' className='w-full'>
+              <Button className='w-full' type='submit'>
                 Save
               </Button>
             </CardFooter>

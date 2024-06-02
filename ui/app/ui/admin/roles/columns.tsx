@@ -4,13 +4,13 @@
 
 'use client';
 
-import { Role } from '@prisma/client';
-import { ColumnDef } from '@tanstack/react-table';
+import { Button } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-
 import ActionDropdown from './action-dropdown';
+
+import type { Role } from '@prisma/client';
+import type { ColumnDef } from '@tanstack/react-table';
 
 export const columns: ColumnDef<Role>[] = [
   {
@@ -18,20 +18,20 @@ export const columns: ColumnDef<Role>[] = [
     header: ({ column }) => {
       return (
         <Button
-          variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant='ghost'
         >
           Name
-          <ArrowUpDown className='ml-2 h-4 w-4' />
+          <ArrowUpDown className='ml-2 size-4' />
         </Button>
       );
     },
   },
   {
-    id: 'actions',
     cell: ({ row }) => {
       const role = row.original;
       return <ActionDropdown role={role} />;
     },
+    id: 'actions',
   },
 ];

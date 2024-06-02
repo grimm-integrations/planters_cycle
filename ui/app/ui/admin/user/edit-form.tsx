@@ -3,14 +3,6 @@
  */
 'use client';
 
-import { UserModel, UsersInRolesModel } from '@/prisma/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Role, User, UsersInRoles } from '@prisma/client';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
 import SubmitButton from '@/components/submit-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,13 +37,20 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useToast } from '@/components/ui/use-toast';
-
 import { createUser, editUser, redirectToUsers } from '@/lib/actions';
 import { cn } from '@/lib/utils';
+import { UserModel, UsersInRolesModel } from '@/prisma/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import type { Role, User, UsersInRoles } from '@prisma/client';
 
 const editUserSchema = UserModel.partial({
-  id: true,
   createdAt: true,
+  id: true,
   lastLogin: true,
   password: true,
 });
@@ -67,34 +66,34 @@ const relatedUserModel: z.ZodSchema<CompleteUser> = z.lazy(() =>
 );
 
 export default function EditUserForm({
+  edit,
   id,
-  user,
   roles,
   sessionUserId,
-  edit,
+  user,
 }: {
+  edit: boolean;
   id: string;
-  user: User & { roles: UsersInRoles[] };
   roles: Role[];
   sessionUserId: string;
-  edit: boolean;
+  user: { roles: UsersInRoles[] } & User;
 }) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof relatedUserModel>>({
-    resolver: zodResolver(relatedUserModel),
     defaultValues: {
       displayName: user.displayName,
       email: user.email,
       roles: user.roles.map((role) => {
         return {
+          assignedAt: new Date(role.assignedAt),
+          assignedBy: role.assignedBy,
           roleId: role.roleId,
           userId: role.userId,
-          assignedBy: role.assignedBy,
-          assignedAt: new Date(role.assignedAt),
         };
       }),
     },
+    resolver: zodResolver(relatedUserModel),
   });
 
   async function onSubmit(values: z.infer<typeof relatedUserModel>) {
@@ -102,8 +101,8 @@ export default function EditUserForm({
     setIsSubmitting(true);
     values = {
       ...values,
-      id: user.id,
       createdAt: user.createdAt,
+      id: user.id,
       lastLogin: user.lastLogin,
     };
     if (values.password == undefined && edit) values.password = '';
@@ -112,21 +111,21 @@ export default function EditUserForm({
       if (edit) {
         await editUser(id, values);
         toast({
-          title: 'Success 🎉',
           description: `Updated user ${values.displayName}.`,
+          title: 'Success 🎉',
         });
       } else {
         await createUser(values);
         toast({
-          title: 'Success 🎉',
           description: `Created user ${values.displayName}.`,
+          title: 'Success 🎉',
         });
       }
       redirectToUsers();
     } catch (error) {
       toast({
-        title: 'Uh oh! Something went wrong.',
         description: `There was a problem with your request.\n${error}`,
+        title: 'Uh oh! Something went wrong.',
       });
       setIsSubmitting(false);
     }
@@ -139,10 +138,10 @@ export default function EditUserForm({
       return [
         ...formRoles,
         {
+          assignedAt: new Date(),
+          assignedBy: sessionUserId,
           roleId: role.id,
           userId: user.id,
-          assignedBy: sessionUserId,
-          assignedAt: new Date(),
         },
       ];
     } else {
@@ -162,7 +161,7 @@ export default function EditUserForm({
     return (
       <div className='flex w-full'>
         {formRoles.map((role) => {
-          let orgRole = roles.find((val) => val.id == role.roleId);
+          const orgRole = roles.find((val) => val.id == role.roleId);
           return (
             <div className='flex-initial p-0.5' key={role.roleId}>
               <Badge>{orgRole?.name}</Badge>
@@ -176,7 +175,7 @@ export default function EditUserForm({
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
           <Card>
             <CardHeader>
               <CardTitle>{edit ? 'Edit' : 'Create'} User</CardTitle>
@@ -232,8 +231,8 @@ export default function EditUserForm({
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
-                          type='password'
                           placeholder='********'
+                          type='password'
                           {...field}
                         />
                       </FormControl>
@@ -254,22 +253,22 @@ export default function EditUserForm({
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-                              variant='outline'
-                              role='combobox'
                               className={cn(
                                 ' justify-between',
                                 !field.value && 'text-muted-foreground'
                               )}
+                              role='combobox'
+                              variant='outline'
                             >
                               <DisplayRoles />
-                              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+                              <ChevronsUpDown className='ml-2 size-4 shrink-0 opacity-50' />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
                         <PopoverContent
+                          align='start'
                           className='p-0'
                           side='bottom'
-                          align='start'
                         >
                           <Command>
                             <CommandInput placeholder='Search role...' />
@@ -278,11 +277,11 @@ export default function EditUserForm({
                               {roles.map((role) => {
                                 return (
                                   <CommandItem
-                                    value={role.name}
                                     key={role.name}
                                     onSelect={() => {
                                       form.setValue('roles', toggleRole(role));
                                     }}
+                                    value={role.name}
                                   >
                                     <Check
                                       className={cn(
@@ -311,8 +310,8 @@ export default function EditUserForm({
             </CardContent>
             <CardFooter>
               <SubmitButton
-                text={edit ? 'Save' : 'Create'}
                 isSubmitting={isSubmitting}
+                text={edit ? 'Save' : 'Create'}
               />
             </CardFooter>
           </Card>

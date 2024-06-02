@@ -3,12 +3,11 @@
  */
 
 import { auth } from '@/auth';
-import Link from 'next/link';
-
 import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
 
 export default async function AdminButton() {
   const session = await auth();
@@ -20,8 +19,8 @@ export default async function AdminButton() {
     <>
       <DropdownMenuSeparator />
       <Link
-        href='/admin'
         className='text-foreground transition-colors hover:text-foreground'
+        href='/admin'
       >
         <DropdownMenuItem>Admin</DropdownMenuItem>
       </Link>

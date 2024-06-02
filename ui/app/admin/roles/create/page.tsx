@@ -2,11 +2,10 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-import { Metadata } from 'next';
-
+import CreateRoleForm from '@/app/ui/admin/roles/create-form';
 import BreadCrumb from '@/components/bread-crumb';
 
-import CreateRoleForm from '@/app/ui/admin/roles/create-form';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Create Role',

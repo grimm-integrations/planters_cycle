@@ -2,9 +2,6 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-import { Metadata } from 'next';
-import Link from 'next/link';
-
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -16,6 +13,9 @@ import {
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -32,7 +32,7 @@ export default async function Page() {
           className='grid gap-4 text-sm text-muted-foreground'
           x-chunk='dashboard-04-chunk-0'
         >
-          <Link href='#' className='font-semibold text-primary'>
+          <Link className='font-semibold text-primary' href='#'>
             General
           </Link>
           <Link href='#'>Security</Link>
@@ -69,14 +69,14 @@ export default async function Page() {
             <CardContent>
               <form className='flex flex-col gap-4'>
                 <Input
-                  placeholder='Project Name'
                   defaultValue='/content/plugins'
+                  placeholder='Project Name'
                 />
                 <div className='flex items-center space-x-2'>
-                  <Checkbox id='include' defaultChecked />
+                  <Checkbox defaultChecked id='include' />
                   <label
-                    htmlFor='include'
                     className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                    htmlFor='include'
                   >
                     Allow administrators to change the directory.
                   </label>

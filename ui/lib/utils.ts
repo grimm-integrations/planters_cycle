@@ -9,10 +9,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const formatDateToLocal = (
-  date?: Date | null,
-  locale: string = 'en-US'
-) => {
+export const formatDateToLocal = (date?: Date | null, locale = 'en-US') => {
   if (!date || date == undefined) return '';
   date = new Date(date.toLocaleString());
   const options: Intl.DateTimeFormatOptions = {

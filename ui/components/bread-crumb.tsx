@@ -27,8 +27,8 @@ export default function BreadCrumb() {
       <Breadcrumb className=''>
         <BreadcrumbList>
           {pathNames.map((link, index) => {
-            let href = `/${pathNames.slice(0, index + 1).join('/')}`;
-            let itemLink = link[0].toUpperCase() + link.slice(1, link.length);
+            const href = `/${pathNames.slice(0, index + 1).join('/')}`;
+            const itemLink = link[0].toUpperCase() + link.slice(1, link.length);
             if (pathNames.length !== index + 1)
               return (
                 <React.Fragment key={index}>

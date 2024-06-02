@@ -1,23 +1,24 @@
 import { Loader2 } from 'lucide-react';
+
 import { Button } from './ui/button';
 
 export default function SubmitButton({
-  text,
   isSubmitting,
+  text,
 }: {
-  text: string;
   isSubmitting: boolean;
+  text: string;
 }) {
   if (isSubmitting)
     return (
-      <Button className='w-full' aria-disabled={true} disabled>
-        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+      <Button aria-disabled={true} className='w-full' disabled>
+        <Loader2 className='mr-2 size-4 animate-spin' />
         Please wait
       </Button>
     );
 
   return (
-    <Button type='submit' className='w-full'>
+    <Button className='w-full' type='submit'>
       {text}
     </Button>
   );

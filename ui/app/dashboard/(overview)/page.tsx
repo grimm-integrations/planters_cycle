@@ -2,16 +2,6 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-import {
-  Activity,
-  ArrowUpRight,
-  CreditCard,
-  DollarSign,
-  Users,
-} from 'lucide-react';
-import { Metadata } from 'next';
-import Link from 'next/link';
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,6 +20,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Activity,
+  ArrowUpRight,
+  CreditCard,
+  DollarSign,
+  Users,
+} from 'lucide-react';
+import Link from 'next/link';
+
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -42,7 +42,7 @@ export default async function Page() {
         <Card x-chunk='dashboard-01-chunk-0'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Total Revenue</CardTitle>
-            <DollarSign className='h-4 w-4 text-muted-foreground' />
+            <DollarSign className='size-4 text-muted-foreground' />
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold'>$45,231.89</div>
@@ -54,7 +54,7 @@ export default async function Page() {
         <Card x-chunk='dashboard-01-chunk-1'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Subscriptions</CardTitle>
-            <Users className='h-4 w-4 text-muted-foreground' />
+            <Users className='size-4 text-muted-foreground' />
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold'>+2350</div>
@@ -66,7 +66,7 @@ export default async function Page() {
         <Card x-chunk='dashboard-01-chunk-2'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Sales</CardTitle>
-            <CreditCard className='h-4 w-4 text-muted-foreground' />
+            <CreditCard className='size-4 text-muted-foreground' />
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold'>+12,234</div>
@@ -78,7 +78,7 @@ export default async function Page() {
         <Card x-chunk='dashboard-01-chunk-3'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Active Now</CardTitle>
-            <Activity className='h-4 w-4 text-muted-foreground' />
+            <Activity className='size-4 text-muted-foreground' />
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold'>+573</div>
@@ -97,10 +97,10 @@ export default async function Page() {
                 Recent transactions from your store.
               </CardDescription>
             </div>
-            <Button asChild size='sm' className='ml-auto gap-1'>
+            <Button asChild className='ml-auto gap-1' size='sm'>
               <Link href='#'>
                 View All
-                <ArrowUpRight className='h-4 w-4' />
+                <ArrowUpRight className='size-4' />
               </Link>
             </Button>
           </CardHeader>
@@ -222,8 +222,8 @@ export default async function Page() {
           </CardHeader>
           <CardContent className='grid gap-8'>
             <div className='flex items-center gap-4'>
-              <Avatar className='hidden h-9 w-9 sm:flex'>
-                <AvatarImage src='/avatars/01.png' alt='Avatar' />
+              <Avatar className='hidden size-9 sm:flex'>
+                <AvatarImage alt='Avatar' src='/avatars/01.png' />
                 <AvatarFallback>OM</AvatarFallback>
               </Avatar>
               <div className='grid gap-1'>
@@ -237,8 +237,8 @@ export default async function Page() {
               <div className='ml-auto font-medium'>+$1,999.00</div>
             </div>
             <div className='flex items-center gap-4'>
-              <Avatar className='hidden h-9 w-9 sm:flex'>
-                <AvatarImage src='/avatars/02.png' alt='Avatar' />
+              <Avatar className='hidden size-9 sm:flex'>
+                <AvatarImage alt='Avatar' src='/avatars/02.png' />
                 <AvatarFallback>JL</AvatarFallback>
               </Avatar>
               <div className='grid gap-1'>
@@ -250,8 +250,8 @@ export default async function Page() {
               <div className='ml-auto font-medium'>+$39.00</div>
             </div>
             <div className='flex items-center gap-4'>
-              <Avatar className='hidden h-9 w-9 sm:flex'>
-                <AvatarImage src='/avatars/03.png' alt='Avatar' />
+              <Avatar className='hidden size-9 sm:flex'>
+                <AvatarImage alt='Avatar' src='/avatars/03.png' />
                 <AvatarFallback>IN</AvatarFallback>
               </Avatar>
               <div className='grid gap-1'>
@@ -265,8 +265,8 @@ export default async function Page() {
               <div className='ml-auto font-medium'>+$299.00</div>
             </div>
             <div className='flex items-center gap-4'>
-              <Avatar className='hidden h-9 w-9 sm:flex'>
-                <AvatarImage src='/avatars/04.png' alt='Avatar' />
+              <Avatar className='hidden size-9 sm:flex'>
+                <AvatarImage alt='Avatar' src='/avatars/04.png' />
                 <AvatarFallback>WK</AvatarFallback>
               </Avatar>
               <div className='grid gap-1'>
@@ -276,8 +276,8 @@ export default async function Page() {
               <div className='ml-auto font-medium'>+$99.00</div>
             </div>
             <div className='flex items-center gap-4'>
-              <Avatar className='hidden h-9 w-9 sm:flex'>
-                <AvatarImage src='/avatars/05.png' alt='Avatar' />
+              <Avatar className='hidden size-9 sm:flex'>
+                <AvatarImage alt='Avatar' src='/avatars/05.png' />
                 <AvatarFallback>SD</AvatarFallback>
               </Avatar>
               <div className='grid gap-1'>

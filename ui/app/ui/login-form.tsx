@@ -4,10 +4,6 @@
 
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -27,8 +23,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
 import { authenticate } from '@/lib/actions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const formSchema = z.object({
   identifier: z.string().min(2, {
@@ -42,11 +40,11 @@ const formSchema = z.object({
 
 export function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
     defaultValues: {
       identifier: '',
       password: '',
     },
+    resolver: zodResolver(formSchema),
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -56,7 +54,7 @@ export function LoginForm() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
           <Card className='w-full max-w-sm'>
             <CardHeader>
               <CardTitle className='text-2xl'>Login</CardTitle>
@@ -92,8 +90,8 @@ export function LoginForm() {
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
-                          type='password'
                           placeholder='********'
+                          type='password'
                           {...field}
                         />
                       </FormControl>
@@ -107,7 +105,7 @@ export function LoginForm() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type='submit' className='w-full'>
+              <Button className='w-full' type='submit'>
                 Sign in
               </Button>
             </CardFooter>

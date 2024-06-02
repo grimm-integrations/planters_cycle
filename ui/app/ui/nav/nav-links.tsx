@@ -12,8 +12,8 @@ export default function NavLinks({
   links,
 }: {
   links: {
-    name: string;
     href: string;
+    name: string;
   }[];
 }) {
   const pathname = usePathname();
@@ -22,8 +22,6 @@ export default function NavLinks({
       {links.map((link) => {
         return (
           <Link
-            key={link.name}
-            href={link.href}
             className={clsx(
               'transition-colors hover:text-foreground',
               {
@@ -33,6 +31,8 @@ export default function NavLinks({
                 'text-muted-foreground': pathname !== link.href,
               }
             )}
+            href={link.href}
+            key={link.name}
           >
             {link.name}
           </Link>

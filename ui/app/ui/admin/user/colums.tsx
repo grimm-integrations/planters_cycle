@@ -3,17 +3,16 @@
  */
 'use client';
 
-import { CompleteUser } from '@/prisma/zod';
-import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown } from 'lucide-react';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
 import { formatDateToLocal } from '@/lib/utils';
+import { ArrowUpDown } from 'lucide-react';
+import Link from 'next/link';
 
 import DeleteDropdown from './delete-dropdown';
-import Link from 'next/link';
+
+import type { CompleteUser } from '@/prisma/zod';
+import type { ColumnDef } from '@tanstack/react-table';
 
 /*
  * Copyright (c) Johannes Grimm 2024.
@@ -25,11 +24,11 @@ export const columns: ColumnDef<CompleteUser>[] = [
     header: ({ column }) => {
       return (
         <Button
-          variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant='ghost'
         >
           Name
-          <ArrowUpDown className='ml-2 h-4 w-4' />
+          <ArrowUpDown className='ml-2 size-4' />
         </Button>
       );
     },
@@ -39,38 +38,37 @@ export const columns: ColumnDef<CompleteUser>[] = [
     header: ({ column }) => {
       return (
         <Button
-          variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant='ghost'
         >
           Email
-          <ArrowUpDown className='ml-2 h-4 w-4' />
+          <ArrowUpDown className='ml-2 size-4' />
         </Button>
       );
     },
   },
   {
     accessorKey: 'lastLogin',
+    cell: ({ row }) => {
+      return <div>{formatDateToLocal(row.original.lastLogin)}</div>;
+    },
     header: 'Last Login',
     meta: {
       className: 'hidden xl:table-cell',
     },
-    cell: ({ row }) => {
-      return <div>{formatDateToLocal(row.original.lastLogin)}</div>;
-    },
   },
   {
     accessorKey: 'createdAt',
+    cell: ({ row }) => {
+      return <div>{formatDateToLocal(row.original.createdAt)}</div>;
+    },
     header: 'Created at',
     meta: {
       className: 'hidden xl:table-cell',
     },
-    cell: ({ row }) => {
-      return <div>{formatDateToLocal(row.original.createdAt)}</div>;
-    },
   },
   {
     accessorKey: 'roles',
-    header: 'Roles',
     cell: ({ row }) => {
       const user = row.original;
       return (
@@ -89,12 +87,13 @@ export const columns: ColumnDef<CompleteUser>[] = [
         </>
       );
     },
+    header: 'Roles',
   },
   {
-    id: 'actions',
     cell: ({ row }) => {
       const user = row.original;
       return <DeleteDropdown user={user} />;
     },
+    id: 'actions',
   },
 ];
