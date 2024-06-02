@@ -25,4 +25,5 @@
     "overrideConfigFile": "./.eslintrc.json"
   },
   "editor.fontLigatures": true,
+  "terminal.integrated.fontFamily": "'FiraCode Nerd Font', monospace",
 }
