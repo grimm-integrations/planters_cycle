@@ -16,4 +16,13 @@
   "editor.quickSuggestions": {
     "strings": "on"
   },
+  "editor.fontFamily": "FiraCode Nerd Font",
+  "eslint.format.enable": true,
+  "eslint.workingDirectories": [
+    "./ui"
+  ],
+  "eslint.options": {
+    "overrideConfigFile": "./.eslintrc.json"
+  },
+  "editor.fontLigatures": true,
 }
