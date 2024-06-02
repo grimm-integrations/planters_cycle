@@ -36,5 +36,3 @@ pub mod auth {
         pub assigned_by: String,
     }
 }
-
-crate::prisma::role::partial_unchecked!(Role { name });

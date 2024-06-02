@@ -35,10 +35,14 @@ pub async fn login_user(
                 None
             }
         };
-        let hash = hash.unwrap();
-        Argon2::default()
-            .verify_password(login_request.password.as_bytes(), &hash)
-            .map_or(false, |_| true)
+        if hash.is_none() {
+            false
+        } else {
+            let hash = hash.unwrap();
+            Argon2::default()
+                .verify_password(login_request.password.as_bytes(), &hash)
+                .map_or(false, |_| true)
+        }
     });
 
     if !valid_password {
@@ -61,13 +65,13 @@ pub async fn register_user(
     let pw = &register_request.password;
     let pw = pw.as_bytes();
     let hashed_password = Argon2::default()
-        .hash_password(&pw, &salt)
+        .hash_password(pw, &salt)
         .unwrap()
         .to_string();
 
     let parsed_hash = PasswordHash::new(&hashed_password).unwrap();
     let verify_password = Argon2::default()
-        .verify_password(&pw, &parsed_hash)
+        .verify_password(pw, &parsed_hash)
         .map_or(false, |_| true);
 
     assert!(verify_password, "Password verification failed");
@@ -95,13 +99,13 @@ pub async fn change_password(
     let salt: SaltString = SaltString::generate(&mut OsRng);
     let pw = new_password.as_bytes();
     let hashed_password = Argon2::default()
-        .hash_password(&pw, &salt)
+        .hash_password(pw, &salt)
         .unwrap()
         .to_string();
 
     let parsed_hash = PasswordHash::new(&hashed_password).unwrap();
     let verify_password = Argon2::default()
-        .verify_password(&pw, &parsed_hash)
+        .verify_password(pw, &parsed_hash)
         .map_or(false, |_| true);
 
     assert!(verify_password, "Password verification failed");

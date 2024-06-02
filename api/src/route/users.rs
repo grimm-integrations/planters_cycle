@@ -5,10 +5,7 @@
 use crate::{
     model::dto::auth::RegisterRequest,
     prisma::{user, users_in_roles, PrismaClient},
-    service::{
-        authentication::register_user,
-        user::{create_new_user, edit_user_by_id},
-    },
+    service::user::{create_new_user, edit_user_by_id},
 };
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 use prisma_client_rust::or;
@@ -97,8 +94,8 @@ async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) ->
         .unwrap();
 
     match user {
-        None => return HttpResponse::NotFound().body("User not found"),
         Some(user) => HttpResponse::Ok().json(user),
+        None => HttpResponse::NotFound().body("User not found"),
     }
 }
 

@@ -47,12 +47,12 @@ pub async fn create_new_user(
     user: RegisterRequest,
     data: &web::Data<PrismaClient>,
 ) -> Result<user::Data, ErrorCode> {
-    let new_user = match register_user(&user, &data).await {
+    let new_user = match register_user(&user, data).await {
         Ok(u) => u,
         Err(e) => return Err(e),
     };
 
-    let user_roles = user.roles.unwrap_or(vec![]);
+    let user_roles = user.roles.unwrap_or_default();
 
     if !user_roles.is_empty() {
         for item in user_roles {
@@ -81,7 +81,7 @@ pub async fn create_new_user(
         .map_err(|_| ErrorCode::INTERNAL001)
     {
         Ok(u) => Ok(u.unwrap()),
-        Err(e) => return Err(e),
+        Err(e) => Err(e),
     }
 }
 
@@ -102,7 +102,7 @@ pub async fn edit_user_by_id(
         }
     }
 
-    let user_roles = user.roles.unwrap_or(vec![]);
+    let user_roles = user.roles.unwrap_or_default();
 
     if !user_roles.is_empty() {
         let org_user_roles = match data
