@@ -75,11 +75,13 @@ export const columns: ColumnDef<CompleteUser>[] = [
       const user = row.original;
       return (
         <>
-          <div className='w-full flex'>
+          <div className='flex w-full'>
             {user.roles.map((role) => {
               return (
                 <div className='flex-initial p-0.5' key={role.role.id}>
-                  <Link href={`/admin/roles/${role.roleId}/edit`}><Badge>{role.role.name}</Badge></Link>
+                  <Link href={`/admin/roles/${role.roleId}/edit`}>
+                    <Badge>{role.role.name}</Badge>
+                  </Link>
                 </div>
               );
             })}

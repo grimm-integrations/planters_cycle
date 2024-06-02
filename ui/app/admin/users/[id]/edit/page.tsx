@@ -28,8 +28,8 @@ export default async function Page({ params }: { params: { id: string } }) {
         <header className='sticky top-0 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6'>
           <BreadCrumb />
         </header>
-        <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 place-items-stretch'>
-          <div className='lg:max-w-2xl place-self-center size-full'>
+        <main className='grid flex-1 place-items-stretch items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
+          <div className='size-full place-self-center lg:max-w-2xl'>
             <EditUserForm
               user={user}
               id={id}

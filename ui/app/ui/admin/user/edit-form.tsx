@@ -115,13 +115,12 @@ export default function EditUserForm({
           title: 'Success 🎉',
           description: `Updated user ${values.displayName}.`,
         });
-      }
-      else {
+      } else {
         await createUser(values);
-            toast({
-                title: 'Success 🎉',
-                description: `Created user ${values.displayName}.`,
-            });
+        toast({
+          title: 'Success 🎉',
+          description: `Created user ${values.displayName}.`,
+        });
       }
       redirectToUsers();
     } catch (error) {
@@ -161,7 +160,7 @@ export default function EditUserForm({
     if (formRoles.length == 0) return 'Roles';
 
     return (
-      <div className='w-full flex'>
+      <div className='flex w-full'>
         {formRoles.map((role) => {
           let orgRole = roles.find((val) => val.id == role.roleId);
           return (
@@ -182,7 +181,9 @@ export default function EditUserForm({
             <CardHeader>
               <CardTitle>{edit ? 'Edit' : 'Create'} User</CardTitle>
               <CardDescription>
-                {edit ? 'Edit the user\'s information below.' : 'Create a new user account.'}
+                {edit
+                  ? "Edit the user's information below."
+                  : 'Create a new user account.'}
               </CardDescription>
             </CardHeader>
             <CardContent className='grid gap-4'>
@@ -309,7 +310,10 @@ export default function EditUserForm({
               </div>
             </CardContent>
             <CardFooter>
-              <SubmitButton text={edit ? 'Save' : 'Create'} isSubmitting={isSubmitting} />
+              <SubmitButton
+                text={edit ? 'Save' : 'Create'}
+                isSubmitting={isSubmitting}
+              />
             </CardFooter>
           </Card>
         </form>
