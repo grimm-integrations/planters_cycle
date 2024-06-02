@@ -65,6 +65,7 @@
     ".*.ts",
     "*.config.js",
     "*.config.ts",
-    "components/ui/*"
+    "components/ui/*",
+    "prisma/*"
   ]
 }

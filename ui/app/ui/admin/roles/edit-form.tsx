@@ -53,9 +53,13 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
         title: 'Succsess 🎉',
       });
       await redirectToRoles();
-    } catch (error) {
+    } catch (error: unknown) {
+      let errorMessage = 'There was a problem with your request.';
+      if (error instanceof Error) {
+        errorMessage += `\n${error.message}`;
+      }
       toast({
-        description: `There was a problem with your request.\n${error}`,
+        description: errorMessage,
         title: 'Uh oh! Something went wrong.',
       });
     }
@@ -64,7 +68,12 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
   return (
     <>
       <Form {...form}>
-        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          className='space-y-8'
+          onSubmit={() => {
+            form.handleSubmit(onSubmit);
+          }}
+        >
           <Card>
             <CardHeader>
               <CardTitle>Edit Role</CardTitle>

@@ -30,7 +30,7 @@ import { useState } from 'react';
 
 import type { CompleteUser } from '@/prisma/zod';
 
-export default function DeleteDropdown({ user }: { user: CompleteUser }) {
+export default function ActionDropdown({ user }: { user: CompleteUser }) {
   const [open, setOpen] = useState(false);
 
   const { toast } = useToast();
@@ -44,9 +44,13 @@ export default function DeleteDropdown({ user }: { user: CompleteUser }) {
       });
       setOpen(false);
       await redirectToUsers();
-    } catch (error) {
+    } catch (error: unknown) {
+      let errorMessage = 'There was a problem with your request.';
+      if (error instanceof Error) {
+        errorMessage += `\n${error.message}`;
+      }
       toast({
-        description: `There was a problem with your request.\n${error}`,
+        description: errorMessage,
         title: 'Uh oh! Something went wrong.',
       });
     }
@@ -84,7 +88,13 @@ export default function DeleteDropdown({ user }: { user: CompleteUser }) {
             <AlertDialogCancel onClick={() => setOpen(false)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => onClickDelete(user)}>
+            <AlertDialogAction
+              onClick={() => {
+                onClickDelete(user).catch((error) => {
+                  console.error(error);
+                });
+              }}
+            >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>

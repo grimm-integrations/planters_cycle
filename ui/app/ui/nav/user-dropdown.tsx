@@ -34,6 +34,7 @@ export default function UserDropdown() {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <form
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             action={async () => {
               'use server';
               await signOut();

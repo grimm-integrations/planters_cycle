@@ -12,7 +12,7 @@ import { useDebouncedCallback } from 'use-debounce';
 export default function SearchBar({ placeholder }: { placeholder: string }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  const router = useRouter();
 
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -22,7 +22,7 @@ export default function SearchBar({ placeholder }: { placeholder: string }) {
     } else {
       params.delete('query');
     }
-    replace(`${pathname}?${params.toString()}`);
+    router.replace(`${pathname}?${params.toString()}`);
   }, 100);
 
   return (

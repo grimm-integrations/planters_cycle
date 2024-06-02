@@ -65,6 +65,7 @@ export async function editUser(
       },
       method: 'POST',
     });
+    if (data.status != 200) return Error('Failed to edit User');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch user');
@@ -90,6 +91,7 @@ export async function createUser(user: z.infer<typeof editUserSchema>) {
       },
       method: 'POST',
     });
+    if (data.status != 200) return Error('Failed to create User');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch user');
@@ -119,6 +121,7 @@ export async function editRole(
       },
       method: 'POST',
     });
+    if (data.status != 200) return Error('Failed to edit Role');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to edit role');
@@ -141,6 +144,7 @@ export async function createRole(role: z.infer<typeof editRoleSchema>) {
       },
       method: 'POST',
     });
+    if (data.status != 200) return Error('Failed to create Role');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to create role');
@@ -160,15 +164,11 @@ export async function deleteRole(id: number) {
       },
       method: 'DELETE',
     });
+    if (data.status != 200) return Error('Failed to delete role');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to delete role');
   }
-}
-
-export async function redirectToRoles() {
-  revalidatePath('/admin/roles');
-  redirect('/admin/roles');
 }
 
 export async function deleteUser(id: string) {
@@ -184,13 +184,23 @@ export async function deleteUser(id: string) {
       },
       method: 'DELETE',
     });
+    if (data.status) return Error('Failed to delete user');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to delete user');
   }
 }
 
+export async function redirectToRoles() {
+  await new Promise<void>(() => {
+    revalidatePath('/admin/roles');
+    redirect('/admin/roles');
+  });
+}
+
 export async function redirectToUsers() {
-  revalidatePath('/admin/users');
-  redirect('/admin/users');
+  await new Promise<void>(() => {
+    revalidatePath('/admin/users');
+    redirect('/admin/users');
+  });
 }

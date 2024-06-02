@@ -43,9 +43,13 @@ export default function ActionDropdown({ role }: { role: Role }) {
         title: 'Success 🎉',
       });
       await redirectToRoles();
-    } catch (error) {
+    } catch (error: unknown) {
+      let errorMessage = 'There was a problem with your request.';
+      if (error instanceof Error) {
+        errorMessage += `\n${error.message}`;
+      }
       toast({
-        description: `There was a problem with your request.\n${error}`,
+        description: errorMessage,
         title: 'Uh oh! Something went wrong.',
       });
     }
@@ -83,7 +87,13 @@ export default function ActionDropdown({ role }: { role: Role }) {
             <AlertDialogCancel onClick={() => setOpen(false)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => onClickDelete(role)}>
+            <AlertDialogAction
+              onClick={() => {
+                onClickDelete(role).catch((error) => {
+                  console.error(error);
+                });
+              }}
+            >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>

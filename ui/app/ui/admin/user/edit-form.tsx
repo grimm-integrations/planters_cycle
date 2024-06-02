@@ -59,6 +59,10 @@ interface CompleteUser extends z.infer<typeof editUserSchema> {
   roles: UsersInRoles[];
 }
 
+/**
+ * Schema for the related user model.
+ * @type {z.ZodSchema<CompleteUser>}
+ */
 const relatedUserModel: z.ZodSchema<CompleteUser> = z.lazy(() =>
   editUserSchema.extend({
     roles: UsersInRolesModel.array(),
@@ -121,10 +125,14 @@ export default function EditUserForm({
           title: 'Success 🎉',
         });
       }
-      redirectToUsers();
-    } catch (error) {
+      await redirectToUsers();
+    } catch (error: unknown) {
+      let errorMessage = 'There was a problem with your request.';
+      if (error instanceof Error) {
+        errorMessage += `\n${error.message}`;
+      }
       toast({
-        description: `There was a problem with your request.\n${error}`,
+        description: errorMessage,
         title: 'Uh oh! Something went wrong.',
       });
       setIsSubmitting(false);
@@ -175,7 +183,12 @@ export default function EditUserForm({
   return (
     <>
       <Form {...form}>
-        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          className='space-y-8'
+          onSubmit={() => {
+            form.handleSubmit(onSubmit);
+          }}
+        >
           <Card>
             <CardHeader>
               <CardTitle>{edit ? 'Edit' : 'Create'} User</CardTitle>

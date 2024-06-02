@@ -9,14 +9,10 @@ import { formatDateToLocal } from '@/lib/utils';
 import { ArrowUpDown } from 'lucide-react';
 import Link from 'next/link';
 
-import DeleteDropdown from './delete-dropdown';
+import ActionDropdown from './action-dropdown';
 
 import type { CompleteUser } from '@/prisma/zod';
 import type { ColumnDef } from '@tanstack/react-table';
-
-/*
- * Copyright (c) Johannes Grimm 2024.
- */
 
 export const columns: ColumnDef<CompleteUser>[] = [
   {
@@ -92,7 +88,7 @@ export const columns: ColumnDef<CompleteUser>[] = [
   {
     cell: ({ row }) => {
       const user = row.original;
-      return <DeleteDropdown user={user} />;
+      return <ActionDropdown user={user} />;
     },
     id: 'actions',
   },

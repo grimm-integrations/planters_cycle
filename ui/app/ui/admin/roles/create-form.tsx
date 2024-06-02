@@ -52,9 +52,13 @@ export default function CreateRoleForm() {
         title: 'Succsess 🎉',
       });
       await redirectToRoles();
-    } catch (error) {
+    } catch (error: unknown) {
+      let errorMessage = 'There was a problem with your request.';
+      if (error instanceof Error) {
+        errorMessage += `\n${error.message}`;
+      }
       toast({
-        description: `There was a problem with your request.\n${error}`,
+        description: errorMessage,
         title: 'Uh oh! Something went wrong.',
       });
     }
@@ -63,7 +67,12 @@ export default function CreateRoleForm() {
   return (
     <>
       <Form {...form}>
-        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          className='space-y-8'
+          onSubmit={() => {
+            form.handleSubmit(onSubmit);
+          }}
+        >
           <Card>
             <CardHeader>
               <CardTitle>Create Role</CardTitle>

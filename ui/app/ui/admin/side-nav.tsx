@@ -29,7 +29,7 @@ const bottom_links = [
 export default function SideNav() {
   const pathname = usePathname();
   return (
-    <aside className='inset-y fixed  left-0 z-20 flex h-full flex-col border-r'>
+    <aside className='fixed inset-y-0 left-0 z-20 flex h-full flex-col border-r'>
       <TooltipProvider>
         <nav className='grid gap-1 p-2'>
           {links.map((link) => {

@@ -23,7 +23,6 @@ import { Input } from '@/components/ui/input';
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationFirst,
   PaginationItem,
   PaginationLast,
@@ -40,7 +39,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { compareItems, rankItem } from '@tanstack/match-sorter-utils';
+import { rankItem } from '@tanstack/match-sorter-utils';
 import {
   flexRender,
   getCoreRowModel,
@@ -64,6 +63,7 @@ import type {
 } from '@tanstack/react-table';
 
 declare module '@tanstack/table-core' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData, TValue> {
     cellClassName?: string;
     className?: string;
@@ -82,8 +82,9 @@ declare module '@tanstack/react-table' {
   }
 }
 // Define a custom fuzzy filter function that will apply ranking info to rows (using match-sorter utils)
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
   // Rank the item
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const itemRank = rankItem(row.getValue(columnId), value);
 
   // Store the itemRank info
@@ -113,11 +114,11 @@ export default function ListData<TData, TValue>({
   name,
   searchParams,
 }: ListDataProps<TData, TValue>) {
-  const query = searchParams?.query || '';
+  const query = searchParams?.query ?? '';
   const currentPage = Number(searchParams?.page) || 1;
 
   const [pagination, setPagination] = React.useState({
-    pageIndex: 0, //initial page index
+    pageIndex: currentPage - 1, //initial page index
     pageSize: 10, //default page size
   });
 
@@ -125,11 +126,10 @@ export default function ListData<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [globalFilter, setGlobalFilter] = React.useState('');
+  const [globalFilter, setGlobalFilter] = React.useState(query);
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     columns,
@@ -152,7 +152,6 @@ export default function ListData<TData, TValue>({
       columnVisibility,
       globalFilter,
       pagination,
-      rowSelection,
       sorting,
     },
   });
@@ -209,7 +208,7 @@ export default function ListData<TData, TValue>({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Link href='/admin/users/create'>
+              <Link href={`/admin/${name.toLowerCase()}s/create`}>
                 <Button className='h-8 gap-1' size='sm'>
                   <PlusCircle className='size-3.5' />
                   <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>

@@ -1,28 +1,18 @@
-import * as z from 'zod';
-import {
-  CompleteUsersInRoles,
-  RelatedUsersInRolesModel,
-  CompletePlantHistory,
-  RelatedPlantHistoryModel,
-} from './index';
+import * as z from "zod"
+import { CompleteUsersInRoles, RelatedUsersInRolesModel, CompletePlantHistory, RelatedPlantHistoryModel } from "./index"
 
 export const UserModel = z.object({
   id: z.string().uuid(),
-  displayName: z
-    .string()
-    .min(2, 'Display name must be at least 2 characters long'),
-  email: z.string().email('Invalid email address'),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters long')
-    .or(z.literal('')),
+  displayName: z.string().min(2, "Display name must be at least 2 characters long"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters long").or(z.literal('')),
   lastLogin: z.date().nullish(),
   createdAt: z.date(),
-});
+})
 
 export interface CompleteUser extends z.infer<typeof UserModel> {
-  roles: CompleteUsersInRoles[];
-  PlantHistory: CompletePlantHistory[];
+  roles: CompleteUsersInRoles[]
+  PlantHistory: CompletePlantHistory[]
 }
 
 /**
@@ -30,9 +20,7 @@ export interface CompleteUser extends z.infer<typeof UserModel> {
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const RelatedUserModel: z.ZodSchema<CompleteUser> = z.lazy(() =>
-  UserModel.extend({
-    roles: RelatedUsersInRolesModel.array(),
-    PlantHistory: RelatedPlantHistoryModel.array(),
-  })
-);
+export const RelatedUserModel: z.ZodSchema<CompleteUser> = z.lazy(() => UserModel.extend({
+  roles: RelatedUsersInRolesModel.array(),
+  PlantHistory: RelatedPlantHistoryModel.array(),
+}))
