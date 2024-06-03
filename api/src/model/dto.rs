@@ -2,6 +2,8 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
+use crate::prisma::role;
+
 pub mod auth {
     use serde::{Deserialize, Serialize};
 
@@ -36,3 +38,8 @@ pub mod auth {
         pub assigned_by: String,
     }
 }
+
+role::partial_unchecked!(Role{
+    name
+    is_default
+});
