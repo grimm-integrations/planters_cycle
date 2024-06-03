@@ -65,7 +65,7 @@ export async function editUser(
       },
       method: 'POST',
     });
-    if (data.status != 200) return Error('Failed to edit User');
+    if (data.status != 200) throw new Error('Failed to edit User');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch user');
@@ -91,7 +91,7 @@ export async function createUser(user: z.infer<typeof editUserSchema>) {
       },
       method: 'POST',
     });
-    if (data.status != 200) return Error('Failed to create User');
+    if (data.status != 200) throw new Error('Failed to create User');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch user');
@@ -121,7 +121,7 @@ export async function editRole(
       },
       method: 'POST',
     });
-    if (data.status != 200) return Error('Failed to edit Role');
+    if (data.status != 200) throw new Error('Failed to edit Role');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to edit role');
@@ -134,7 +134,7 @@ export async function createRole(role: z.infer<typeof editRoleSchema>) {
   const session = await auth();
   if (!session || !session.user) throw new Error('Not authenticated');
 
-  const jsonObject = JSON.stringify(role);
+  const jsonObject = JSON.stringify(role, null, 2);
   try {
     const data = await fetch(`http://127.0.0.1:8004/api/roles`, {
       body: jsonObject,
@@ -144,7 +144,7 @@ export async function createRole(role: z.infer<typeof editRoleSchema>) {
       },
       method: 'POST',
     });
-    if (data.status != 200) return Error('Failed to create Role');
+    if (data.status != 200) throw new Error('Failed to create Role');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to create role');
@@ -164,7 +164,7 @@ export async function deleteRole(id: number) {
       },
       method: 'DELETE',
     });
-    if (data.status != 200) return Error('Failed to delete role');
+    if (data.status != 200) throw new Error('Failed to delete role');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to delete role');
@@ -184,7 +184,7 @@ export async function deleteUser(id: string) {
       },
       method: 'DELETE',
     });
-    if (data.status) return Error('Failed to delete user');
+    if (data.status != 200) throw new Error('Failed to delete user');
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to delete user');
