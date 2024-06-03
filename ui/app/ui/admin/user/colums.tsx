@@ -55,8 +55,10 @@ export const columns: ColumnDef<CompleteUser>[] = [
   },
   {
     accessorKey: 'createdAt',
+    /// TODO: need to investigate solution for conversion of createdAt to local time
+    /// produces hydration error when server and client in different timezones
     cell: ({ row }) => {
-      return <div>{formatDateToLocal(row.original.createdAt)}</div>;
+      return <time>{row.original.createdAt.toLocaleString()}</time>;
     },
     header: 'Created at',
     meta: {
