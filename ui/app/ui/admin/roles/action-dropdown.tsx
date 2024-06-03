@@ -87,13 +87,7 @@ export default function ActionDropdown({ role }: { role: Role }) {
             <AlertDialogCancel onClick={() => setOpen(false)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                onClickDelete(role).catch((error) => {
-                  console.error(error);
-                });
-              }}
-            >
+            <AlertDialogAction onClick={() => onClickDelete(role)}>
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>

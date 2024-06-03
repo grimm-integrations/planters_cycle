@@ -88,13 +88,7 @@ export default function ActionDropdown({ user }: { user: CompleteUser }) {
             <AlertDialogCancel onClick={() => setOpen(false)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                onClickDelete(user).catch((error) => {
-                  console.error(error);
-                });
-              }}
-            >
+            <AlertDialogAction onClick={() => onClickDelete(user)}>
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>
