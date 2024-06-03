@@ -52,7 +52,6 @@ const editUserSchema = UserModel.partial({
   createdAt: true,
   id: true,
   lastLogin: true,
-  password: true,
 });
 
 interface CompleteUser extends z.infer<typeof editUserSchema> {
@@ -88,6 +87,7 @@ export default function EditUserForm({
     defaultValues: {
       displayName: user.displayName,
       email: user.email,
+      password: '',
       roles: user.roles.map((role) => {
         return {
           assignedAt: new Date(role.assignedAt),
@@ -109,7 +109,6 @@ export default function EditUserForm({
       id: user.id,
       lastLogin: user.lastLogin,
     };
-    if (values.password == undefined && edit) values.password = '';
 
     try {
       if (edit) {

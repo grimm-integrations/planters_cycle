@@ -20,9 +20,12 @@ export default async function Page() {
   if (!session || !session.user) throw new Error('Not authenticated');
 
   const user: { roles: UsersInRoles[] } & User = {
+    createdAt: new Date(),
     displayName: '',
     email: '',
-    password: undefined,
+    id: '',
+    lastLogin: null,
+    password: '',
     roles: [],
   };
 
