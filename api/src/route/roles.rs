@@ -2,7 +2,10 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use crate::prisma::{role, PrismaClient};
+use crate::{
+    model::dto::Role,
+    prisma::{role, PrismaClient},
+};
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 
 #[allow(dead_code)]
@@ -35,13 +38,13 @@ async fn get_role_by_id(data: web::Data<PrismaClient>, id: web::Path<i32>) -> im
 }
 
 #[post("")]
-async fn create_role(data: web::Data<PrismaClient>, body: web::Json<role::Data>) -> impl Responder {
+async fn create_role(data: web::Data<PrismaClient>, body: web::Json<Role>) -> impl Responder {
     let body = body.into_inner();
     let role = data
         .role()
         .create(
-            body.name,
-            vec![role::is_default::set(body.is_default)],
+            body.name.unwrap(),
+            vec![role::is_default::set(body.is_default.unwrap())],
         )
         .exec()
         .await
@@ -53,13 +56,13 @@ async fn create_role(data: web::Data<PrismaClient>, body: web::Json<role::Data>)
 async fn edit_role(
     data: web::Data<PrismaClient>,
     id: web::Path<i32>,
-    body: web::Json<role::Data>,
+    body: web::Json<Role>,
 ) -> impl Responder {
     let role = data
         .role()
-        .update(
+        .update_unchecked(
             role::id::equals(id.into_inner()),
-            vec![role::name::set(body.into_inner().name)],
+            body.into_inner().to_params(),
         )
         .exec()
         .await
