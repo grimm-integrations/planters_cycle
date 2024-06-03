@@ -4,7 +4,7 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
+import SubmitButton from '@/components/submit-button';
 import {
   Card,
   CardContent,
@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -24,9 +25,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { editRole, redirectToRoles } from '@/lib/actions';
+import { createRole, editRole, redirectToRoles } from '@/lib/actions';
 import { RoleModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { Role } from '@prisma/client';
@@ -36,22 +38,42 @@ const editRoleSchema = RoleModel.partial({
   id: true,
 });
 
-export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
+export default function EditRoleForm({
+  edit,
+  id,
+  role,
+}: {
+  edit: boolean;
+  id: string;
+  role: Role;
+}) {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof editRoleSchema>>({
     defaultValues: {
+      isDefault: role.isDefault,
       name: role.name,
     },
     resolver: zodResolver(editRoleSchema),
   });
-  const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof editRoleSchema>) {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
-      await editRole(id, values);
-      toast({
-        description: `Edited role ${values.name}.`,
-        title: 'Succsess 🎉',
-      });
+      if (edit) {
+        await editRole(id, values);
+        toast({
+          description: `Edited role ${values.name}.`,
+          title: 'Succsess 🎉',
+        });
+      } else {
+        await createRole(values);
+        toast({
+          description: `Created role ${values.name}.`,
+          title: 'Succsess 🎉',
+        });
+      }
       await redirectToRoles();
     } catch (error: unknown) {
       let errorMessage = 'There was a problem with your request.';
@@ -62,23 +84,21 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
         description: errorMessage,
         title: 'Uh oh! Something went wrong.',
       });
+      setIsSubmitting(false);
     }
   }
 
   return (
     <>
       <Form {...form}>
-        <form
-          className='space-y-8'
-          onSubmit={() => {
-            form.handleSubmit(onSubmit);
-          }}
-        >
+        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
           <Card>
             <CardHeader>
-              <CardTitle>Edit Role</CardTitle>
+              <CardTitle>{edit ? 'Edit' : 'Create'} Role</CardTitle>
               <CardDescription>
-                Edit the role&apos;s information below.
+                {edit
+                  ? "Edit the role's information below."
+                  : 'Create a new role account.'}
               </CardDescription>
             </CardHeader>
             <CardContent className='grid gap-4'>
@@ -98,11 +118,34 @@ export default function EditRoleForm({ id, role }: { id: string; role: Role }) {
                   )}
                 />
               </div>
+              <div className='grid gap-2'>
+                <FormField
+                  control={form.control}
+                  name='isDefault'
+                  render={({ field }) => (
+                    <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className='space-y-1 leading-none'>
+                        <FormLabel>Is default role</FormLabel>
+                        <FormDescription>
+                          Default roles get automaticly assigned to new users.
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
             </CardContent>
             <CardFooter>
-              <Button className='w-full' type='submit'>
-                Save
-              </Button>
+              <SubmitButton
+                isSubmitting={isSubmitting}
+                text={edit ? 'Save' : 'Create'}
+              />
             </CardFooter>
           </Card>
         </form>

@@ -24,7 +24,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           <BreadCrumb />
         </header>
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-          <EditRoleForm id={id} role={role} />
+          <EditRoleForm edit={true} id={id} role={role} />
         </main>
       </div>
     </div>
