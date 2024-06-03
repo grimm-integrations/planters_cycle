@@ -2,7 +2,7 @@ import * as z from "zod"
 import { CompleteUser, RelatedUserModel, CompleteRole, RelatedRoleModel } from "./index"
 
 export const UsersInRolesModel = z.object({
-  userId: z.string().uuid("Invalid user id"),
+  userId: z.string(),
   roleId: z.number().int().min(1, "Role ID needs to be set"),
   assignedAt: z.date(),
   assignedBy: z.string().uuid("Assigner must be set"),
