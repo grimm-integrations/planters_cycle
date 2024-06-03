@@ -2,7 +2,6 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 import EditUserForm from '@/app/ui/admin/user/edit-form';
-import { auth } from '@/auth';
 import BreadCrumb from '@/components/bread-crumb';
 import { fetchRoles } from '@/lib/data';
 
@@ -15,9 +14,6 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const roles = await fetchRoles('');
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
 
   const user: { roles: UsersInRoles[] } & User = {
     createdAt: new Date(),
@@ -37,13 +33,7 @@ export default async function Page() {
         </header>
         <main className='grid flex-1 place-items-stretch items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
           <div className='size-full place-self-center lg:max-w-2xl'>
-            <EditUserForm
-              edit={false}
-              id=''
-              roles={roles}
-              sessionUserId={session.user.id}
-              user={user}
-            />
+            <EditUserForm edit={false} id='' roles={roles} user={user} />
           </div>
         </main>
       </div>

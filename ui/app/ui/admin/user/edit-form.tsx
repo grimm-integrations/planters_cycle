@@ -72,13 +72,11 @@ export default function EditUserForm({
   edit,
   id,
   roles,
-  sessionUserId,
   user,
 }: {
   edit: boolean;
   id: string;
   roles: Role[];
-  sessionUserId: string;
   user: { roles: UsersInRoles[] } & User;
 }) {
   const { toast } = useToast();
@@ -146,7 +144,7 @@ export default function EditUserForm({
         ...formRoles,
         {
           assignedAt: new Date(),
-          assignedBy: sessionUserId,
+          assignedBy: '',
           roleId: role.id,
           userId: user.id,
         },
@@ -182,12 +180,7 @@ export default function EditUserForm({
   return (
     <>
       <Form {...form}>
-        <form
-          className='space-y-8'
-          onSubmit={() => {
-            form.handleSubmit(onSubmit);
-          }}
-        >
+        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
           <Card>
             <CardHeader>
               <CardTitle>{edit ? 'Edit' : 'Create'} User</CardTitle>

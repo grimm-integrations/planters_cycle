@@ -4,9 +4,9 @@
 
 use std::collections::HashSet;
 
-use crate::model::dto::auth::RegisterRequest;
+use crate::model::dto::auth::{RegisterRequest, RoleRegisterRequest};
 use crate::model::error::ErrorCode;
-use crate::prisma::{user, users_in_roles, PrismaClient};
+use crate::prisma::{role, user, users_in_roles, PrismaClient};
 use actix_web::web;
 use chrono::Utc;
 use prisma_client_rust::or;
@@ -44,6 +44,7 @@ pub async fn update_last_login(id: &str, data: &web::Data<PrismaClient>) -> Resu
 }
 
 pub async fn create_new_user(
+    assigner_id: String,
     user: RegisterRequest,
     data: &web::Data<PrismaClient>,
 ) -> Result<user::Data, ErrorCode> {
@@ -52,7 +53,28 @@ pub async fn create_new_user(
         Err(e) => return Err(e),
     };
 
-    let user_roles = user.roles.unwrap_or_default();
+    let mut user_roles = user.roles.unwrap_or_default();
+
+    let default_roles = match data
+        .role()
+        .find_many(vec![role::is_default::equals(true)])
+        .exec()
+        .await
+        .map_err(|_| ErrorCode::INTERNAL001)
+    {
+        Ok(r) => r,
+        Err(e) => return Err(e),
+    };
+
+    if !default_roles.is_empty() {
+        for item in default_roles {
+            user_roles.push(RoleRegisterRequest {
+                role_id: item.id,
+                assigned_at: Utc::now().fixed_offset(),
+                assigned_by: assigner_id.to_owned(),
+            })
+        }
+    }
 
     if !user_roles.is_empty() {
         for item in user_roles {
@@ -90,6 +112,7 @@ pub async fn edit_user_by_id(
     id: &str,
     data: &web::Data<PrismaClient>,
     user: user::Data,
+    assigner_id: String
 ) -> Result<user::Data, ErrorCode> {
     let mut user: user::Data = user.clone();
 
@@ -134,7 +157,7 @@ pub async fn edit_user_by_id(
         for item in added_roles {
             match data
                 .users_in_roles()
-                .create_unchecked(item.user_id, item.role_id, item.assigned_by, vec![])
+                .create_unchecked(item.user_id, item.role_id, assigner_id.to_owned(), vec![])
                 .exec()
                 .await
                 .map_err(|_| ErrorCode::INTERNAL001)

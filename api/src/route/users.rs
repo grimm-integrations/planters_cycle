@@ -7,6 +7,7 @@ use crate::{
     prisma::{user, users_in_roles, PrismaClient},
     service::user::{create_new_user, edit_user_by_id},
 };
+use actix_identity::Identity;
 use actix_web::{delete, get, post, web, HttpResponse, Responder};
 use prisma_client_rust::or;
 use serde::Deserialize;
@@ -101,10 +102,16 @@ async fn get_user_by_id(data: web::Data<PrismaClient>, id: web::Path<String>) ->
 
 #[post("")]
 async fn create_user(
+    identity: Option<Identity>,
     data: web::Data<PrismaClient>,
     body: web::Json<RegisterRequest>,
 ) -> impl Responder {
-    let register_result = create_new_user(body.into_inner(), &data).await;
+    let ident_id: String = match identity.map(|id| id.id()) {
+        None => "anonymous".to_owned(),
+        Some(Ok(id)) => id,
+        Some(Err(_)) => return HttpResponse::InternalServerError().finish(),
+    };
+    let register_result = create_new_user(ident_id, body.into_inner(), &data).await;
     match register_result {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(_) => HttpResponse::BadRequest().finish(),
@@ -113,11 +120,17 @@ async fn create_user(
 
 #[post("/{id}")]
 async fn edit_user(
+    identity: Option<Identity>,
     data: web::Data<PrismaClient>,
     id: web::Path<String>,
     body: web::Json<user::Data>,
 ) -> impl Responder {
-    match edit_user_by_id(&id.to_string(), &data, body.into_inner()).await {
+    let ident_id = match identity.map(|id| id.id()) {
+        None => "anonymous".to_owned(),
+        Some(Ok(id)) => id,
+        Some(Err(_)) => return HttpResponse::InternalServerError().finish(),
+    };
+    match edit_user_by_id(&id.to_string(), &data, body.into_inner(), ident_id).await {
         Err(_) => HttpResponse::NotFound().body("User not found"),
         Ok(usr) => HttpResponse::Ok().json(usr),
     }
