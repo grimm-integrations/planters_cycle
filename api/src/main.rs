@@ -25,7 +25,8 @@ async fn main() -> Result<(), std::io::Error> {
     let data: Result<PrismaClient, NewClientError> = PrismaClient::_builder().build().await;
     let data = data.unwrap();
 
-    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("debug"));
+    env::set_var("RUST_BACKTRACE", "1");
     env::set_var("RUST_LOG", "actix_web=debug");
 
     let listener = TcpListener::bind("127.0.0.1:8004").expect("Failed to bind address");
