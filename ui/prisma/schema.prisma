@@ -76,9 +76,10 @@ model Plant {
 }
 
 model Genetic {
-  id    String  @id @default(uuid())
-  name  String
-  Plant Plant[]
+  id          String  @id @default(uuid())
+  name        String
+  flower_days Int
+  Plant       Plant[]
 }
 
 model PlantHistory {
