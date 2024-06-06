@@ -26,7 +26,7 @@ export default function SearchBar({ placeholder }: { placeholder: string }) {
   }, 100);
 
   return (
-    <div className='relative ml-auto flex-1 md:grow-0'>
+    <div className='relative z-0 ml-auto flex-1 md:grow-0'>
       <Search className='absolute left-2.5 top-2.5 size-4 text-muted-foreground' />
       <Input
         className='w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]'
