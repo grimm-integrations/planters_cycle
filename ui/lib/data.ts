@@ -5,7 +5,11 @@
 import { auth } from '@/auth';
 import { unstable_noStore as noStore } from 'next/cache';
 
-import type { CompleteUser } from '@/prisma/zod';
+import type {
+  CompleteGenetic,
+  CompletePlant,
+  CompleteUser,
+} from '@/prisma/zod';
 import type { Role, User, UsersInRoles } from '@prisma/client';
 
 export async function fetchProfile() {
@@ -52,6 +56,66 @@ export async function fetchUsers(query: string): Promise<CompleteUser[]> {
   } catch (error) {
     console.error('Fetch ERROR:', error);
     throw new Error('Failed to fetch user pages');
+  }
+}
+
+export async function fetchGenetics(query: string): Promise<CompleteGenetic[]> {
+  noStore();
+
+  const session = await auth();
+  if (!session?.user) throw new Error('Not authenticated');
+
+  try {
+    const data = await fetch(
+      `http://127.0.0.1:8004/api/genetics?query=${query}`,
+      {
+        headers: {
+          Cookie: session.user.auth,
+        },
+        method: 'GET',
+      }
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        const genetics = data as CompleteGenetic[];
+        return genetics;
+      });
+    return data;
+  } catch (error) {
+    console.error('Fetch ERROR:', error);
+    throw new Error('Failed to fetch genetics');
+  }
+}
+
+export async function fetchPlants(query: string): Promise<CompletePlant[]> {
+  noStore();
+
+  const session = await auth();
+  if (!session?.user) throw new Error('Not authenticated');
+
+  try {
+    const data = await fetch(
+      `http://127.0.0.1:8004/api/plants?query=${query}`,
+      {
+        headers: {
+          Cookie: session.user.auth,
+        },
+        method: 'GET',
+      }
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        const plants = data as CompletePlant[];
+        return plants;
+      });
+    return data;
+  } catch (error) {
+    console.error('Fetch ERROR:', error);
+    throw new Error('Failed to fetch plants');
   }
 }
 

@@ -14,8 +14,8 @@ import UserDropdown from './user-dropdown';
 export default function TopNav() {
   const links = [
     { href: '/dashboard', name: 'Dashboard' },
-    { href: '/plants', name: 'Plants' },
-    { href: '/genetics', name: 'Genetics' },
+    { href: '/dashboard/plants', name: 'Plants' },
+    { href: '/dashboard/genetics', name: 'Genetics' },
   ];
 
   return (

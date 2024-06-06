@@ -2,7 +2,7 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use crate::prisma::role;
+use crate::prisma::{plant, genetic, role};
 
 pub mod auth {
     use serde::{Deserialize, Serialize};
@@ -42,4 +42,14 @@ pub mod auth {
 role::partial_unchecked!(Role{
     name
     is_default
+});
+
+genetic::partial_unchecked!(Genetic{
+    name
+    flower_days
+});
+
+plant::partial_unchecked!(Plant{
+    name
+    genetic_id
 });

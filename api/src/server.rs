@@ -4,7 +4,9 @@
 
 use crate::prisma::PrismaClient;
 use crate::route::auth::auth_controller_init;
+use crate::route::genetics::genetic_controller_init;
 use crate::route::health_check::health_check;
+use crate::route::plants::plant_controller_init;
 use crate::route::roles::role_controller_init;
 use crate::route::users::user_controller_init;
 use actix_identity::{Identity, IdentityMiddleware};
@@ -43,9 +45,11 @@ pub fn get_config(conf: &mut ServiceConfig) {
     conf.service(
         scope("/api")
             .service(health_check)
+            .configure(auth_controller_init)
             .configure(user_controller_init)
             .configure(role_controller_init)
-            .configure(auth_controller_init),
+            .configure(genetic_controller_init)
+            .configure(plant_controller_init),
     );
 }
 
