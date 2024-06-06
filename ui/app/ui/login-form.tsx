@@ -54,12 +54,7 @@ export function LoginForm() {
   return (
     <>
       <Form {...form}>
-        <form
-          className='space-y-8'
-          onSubmit={() => {
-            form.handleSubmit(onSubmit);
-          }}
-        >
+        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
           <Card className='w-full max-w-sm'>
             <CardHeader>
               <CardTitle className='text-2xl'>Login</CardTitle>
