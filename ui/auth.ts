@@ -5,55 +5,54 @@
 import NextAuth, { type DefaultSession } from 'next-auth';
 // The `JWT` interface can be found in the `next-auth/jwt` submodule
 import { JWT } from 'next-auth/jwt';
-import { Provider } from 'next-auth/providers';
 import Credentials from 'next-auth/providers/credentials';
+
+import type { User } from 'next-auth';
+import type { Provider } from 'next-auth/providers';
 
 declare module 'next-auth/jwt' {
   /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
   interface JWT {
-    id: string;
-    name?: string | null;
-    roles?: string[] | null;
     auth: string;
+    id: string;
+    name?: null | string;
+    roles?: null | string[];
   }
 }
 
 declare module 'next-auth' {
   interface User {
-    id?: string;
-    displayName?: string | null;
-    email?: string | null;
     auth: string;
-    roles?: string[] | null;
+    displayName?: null | string;
+    email?: null | string;
+    id?: string;
+    roles?: null | string[];
   }
 
   interface Session {
     user: {
-      id: string;
-      name?: string | null;
-      roles?: string[] | null;
       auth: string;
+      id: string;
+      name?: null | string;
+      roles?: null | string[];
     } & DefaultSession['user'];
   }
 }
 
 const providers: Provider[] = [
   Credentials({
-    name: 'credentials',
-    credentials: {
-      identifier: {},
-      password: {},
-    },
     authorize: async (credentials) => {
       const res = await fetch('http://127.0.0.1:8004/api/auth/login', {
-        method: 'POST',
         body: JSON.stringify(credentials),
         headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
       });
-      const user = await res.json();
-      user.auth = res.headers.getSetCookie().find((a) => {
+      const user = (await res.json()) as User;
+      const auth_token = res.headers.getSetCookie().find((a) => {
         return a.includes('plnt_auth');
       });
+      if (auth_token == undefined) return null;
+      user.auth = auth_token;
       user.auth = user.auth?.substring(0, user.auth?.indexOf(';') + 1);
       if (res.ok && user) {
         return user;
@@ -61,6 +60,11 @@ const providers: Provider[] = [
 
       return null;
     },
+    credentials: {
+      identifier: {},
+      password: {},
+    },
+    name: 'credentials',
   }),
 ];
 
@@ -73,10 +77,18 @@ export const providerMap = providers.map((provider) => {
   }
 });
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  // debug: true,
-  providers,
+export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      const isOnAdmin = nextUrl.pathname.startsWith('/admin');
+      if (isOnDashboard || isOnAdmin) {
+        if (isLoggedIn) return true;
+        return false;
+      }
+      return true;
+    },
     jwt({ token, user }) {
       if (user) {
         token.name = user.displayName;
@@ -93,18 +105,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.auth = token.auth;
       return session;
     },
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-      const isOnAdmin = nextUrl.pathname.startsWith('/admin');
-      if (isOnDashboard || isOnAdmin) {
-        if (isLoggedIn) return true;
-        return false;
-      }
-      return true;
-    },
   },
   pages: {
     signIn: '/login',
   },
+  // debug: true,
+  providers,
 });
