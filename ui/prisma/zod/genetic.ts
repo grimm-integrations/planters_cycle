@@ -4,6 +4,7 @@ import { CompletePlant, RelatedPlantModel } from "./index"
 export const GeneticModel = z.object({
   id: z.string(),
   name: z.string(),
+  flower_days: z.number().int(),
 })
 
 export interface CompleteGenetic extends z.infer<typeof GeneticModel> {
