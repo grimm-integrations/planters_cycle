@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
+import { deleteGenetic, redirectToGenetics } from '@/lib/repos/genetic';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -34,15 +35,15 @@ export default function ActionDropdown({ genetic }: { genetic: Genetic }) {
 
   const { toast } = useToast();
 
-  function onClickDelete(genetic: Genetic) {
+  async function onClickDelete(genetic: Genetic) {
     try {
-      // await deleteGenetic(genetic.id);
+      await deleteGenetic(genetic.id);
       toast({
         description: `Deleted genetic ${genetic.name}.`,
         title: 'Success 🎉',
       });
       setOpen(false);
-      // await redirectToGenetics();
+      await redirectToGenetics();
     } catch (error: unknown) {
       let errorMessage = 'There was a problem with your request.';
       if (error instanceof Error) {
