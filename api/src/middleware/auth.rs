@@ -4,9 +4,10 @@
 
 use std::future::ready;
 
-use actix_identity::Identity;
+use actix_identity::{Identity, IdentityExt};
 use actix_web::dev::Payload;
-use actix_web::{FromRequest, HttpRequest};
+use actix_web::guard::GuardContext;
+use actix_web::{FromRequest, HttpRequest, HttpResponse};
 
 #[derive(Debug)]
 pub struct AuthDetails {
@@ -29,20 +30,15 @@ impl FromRequest for AuthDetails {
         ready(Ok(AuthDetails {
             user_id: user_id.unwrap(),
         }))
+    }
+}
 
-        /*Box::pin(async move {
-            let data: &web::Data<PrismaClient> =
-                req_clone.app_data::<web::Data<PrismaClient>>().unwrap();
-            if let Ok(usr_id) = user_id {
-                let res = data
-                    .user()
-                    .find_unique(user::id::equals(usr_id))
-                    .exec()
-                    .await;
-                Ok(res.unwrap().unwrap().clone())
-            } else {
-                Err(ErrorUnauthorized(""))
-            }
-        })*/
+pub fn verify_token(ctx: &GuardContext) -> bool {
+    let ident = ctx.get_identity();
+    if ident.is_err() {
+        HttpResponse::Unauthorized().finish();
+        return false;
+    } else {
+        return true;
     }
 }
