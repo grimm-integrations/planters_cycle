@@ -112,7 +112,7 @@ pub async fn edit_user_by_id(
     id: &str,
     data: &web::Data<PrismaClient>,
     user: user::Data,
-    assigner_id: String
+    assigner_id: String,
 ) -> Result<user::Data, ErrorCode> {
     let mut user: user::Data = user.clone();
 
