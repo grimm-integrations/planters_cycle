@@ -4,7 +4,7 @@
 
 import ListData from '@/app/ui/list-data';
 import { columns } from '@/app/ui/plants/columns';
-import { fetchPlants } from '@/lib/data';
+import { fetchPlants } from '@/lib/repos/plant';
 
 import type { Metadata } from 'next';
 
