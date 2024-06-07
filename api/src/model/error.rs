@@ -2,9 +2,8 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
-use prisma_client_rust::QueryError;
+use prisma_client_rust::{prisma_errors::query_engine::RecordNotFound, QueryError};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -19,7 +18,16 @@ pub enum ErrorCode {
     INTERNAL001,
 
     #[doc = "Database error"]
-    DATABASE001,
+    DATABASE001(String),
+
+    #[doc = "Database entry not found"]
+    DATABASE002,
+
+    #[doc = "Bad request"]
+    BADREQUEST(String),
+
+    #[doc = "Unknown error"]
+    UNKNOWN,
 }
 
 #[doc = "Application error model"]
@@ -42,15 +50,20 @@ impl ErrorResponse {
             ErrorCode::AUTH001 => HttpResponse::NotFound(),
             ErrorCode::AUTH002 => HttpResponse::Unauthorized(),
             ErrorCode::INTERNAL001 => HttpResponse::InternalServerError(),
-            ErrorCode::DATABASE001 => HttpResponse::InternalServerError(),
-            _ => HttpResponse::build(StatusCode::from_u16(418).unwrap()),
+            ErrorCode::DATABASE001(_) => HttpResponse::InternalServerError(),
+            ErrorCode::DATABASE002 => HttpResponse::NotFound(),
+            ErrorCode::BADREQUEST(_) => HttpResponse::BadRequest(),
+            ErrorCode::UNKNOWN => HttpResponse::ImATeapot(),
         }
         .json(json!(ErrorResponse::new(code)))
     }
 }
 
 impl From<QueryError> for ErrorCode {
-    fn from(_: QueryError) -> Self {
-        ErrorCode::DATABASE001
+    fn from(error: QueryError) -> Self {
+        if error.is_prisma_error::<RecordNotFound>() {
+            return ErrorCode::DATABASE002;
+        }
+        ErrorCode::DATABASE001(error.to_string())
     }
 }
