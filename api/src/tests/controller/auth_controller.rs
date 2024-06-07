@@ -49,10 +49,10 @@ mod tests {
         assert_eq!(resp.email, "dev@dev.com");
     }
 
+    #[allow(unreachable_code)]
     #[actix_rt::test]
     async fn test_login_user() {
         todo!("Fix the login test");
-        #[allow(unreachable_code)]
         let app_data = init_app_state().await;
         let app =
             test::init_service(init_app_entry().app_data(app_data).configure(get_config)).await;
