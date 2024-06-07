@@ -4,6 +4,7 @@
 
 use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
+use prisma_client_rust::QueryError;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -16,6 +17,9 @@ pub enum ErrorCode {
 
     #[doc = "Internal server error"]
     INTERNAL001,
+
+    #[doc = "Database error"]
+    DATABASE001,
 }
 
 #[doc = "Application error model"]
@@ -37,8 +41,16 @@ impl ErrorResponse {
         match code {
             ErrorCode::AUTH001 => HttpResponse::NotFound(),
             ErrorCode::AUTH002 => HttpResponse::Unauthorized(),
+            ErrorCode::INTERNAL001 => HttpResponse::InternalServerError(),
+            ErrorCode::DATABASE001 => HttpResponse::InternalServerError(),
             _ => HttpResponse::build(StatusCode::from_u16(418).unwrap()),
         }
         .json(json!(ErrorResponse::new(code)))
+    }
+}
+
+impl From<QueryError> for ErrorCode {
+    fn from(_: QueryError) -> Self {
+        ErrorCode::DATABASE001
     }
 }
