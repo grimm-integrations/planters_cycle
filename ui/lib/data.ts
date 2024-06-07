@@ -5,8 +5,8 @@
 import { auth } from '@/auth';
 import { unstable_noStore as noStore } from 'next/cache';
 
-import type { CompleteGenetic, CompleteUser } from '@/prisma/zod';
-import type { Role, User, UsersInRoles } from '@prisma/client';
+import type { CompleteUser } from '@/prisma/zod';
+import type { Genetic, Role, User, UsersInRoles } from '@prisma/client';
 
 export async function fetchProfile() {
   noStore();
@@ -55,7 +55,7 @@ export async function fetchUsers(query: string): Promise<CompleteUser[]> {
   }
 }
 
-export async function fetchGenetics(query: string): Promise<CompleteGenetic[]> {
+export async function fetchGenetics(query: string): Promise<Genetic[]> {
   noStore();
 
   const session = await auth();
@@ -75,7 +75,7 @@ export async function fetchGenetics(query: string): Promise<CompleteGenetic[]> {
         return res.json();
       })
       .then((data) => {
-        const genetics = data as CompleteGenetic[];
+        const genetics = data as Genetic[];
         return genetics;
       });
     return data;
