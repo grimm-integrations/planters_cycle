@@ -2,7 +2,7 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-use crate::prisma::{plant, genetic, role};
+use crate::prisma::{genetic, plant, role};
 
 pub mod auth {
     use serde::{Deserialize, Serialize};
