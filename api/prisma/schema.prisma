@@ -41,7 +41,7 @@ model UsersInRoles {
 
 model Plant {
   id           String         @id @default(uuid()) /// @zod.uuid().optional()
-  name         String /// @zod.min(1, "Plant name must be at least 1 character long")
+  name         String         @unique /// @zod.min(1, "Plant name must be at least 1 character long")
   genetic      Genetic        @relation(fields: [geneticId], references: [id]) /// @zod.optional()
   geneticId    String /// @zod.uuid("Genetic ID must be set")
   createdAt    DateTime       @default(now()) /// @zod.optional()
@@ -55,7 +55,7 @@ model Plant {
 
 model Genetic {
   id         String  @id @default(uuid()) /// @zod.uuid().optional()
-  name       String /// @zod.min(1, "Genetic name must be at least 1 character long")
+  name       String  @unique /// @zod.min(1, "Genetic name must be at least 1 character long")
   flowerDays Int /// @zod.min(1, "Flower days must be at least 1")
   plants     Plant[]
 }
