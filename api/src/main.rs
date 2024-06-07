@@ -22,9 +22,11 @@ mod tests;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
+    // Prepare database connection
     let data: Result<PrismaClient, NewClientError> = PrismaClient::_builder().build().await;
     let data = data.unwrap();
 
+    // enable logging
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("debug"));
     env::set_var("RUST_BACKTRACE", "1");
     env::set_var("RUST_LOG", "actix_web=debug");
