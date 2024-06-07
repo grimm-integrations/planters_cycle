@@ -1,4 +1,5 @@
 import * as z from "zod"
+import { PlantStage } from "@prisma/client"
 import { CompleteGenetic, RelatedGeneticModel, CompletePlantHistory, RelatedPlantHistoryModel } from "./index"
 
 export const PlantModel = z.object({
@@ -7,11 +8,15 @@ export const PlantModel = z.object({
   geneticId: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  stage: z.nativeEnum(PlantStage).optional(),
+  motherId: z.string().optional().nullish(),
 })
 
 export interface CompletePlant extends z.infer<typeof PlantModel> {
   genetic: CompleteGenetic
-  PlantHistory: CompletePlantHistory[]
+  plantHistory: CompletePlantHistory[]
+  mother?: CompletePlant | null
+  children: CompletePlant[]
 }
 
 /**
@@ -21,5 +26,7 @@ export interface CompletePlant extends z.infer<typeof PlantModel> {
  */
 export const RelatedPlantModel: z.ZodSchema<CompletePlant> = z.lazy(() => PlantModel.extend({
   genetic: RelatedGeneticModel,
-  PlantHistory: RelatedPlantHistoryModel.array(),
+  plantHistory: RelatedPlantHistoryModel.array(),
+  mother: RelatedPlantModel.optional().nullish(),
+  children: RelatedPlantModel.array().optional(),
 }))

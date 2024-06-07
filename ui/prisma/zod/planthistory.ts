@@ -11,7 +11,7 @@ export const PlantHistoryModel = z.object({
 
 export interface CompletePlantHistory extends z.infer<typeof PlantHistoryModel> {
   plant: CompletePlant
-  User: CompleteUser
+  user: CompleteUser
 }
 
 /**
@@ -21,5 +21,5 @@ export interface CompletePlantHistory extends z.infer<typeof PlantHistoryModel> 
  */
 export const RelatedPlantHistoryModel: z.ZodSchema<CompletePlantHistory> = z.lazy(() => PlantHistoryModel.extend({
   plant: RelatedPlantModel,
-  User: RelatedUserModel,
+  user: RelatedUserModel,
 }))

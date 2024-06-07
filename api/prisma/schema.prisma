@@ -46,14 +46,18 @@ model Plant {
   geneticId    String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  PlantHistory PlantHistory[]
+  plantHistory PlantHistory[]
+  stage        PlantStage     @default(SEED) /// @zod.optional()
+  mother       Plant?         @relation(name: "motherToChildren", fields: [motherId], references: [id]) /// @zod.optional()
+  motherId     String? /// @zod.optional()
+  children     Plant[]        @relation("motherToChildren") /// @zod.optional()
 }
 
 model Genetic {
-  id          String  @id @default(uuid())
-  name        String
-  flower_days Int
-  Plant       Plant[]
+  id         String  @id @default(uuid())
+  name       String
+  flowerDays Int
+  plants     Plant[]
 }
 
 model PlantHistory {
@@ -62,6 +66,18 @@ model PlantHistory {
   plantId   String
   action    String
   createdAt DateTime @default(now())
-  User      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
+}
+
+enum PlantStage {
+  SEED
+  VEGETATIVE
+  FLOWERING
+  HARVEST
+  DRIED
+  CURED
+  PACKAGED
+  SOLD
+  DESTROYED
 }

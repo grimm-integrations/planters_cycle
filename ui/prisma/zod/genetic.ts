@@ -4,11 +4,11 @@ import { CompletePlant, RelatedPlantModel } from "./index"
 export const GeneticModel = z.object({
   id: z.string(),
   name: z.string(),
-  flower_days: z.number().int(),
+  flowerDays: z.number().int(),
 })
 
 export interface CompleteGenetic extends z.infer<typeof GeneticModel> {
-  Plant: CompletePlant[]
+  plants: CompletePlant[]
 }
 
 /**
@@ -17,5 +17,5 @@ export interface CompleteGenetic extends z.infer<typeof GeneticModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedGeneticModel: z.ZodSchema<CompleteGenetic> = z.lazy(() => GeneticModel.extend({
-  Plant: RelatedPlantModel.array(),
+  plants: RelatedPlantModel.array(),
 }))
