@@ -25,7 +25,9 @@ export default function Page() {
           <BreadCrumb />
         </header>
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-          <EditRoleForm edit={false} id='' role={role} />
+          <div className='size-full place-self-center lg:max-w-2xl'>
+            <EditRoleForm edit={false} id='' role={role} />
+          </div>
         </main>
       </div>
     </div>
