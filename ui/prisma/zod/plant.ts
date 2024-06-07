@@ -25,8 +25,8 @@ export interface CompletePlant extends z.infer<typeof PlantModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedPlantModel: z.ZodSchema<CompletePlant> = z.lazy(() => PlantModel.extend({
-  genetic: RelatedGeneticModel.optional(),
-  plantHistory: RelatedPlantHistoryModel.array().optional(),
+  genetic: RelatedGeneticModel,
+  plantHistory: RelatedPlantHistoryModel.array(),
   mother: RelatedPlantModel.optional().nullish(),
-  children: RelatedPlantModel.array().optional(),
+  children: RelatedPlantModel.array(),
 }))
