@@ -3,15 +3,17 @@
  */
 
 use crate::{
+    middleware::auth::verify_token,
     model::dto::Role,
     prisma::{role, PrismaClient},
 };
-use actix_web::{delete, get, post, web, HttpResponse, Responder};
+use actix_web::{delete, get, guard, post, web, HttpResponse, Responder};
 
 #[allow(dead_code)]
 pub fn role_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(
         web::scope("/roles")
+            .guard(guard::fn_guard(verify_token))
             .service(get_roles)
             .service(get_role_by_id)
             .service(create_role)

@@ -3,15 +3,17 @@
  */
 
  use crate::{
-  model::dto::Plant,
-  prisma::{plant, PrismaClient},
+    middleware::auth::verify_token,
+    model::{dto::Plant, error::ErrorResponse},
+    prisma::PrismaClient,
 };
-use actix_web::{delete, get, post, web, HttpResponse, Responder};
+use actix_web::{delete, get, guard, post, web, HttpResponse, Responder};
 
 #[allow(dead_code)]
 pub fn plant_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
   cfg.service(
       web::scope("/plants")
+            .guard(guard::fn_guard(verify_token))
           .service(get_plants)
           .service(get_plant_by_id)
           .service(create_plant)

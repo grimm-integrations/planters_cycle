@@ -3,18 +3,20 @@
  */
 
 use crate::{
+    middleware::auth::verify_token,
     model::dto::auth::RegisterRequest,
     prisma::{user, users_in_roles, PrismaClient},
     service::user::{create_new_user, edit_user_by_id},
 };
 use actix_identity::Identity;
-use actix_web::{delete, get, post, web, HttpResponse, Responder};
+use actix_web::{delete, get, guard, post, web, HttpResponse, Responder};
 use prisma_client_rust::or;
 use serde::Deserialize;
 
 pub fn user_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(
         web::scope("/users")
+            .guard(guard::fn_guard(verify_token))
             .service(count_users)
             .service(get_users)
             .service(get_user_by_id)
