@@ -27,6 +27,7 @@ export default async function Page({
       columns={columns}
       data={roles}
       description='Manage your roles here. You can add, edit, and delete roles.'
+      isAdmin={true}
       name='Role'
       searchParams={searchParams}
     />

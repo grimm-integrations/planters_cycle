@@ -100,6 +100,7 @@ interface ListDataProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   description: string;
+  isAdmin?: boolean;
   name: string;
   searchParams?: {
     page?: string;
@@ -111,6 +112,7 @@ export default function ListData<TData, TValue>({
   columns,
   data,
   description,
+  isAdmin,
   name,
   searchParams,
 }: ListDataProps<TData, TValue>) {
@@ -208,7 +210,9 @@ export default function ListData<TData, TValue>({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Link href={`/admin/${name.toLowerCase()}s/create`}>
+              <Link
+                href={`${isAdmin ? '/admin' : '/dashboard'}/${name.toLowerCase()}s/create`}
+              >
                 <Button className='h-8 gap-1' size='sm'>
                   <PlusCircle className='size-3.5' />
                   <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>

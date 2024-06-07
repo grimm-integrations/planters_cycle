@@ -27,6 +27,7 @@ export default async function Page({
       columns={columns}
       data={users}
       description='Manage your users here. You can add, edit, and delete users.'
+      isAdmin={true}
       name='User'
       searchParams={searchParams}
     />
