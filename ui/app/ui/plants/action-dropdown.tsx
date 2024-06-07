@@ -27,14 +27,14 @@ import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
-import type { Plant } from '@prisma/client';
+import type { CompletePlant } from '@/prisma/zod';
 
-export default function ActionDropdown({ plant }: { plant: Plant }) {
+export default function ActionDropdown({ plant }: { plant: CompletePlant }) {
   const [open, setOpen] = useState(false);
 
   const { toast } = useToast();
 
-  function onClickDelete(plant: Plant) {
+  function onClickDelete(plant: CompletePlant) {
     try {
       // await deletePlant(plant.id);
       toast({
