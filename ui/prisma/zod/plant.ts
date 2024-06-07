@@ -3,11 +3,11 @@ import { PlantStage } from "@prisma/client"
 import { CompleteGenetic, RelatedGeneticModel, CompletePlantHistory, RelatedPlantHistoryModel } from "./index"
 
 export const PlantModel = z.object({
-  id: z.string(),
-  name: z.string(),
-  geneticId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  id: z.string().uuid().optional(),
+  name: z.string().min(1, "Plant name must be at least 1 character long"),
+  geneticId: z.string().uuid("Genetic ID must be set"),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
   stage: z.nativeEnum(PlantStage).optional(),
   motherId: z.string().optional().nullish(),
 })
@@ -25,8 +25,8 @@ export interface CompletePlant extends z.infer<typeof PlantModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedPlantModel: z.ZodSchema<CompletePlant> = z.lazy(() => PlantModel.extend({
-  genetic: RelatedGeneticModel,
-  plantHistory: RelatedPlantHistoryModel.array(),
+  genetic: RelatedGeneticModel.optional(),
+  plantHistory: RelatedPlantHistoryModel.array().optional(),
   mother: RelatedPlantModel.optional().nullish(),
   children: RelatedPlantModel.array().optional(),
 }))

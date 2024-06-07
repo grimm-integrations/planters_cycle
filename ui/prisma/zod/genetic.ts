@@ -2,9 +2,9 @@ import * as z from "zod"
 import { CompletePlant, RelatedPlantModel } from "./index"
 
 export const GeneticModel = z.object({
-  id: z.string(),
-  name: z.string(),
-  flowerDays: z.number().int(),
+  id: z.string().uuid().optional(),
+  name: z.string().min(1, "Genetic name must be at least 1 character long"),
+  flowerDays: z.number().int().min(1, "Flower days must be at least 1"),
 })
 
 export interface CompleteGenetic extends z.infer<typeof GeneticModel> {
