@@ -1,11 +1,17 @@
+/*
+ * Copyright (c) Johannes Grimm 2024.
+ */
+
 import { Loader2 } from 'lucide-react';
 
 import { Button } from './ui/button';
 
 export default function SubmitButton({
+  icon,
   isSubmitting,
   text,
 }: {
+  icon?: JSX.Element;
   isSubmitting: boolean;
   text: string;
 }) {
@@ -19,7 +25,7 @@ export default function SubmitButton({
 
   return (
     <Button className='w-full' type='submit'>
-      {text}
+      {icon} {text}
     </Button>
   );
 }
