@@ -4,6 +4,7 @@
 
 'use client';
 
+import getPlantStageIcon from '@/components/plantstage-icon';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
 
@@ -29,6 +30,14 @@ export const columns: ColumnDef<CompletePlant>[] = [
   },
   {
     accessorKey: 'stage',
+    cell: ({ row }) => {
+      return (
+        <div className='flex justify-start px-4'>
+          {getPlantStageIcon(row.original.stage)}
+          <span>{row.original.stage}</span>
+        </div>
+      );
+    },
     header: ({ column }) => {
       return (
         <Button
@@ -44,7 +53,7 @@ export const columns: ColumnDef<CompletePlant>[] = [
   {
     accessorKey: 'genetic',
     cell: ({ row }) => {
-      return <span>{row.original.genetic.name}</span>;
+      return <span className='px-4'>{row.original.genetic.name}</span>;
     },
     header: ({ column }) => {
       return (
@@ -61,7 +70,11 @@ export const columns: ColumnDef<CompletePlant>[] = [
   {
     cell: ({ row }) => {
       const plant = row.original;
-      return <ActionDropdown plant={plant} />;
+      return (
+        <div className='grid min-w-max justify-items-end'>
+          <ActionDropdown plant={plant} />
+        </div>
+      );
     },
     id: 'actions',
   },
