@@ -6,7 +6,7 @@ use actix_web::web;
 
 use crate::{
     model::{dto::Plant, error::ErrorCode},
-    prisma::{plant, PrismaClient},
+    prisma::{plant, plant_history, PrismaClient},
 };
 
 pub async fn generate_plant_name(
@@ -43,7 +43,14 @@ pub async fn get_plant_by_id(
     data: &web::Data<PrismaClient>,
     id: String,
 ) -> Result<plant::Data, ErrorCode> {
-    match data.plant().find_unique(plant::id::equals(id)).exec().await {
+    match data
+        .plant()
+        .find_unique(plant::id::equals(id))
+        .with(plant::genetic::fetch())
+        .with(plant::plant_history::fetch(vec![]).with(plant_history::user::fetch()))
+        .exec()
+        .await
+    {
         Ok(plant) => match plant {
             Some(plant) => Ok(plant),
             None => Err(ErrorCode::DATABASE002),
