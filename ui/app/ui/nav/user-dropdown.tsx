@@ -2,7 +2,6 @@
  * Copyright (c) Johannes Grimm 2024.
  */
 
-import { signOut } from '@/auth';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { logoutAction } from '@/lib/actions';
 import { CircleUser } from 'lucide-react';
 
 import AdminButton from './admin-button';
@@ -37,7 +37,7 @@ export default function UserDropdown() {
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             action={async () => {
               'use server';
-              await signOut();
+              await logoutAction();
             }}
           >
             <button type='submit'>Sign in</button>

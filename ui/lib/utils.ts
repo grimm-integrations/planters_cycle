@@ -20,3 +20,4 @@ export const formatDateToLocal = (date?: Date | null, locale = 'de-DE') => {
   const formatter = new Intl.DateTimeFormat(locale, options);
   return formatter.format(date);
 };
+

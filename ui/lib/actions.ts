@@ -4,13 +4,14 @@
 
 'use server';
 
-import { auth, signIn } from '@/auth';
+import { signIn, signOut } from '@/auth';
 import { RoleModel, UserModel } from '@/prisma/zod';
 import { AuthError } from 'next-auth';
-import { unstable_noStore as noStore } from 'next/cache';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+
+import { httpDelete, httpPost } from './http';
 
 const loginSchema = z.object({
   identifier: z.string().min(2, {
@@ -39,6 +40,15 @@ export async function authenticate(formData: z.infer<typeof loginSchema>) {
   }
 }
 
+export async function logoutAction() {
+  try {
+    await httpPost('/auth/logout');
+    await signOut();
+  } catch (error) {
+    console.error('Failed to sign out:', error);
+  }
+}
+
 const editUserSchema = UserModel.partial({
   createdAt: true,
   id: true,
@@ -50,52 +60,11 @@ export async function editUser(
   id: string,
   user: z.infer<typeof editUserSchema>
 ) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  const jsonObject = JSON.stringify(user);
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/users/${id}`, {
-      body: jsonObject,
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: session.user.auth,
-      },
-      method: 'POST',
-    });
-    if (data.status != 200) throw new Error('Failed to edit User');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to fetch user');
-  }
-
-  revalidatePath('/admin/users');
-  redirect('/admin/users');
+  return httpPost(`/users/${id}`, JSON.stringify(user));
 }
 
 export async function createUser(user: z.infer<typeof editUserSchema>) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  const jsonObject = JSON.stringify(user, null, 2);
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/users`, {
-      body: jsonObject,
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: session.user.auth,
-      },
-      method: 'POST',
-    });
-    if (data.status != 200) throw new Error('Failed to create User');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to fetch user');
-  }
+  return httpPost(`/users`, JSON.stringify(user));
 }
 
 const editRoleSchema = RoleModel.partial({
@@ -106,89 +75,19 @@ export async function editRole(
   id: string,
   role: z.infer<typeof editRoleSchema>
 ) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  const jsonObject = JSON.stringify(role);
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/roles/${id}`, {
-      body: jsonObject,
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: session.user.auth,
-      },
-      method: 'POST',
-    });
-    if (data.status != 200) throw new Error('Failed to edit Role');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to edit role');
-  }
+  return httpPost(`/roles/${id}`, JSON.stringify(role));
 }
 
 export async function createRole(role: z.infer<typeof editRoleSchema>) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  const jsonObject = JSON.stringify(role, null, 2);
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/roles`, {
-      body: jsonObject,
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: session.user.auth,
-      },
-      method: 'POST',
-    });
-    if (data.status != 200) throw new Error('Failed to create Role');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to create role');
-  }
+  return httpPost(`/roles`, JSON.stringify(role));
 }
 
 export async function deleteRole(id: number) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/roles/${id}`, {
-      headers: {
-        Cookie: session.user.auth,
-      },
-      method: 'DELETE',
-    });
-    if (data.status != 200) throw new Error('Failed to delete role');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to delete role');
-  }
+  return httpDelete(`/roles/${id}`);
 }
 
 export async function deleteUser(id: string) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/users/${id}`, {
-      headers: {
-        Cookie: session.user.auth,
-      },
-      method: 'DELETE',
-    });
-    if (data.status != 200) throw new Error('Failed to delete user');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to delete user');
-  }
+  return httpDelete(`/users/${id}`);
 }
 
 export async function redirectToRoles() {
