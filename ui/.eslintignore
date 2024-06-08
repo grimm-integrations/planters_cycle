@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.*.js
+.*.cjs
+.*.ts
+*.config.js
+*.config.ts
+components/ui/*
+prisma
