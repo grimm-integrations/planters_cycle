@@ -4,14 +4,20 @@
 
 'use server';
 
-import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
-import { unstable_noStore as noStore } from 'next/cache';
 import { redirect } from 'next/navigation';
 
+import { httpDelete, httpGet, httpPatch, httpPost } from '../http';
+
 import type { GeneticModel } from '@/prisma/zod';
+import type { Genetic } from '@prisma/client';
 import type { z } from 'zod';
 
+/**
+ * Redirects to the genetics dashboard.
+ * This function revalidates the path and then redirects to the genetics dashboard.
+ * @returns A promise that resolves when the redirection is complete.
+ */
 export async function redirectToGenetics() {
   await new Promise<void>(() => {
     revalidatePath('/dashboard/genetics');
@@ -19,95 +25,45 @@ export async function redirectToGenetics() {
   });
 }
 
+/**
+ * Creates a new genetic entry.
+ * @param genetic - The genetic data to be created.
+ * @returns A Promise that resolves to the response of the HTTP POST request.
+ */
 export async function createGenetic(genetic: z.infer<typeof GeneticModel>) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  const jsonObject = JSON.stringify(genetic, null, 2);
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/genetics`, {
-      body: jsonObject,
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: session.user.auth,
-      },
-      method: 'POST',
-    });
-    if (data.status != 201) throw new Error('Failed to create genetic');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to create genetic');
-  }
+  return httpPost(`/genetics`, {
+    body: JSON.stringify(genetic),
+    responseCode: 201,
+  });
 }
 
+/**
+ * Edits a genetic entry with the specified ID.
+ * @param id - The ID of the genetic entry to edit.
+ * @param genetic - The updated genetic data.
+ * @returns A promise that resolves to the result of the HTTP PATCH request.
+ */
 export async function editGenetic(
   id: string,
   genetic: z.infer<typeof GeneticModel>
 ) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  const jsonObject = JSON.stringify(genetic);
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/genetics/${id}`, {
-      body: jsonObject,
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: session.user.auth,
-      },
-      method: 'PATCH',
-    });
-    if (data.status != 200) throw new Error('Failed to edit Genetic');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to fetch genetic');
-  }
+  return httpPatch(`/genetics/${id}`, { body: JSON.stringify(genetic) });
 }
 
-export async function checkDuplicateName(name: string) {
-  noStore();
-
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  try {
-    const data = await fetch(
-      `http://127.0.0.1:8004/api/genetics/checkname/${name}`,
-      {
-        headers: {
-          Cookie: session.user.auth,
-        },
-        method: 'POST',
-      }
-    );
-    if (data.status != 200) throw new Error('Failed to check name');
-    return data.text();
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to check name');
-  }
-}
-
+/**
+ * Deletes a genetic entry by its ID.
+ * @param id - The ID of the genetic entry to delete.
+ * @returns A promise that resolves when the deletion is successful.
+ */
 export async function deleteGenetic(id: string) {
-  noStore();
+  return httpDelete(`/genetics/${id}`);
+}
 
-  const session = await auth();
-  if (!session || !session.user) throw new Error('Not authenticated');
-
-  try {
-    const data = await fetch(`http://127.0.0.1:8004/api/genetics/${id}`, {
-      headers: {
-        Cookie: session.user.auth,
-      },
-      method: 'DELETE',
-    });
-    if (data.status != 200) throw new Error('Failed to delete genetic');
-  } catch (error) {
-    console.error('Fetch ERROR:', error);
-    throw new Error('Failed to delete genetic');
-  }
+/**
+ * Fetches genetics data based on the provided query.
+ * @param query - The query string used to search for genetics data.
+ * @returns A promise that resolves to an array of Genetic objects.
+ */
+export async function fetchGenetics(query: string): Promise<Genetic[]> {
+  return httpGet<Genetic[]>(`/genetics?query=${query}`);
 }

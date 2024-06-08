@@ -5,17 +5,17 @@
 'use server';
 
 import { signIn, signOut } from '@/auth';
-import { RoleModel, UserModel } from '@/prisma/zod';
 import { AuthError } from 'next-auth';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-import { httpDelete, httpPost } from './http';
+import { httpPost } from './http';
 
+/**
+ * Schema for the login data.
+ */
 const loginSchema = z.object({
   identifier: z.string().min(2, {
-    message: 'identifier must be at least 2 characters.',
+    message: 'Identifier must be at least 2 characters.',
   }),
   password: z.string().min(2, {
     message: 'Password must be at least 2 characters.',
@@ -23,7 +23,13 @@ const loginSchema = z.object({
   redirectTo: z.string().optional(),
 });
 
-export async function authenticate(formData: z.infer<typeof loginSchema>) {
+/**
+ * Performs a login action using the provided form data.
+ * @param formData - The form data for the login action.
+ * @returns A promise that resolves to a string indicating the result of the login action.
+ * @throws Any error that occurs during the login action.
+ */
+export async function loginAction(formData: z.infer<typeof loginSchema>) {
   formData.redirectTo = '/dashboard';
   try {
     await signIn('credentials', formData);
@@ -40,6 +46,10 @@ export async function authenticate(formData: z.infer<typeof loginSchema>) {
   }
 }
 
+/**
+ * Logs out the user by sending a POST request to '/auth/logout' and signing out.
+ * @throws {Error} If there is an error during the logout process.
+ */
 export async function logoutAction() {
   try {
     await httpPost('/auth/logout');
@@ -47,59 +57,4 @@ export async function logoutAction() {
   } catch (error) {
     console.error('Failed to sign out:', error);
   }
-}
-
-const editUserSchema = UserModel.partial({
-  createdAt: true,
-  id: true,
-  lastLogin: true,
-  password: true,
-});
-
-export async function editUser(
-  id: string,
-  user: z.infer<typeof editUserSchema>
-) {
-  return httpPost(`/users/${id}`, JSON.stringify(user));
-}
-
-export async function createUser(user: z.infer<typeof editUserSchema>) {
-  return httpPost(`/users`, JSON.stringify(user));
-}
-
-const editRoleSchema = RoleModel.partial({
-  id: true,
-});
-
-export async function editRole(
-  id: string,
-  role: z.infer<typeof editRoleSchema>
-) {
-  return httpPost(`/roles/${id}`, JSON.stringify(role));
-}
-
-export async function createRole(role: z.infer<typeof editRoleSchema>) {
-  return httpPost(`/roles`, JSON.stringify(role));
-}
-
-export async function deleteRole(id: number) {
-  return httpDelete(`/roles/${id}`);
-}
-
-export async function deleteUser(id: string) {
-  return httpDelete(`/users/${id}`);
-}
-
-export async function redirectToRoles() {
-  await new Promise<void>(() => {
-    revalidatePath('/admin/roles');
-    redirect('/admin/roles');
-  });
-}
-
-export async function redirectToUsers() {
-  await new Promise<void>(() => {
-    revalidatePath('/admin/users');
-    redirect('/admin/users');
-  });
 }
