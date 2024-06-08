@@ -3,6 +3,7 @@
  */
 
 use crate::prisma::{genetic, plant, role};
+use serde::{Deserialize, Serialize};
 
 pub mod auth {
     use serde::{Deserialize, Serialize};
@@ -37,6 +38,12 @@ pub mod auth {
         #[serde(rename = "assignedBy")]
         pub assigned_by: String,
     }
+}
+
+#[doc = "Plain Id Model"]
+#[derive(Serialize, Debug, Deserialize)]
+pub struct IdModel {
+    pub id: String,
 }
 
 role::partial_unchecked!(Role{

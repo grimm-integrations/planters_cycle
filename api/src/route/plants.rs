@@ -4,11 +4,14 @@
 
 use crate::{
     middleware::auth::verify_token,
-    model::{dto::Plant, error::ErrorResponse},
+    model::{
+        dto::{IdModel, Plant},
+        error::ErrorResponse,
+    },
     prisma::PrismaClient,
     service,
 };
-use actix_web::{delete, get, guard, post, web, HttpResponse, Responder};
+use actix_web::{delete, get, guard, patch, post, web, HttpResponse, Responder};
 
 #[allow(dead_code)]
 pub fn plant_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
@@ -19,7 +22,8 @@ pub fn plant_controller_init(cfg: &mut actix_web::web::ServiceConfig) {
             .service(get_plant_by_id)
             .service(create_plant)
             .service(delete_plant)
-          .service(edit_plant),
+            .service(edit_plant)
+            .service(generate_plant_name),
     );
 }
 
@@ -63,6 +67,17 @@ async fn edit_plant(
 async fn delete_plant(data: web::Data<PrismaClient>, id: web::Path<String>) -> impl Responder {
     match service::plant::delete_plant(&data, id.into_inner()).await {
         Ok(_) => HttpResponse::Ok().finish(),
+        Err(e) => ErrorResponse::build(e),
+    }
+}
+
+#[post("/generatePlantName")]
+async fn generate_plant_name(
+    data: web::Data<PrismaClient>,
+    id: web::Json<IdModel>,
+) -> impl Responder {
+    match service::plant::generate_plant_name(&data, id.into_inner().id).await {
+        Ok(name) => HttpResponse::Ok().json(name),
         Err(e) => ErrorResponse::build(e),
     }
 }
