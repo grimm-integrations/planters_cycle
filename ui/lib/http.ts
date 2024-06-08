@@ -80,7 +80,7 @@ export async function httpGet<T>(
     responseCode?: number;
   }
 ): Promise<T> {
-  return base<T>(apiURL + url, 'GET', options);
+  return base<T>('GET', apiURL + url, options);
 }
 
 /**
