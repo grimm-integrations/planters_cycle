@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://github.com/ShaanCoding/ReadME-Generator">
+<a href="https://github.com/grimm-integrations/planters_cycle">
 <img src="https://avatars.githubusercontent.com/u/151554346?s=200&v=4" alt="Logo" width="80" height="80">
 </a>
 <h3 align="center">Planters Cycle</h3>
