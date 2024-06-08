@@ -5,7 +5,7 @@ export const UsersInRolesModel = z.object({
   userId: z.string(),
   roleId: z.number().int().min(1, "Role ID needs to be set"),
   assignedAt: z.date(),
-  assignedBy: z.string().uuid("Assigner must be set"),
+  assignedBy: z.string(),
 })
 
 export interface CompleteUsersInRoles extends z.infer<typeof UsersInRolesModel> {

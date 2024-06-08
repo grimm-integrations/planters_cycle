@@ -60,7 +60,7 @@ model UsersInRoles {
   role       Role     @relation(fields: [roleId], references: [id])
   roleId     Int /// @zod.min(1, "Role ID needs to be set")
   assignedAt DateTime @default(now())
-  assignedBy String /// @zod.uuid("Assigner must be set")
+  assignedBy String
 
   @@id([userId, roleId])
 }
