@@ -147,7 +147,20 @@ const FormMessage = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message) : children;
+  // Handle nested errors
+  const body = error
+    ? error instanceof Array
+      ? error
+          .map((e) => {
+            const messages = [];
+            for (const [k, v] of Object.entries(e)) {
+              messages.push(`${k}: ${(v as Error).message}`);
+            }
+            return messages.join('\n');
+          })
+          .join('\n')
+      : String(error?.message)
+    : children;
 
   if (!body) {
     return null;
