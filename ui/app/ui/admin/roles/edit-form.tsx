@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { createRole, editRole, redirectToRoles } from '@/lib/actions';
+import { createRole, editRole, redirectToRoles } from '@/lib/repos/role';
 import { RoleModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
@@ -34,10 +34,22 @@ import { useForm } from 'react-hook-form';
 import type { Role } from '@prisma/client';
 import type { z } from 'zod';
 
+/**
+ * Represents the schema for editing a role.
+ * @remarks
+ * This schema includes the `id` property.
+ */
 const editRoleSchema = RoleModel.partial({
   id: true,
 });
 
+/**
+ * Renders a form for editing or creating a role.
+ * @param edit - A boolean indicating whether the form is for editing an existing role.
+ * @param id - The ID of the role being edited.
+ * @param role - The role object containing the initial values for the form fields.
+ * @returns The JSX element representing the form.
+ */
 export default function EditRoleForm({
   edit,
   id,
@@ -65,13 +77,13 @@ export default function EditRoleForm({
         await editRole(id, values);
         toast({
           description: `Edited role ${values.name}.`,
-          title: 'Succsess 🎉',
+          title: 'Success 🎉',
         });
       } else {
         await createRole(values);
         toast({
           description: `Created role ${values.name}.`,
-          title: 'Succsess 🎉',
+          title: 'Success 🎉',
         });
       }
       await redirectToRoles();

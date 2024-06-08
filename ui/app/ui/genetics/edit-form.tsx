@@ -25,7 +25,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import {
-  checkDuplicateName,
   createGenetic,
   editGenetic,
   redirectToGenetics,
@@ -35,11 +34,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useDebouncedCallback } from 'use-debounce';
 
 import type { Genetic } from '@prisma/client';
 import type { z } from 'zod';
 
+/**
+ * Renders a form for editing or creating a genetic entry.
+ * @param {Object} props - The component props.
+ * @param {Genetic} props.genetic - The genetic object to edit (optional).
+ * @returns {JSX.Element} The rendered form component.
+ */
 export default function EditGeneticForm({ genetic }: { genetic?: Genetic }) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,7 +56,7 @@ export default function EditGeneticForm({ genetic }: { genetic?: Genetic }) {
     resolver: zodResolver(GeneticModel),
   });
 
-  const checkDuplicateNameDebounce = useDebouncedCallback(
+  /* const checkDuplicateNameDebounce = useDebouncedCallback(
     async (name: string) => {
       if (name == '') return;
       // Check if name is already in use
@@ -60,7 +64,7 @@ export default function EditGeneticForm({ genetic }: { genetic?: Genetic }) {
       console.log(d);
     },
     100
-  );
+  ); */
 
   const { watch } = form;
   React.useEffect(() => {
@@ -77,7 +81,7 @@ export default function EditGeneticForm({ genetic }: { genetic?: Genetic }) {
       }
     });
     return () => subscription.unsubscribe();
-  }, [checkDuplicateNameDebounce, form, watch]);
+  }, [form, watch]);
 
   async function onSubmit(formValues: z.infer<typeof GeneticModel>) {
     if (isSubmitting) return;
@@ -87,13 +91,13 @@ export default function EditGeneticForm({ genetic }: { genetic?: Genetic }) {
         await editGenetic(genetic.id, formValues);
         toast({
           description: `Edited genetic: ${formValues.name}.`,
-          title: 'Succsess 🎉',
+          title: 'Success 🎉',
         });
       } else {
         await createGenetic(formValues);
         toast({
           description: `Created genetic: ${formValues.name}.`,
-          title: 'Succsess 🎉',
+          title: 'Success 🎉',
         });
       }
       await redirectToGenetics();

@@ -23,13 +23,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
-import { deleteUser, redirectToUsers } from '@/lib/actions';
+import { deleteUser, redirectToUsers } from '@/lib/repos/user';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 import type { CompleteUser } from '@/prisma/zod';
 
+/**
+ * Renders a dropdown menu with actions for a user.
+ * @component
+ * @param {Object} props - The component props.
+ * @param {CompleteUser} props.user - The user object.
+ * @returns {JSX.Element} The rendered ActionDropdown component.
+ */
 export default function ActionDropdown({ user }: { user: CompleteUser }) {
   const [open, setOpen] = useState(false);
 

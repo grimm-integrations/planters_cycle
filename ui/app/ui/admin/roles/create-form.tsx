@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { createRole, redirectToRoles } from '@/lib/actions';
+import { createRole, redirectToRoles } from '@/lib/repos/role';
 import { RoleModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -35,6 +35,9 @@ const editRoleSchema = RoleModel.partial({
   id: true,
 });
 
+/**
+ * Component for creating a new role account.
+ */
 export default function CreateRoleForm() {
   const form = useForm<z.infer<typeof editRoleSchema>>({
     defaultValues: {
@@ -49,7 +52,7 @@ export default function CreateRoleForm() {
       await createRole(values);
       toast({
         description: `Created role ${values.name}.`,
-        title: 'Succsess 🎉',
+        title: 'Success 🎉',
       });
       await redirectToRoles();
     } catch (error: unknown) {

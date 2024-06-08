@@ -23,14 +23,17 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { authenticate } from '@/lib/actions';
+import { loginAction } from '@/lib/actions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+/**
+ * Represents the form schema for the login form.
+ */
 const formSchema = z.object({
   identifier: z.string().min(2, {
-    message: 'identifier must be at least 2 characters.',
+    message: 'Identifier must be at least 2 characters.',
   }),
   password: z.string().min(2, {
     message: 'Password must be at least 2 characters.',
@@ -38,6 +41,10 @@ const formSchema = z.object({
   redirectTo: z.string().optional(),
 });
 
+/**
+ * Renders a login form component.
+ * @returns The login form component.
+ */
 export function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
@@ -48,7 +55,7 @@ export function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await authenticate(values);
+    await loginAction(values);
   }
 
   return (

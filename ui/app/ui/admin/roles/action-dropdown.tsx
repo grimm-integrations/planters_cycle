@@ -23,13 +23,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
-import { deleteRole, redirectToRoles } from '@/lib/actions';
+import { deleteRole, redirectToRoles } from '@/lib/repos/role';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 import type { Role } from '@prisma/client';
 
+/**
+ * Renders a dropdown menu with actions for a specific role.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Role} props.role - The role object for which the actions are being displayed.
+ * @returns {JSX.Element} The rendered ActionDropdown component.
+ */
 export default function ActionDropdown({ role }: { role: Role }) {
   const [open, setOpen] = useState(false);
 

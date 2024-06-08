@@ -3,7 +3,7 @@
  */
 import EditUserForm from '@/app/ui/admin/user/edit-form';
 import BreadCrumb from '@/components/bread-crumb';
-import { fetchRoles } from '@/lib/data';
+import { fetchRoles } from '@/lib/repos/role';
 
 import type { User, UsersInRoles } from '@prisma/client';
 import type { Metadata } from 'next';
@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   title: 'Create User',
 };
 
+/**
+ * Renders the create user page.
+ * @returns The JSX element representing the create user page.
+ */
 export default async function Page() {
   const roles = await fetchRoles('');
 

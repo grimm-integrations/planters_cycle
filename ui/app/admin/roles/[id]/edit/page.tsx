@@ -4,7 +4,7 @@
 
 import EditRoleForm from '@/app/ui/admin/roles/edit-form';
 import BreadCrumb from '@/components/bread-crumb';
-import { fetchRole } from '@/lib/data';
+import { fetchRole } from '@/lib/repos/role';
 
 import type { Metadata } from 'next';
 
@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   title: 'Edit Role',
 };
 
+/**
+ * Renders the page for editing a role.
+ *
+ * @param params - The parameters for the page, including the role ID.
+ * @returns The JSX element representing the page.
+ */
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
 

@@ -37,7 +37,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useToast } from '@/components/ui/use-toast';
-import { createUser, editUser, redirectToUsers } from '@/lib/actions';
+import { createUser, editUser, redirectToUsers } from '@/lib/repos/user';
 import { cn } from '@/lib/utils';
 import { UserModel, UsersInRolesModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -46,7 +46,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import type { Role, User, UsersInRoles } from '@prisma/client';
+import type { Role, UsersInRoles } from '@prisma/client';
 
 const editUserSchema = UserModel.partial({
   createdAt: true,
@@ -68,6 +68,16 @@ const relatedUserModel: z.ZodSchema<CompleteUser> = z.lazy(() =>
   })
 );
 
+/**
+ * EditUserForm component is a form for editing or creating a user.
+ * @component
+ * @param {Object} props - The component props.
+ * @param {boolean} props.edit - Indicates whether the form is for editing an existing user or creating a new user.
+ * @param {string} props.id - The ID of the user being edited.
+ * @param {Role[]} props.roles - An array of available roles.
+ * @param {CompleteUser} props.user - The user object being edited.
+ * @returns {JSX.Element} The rendered EditUserForm component.
+ */
 export default function EditUserForm({
   edit,
   id,
@@ -77,7 +87,7 @@ export default function EditUserForm({
   edit: boolean;
   id: string;
   roles: Role[];
-  user: { roles: UsersInRoles[] } & User;
+  user: CompleteUser;
 }) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -146,7 +156,7 @@ export default function EditUserForm({
           assignedAt: new Date(),
           assignedBy: '',
           roleId: role.id,
-          userId: user.id,
+          userId: user.id ?? '',
         },
       ];
     } else {

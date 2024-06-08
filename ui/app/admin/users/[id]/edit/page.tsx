@@ -3,7 +3,8 @@
  */
 import EditUserForm from '@/app/ui/admin/user/edit-form';
 import BreadCrumb from '@/components/bread-crumb';
-import { fetchRoles, fetchUser } from '@/lib/data';
+import { fetchRoles } from '@/lib/repos/role';
+import { fetchUser } from '@/lib/repos/user';
 
 import type { Metadata } from 'next';
 
@@ -13,7 +14,6 @@ export const metadata: Metadata = {
 
 /**
  * Renders the page for editing a user.
- *
  * @param params - The parameters for the page, including the user ID.
  * @returns The JSX element representing the page.
  */
