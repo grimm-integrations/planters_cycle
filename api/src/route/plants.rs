@@ -51,7 +51,7 @@ async fn create_plant(data: web::Data<PrismaClient>, body: web::Json<Plant>) -> 
     }
 }
 
-#[post("/{id}")]
+#[patch("/{id}")]
 async fn edit_plant(
     data: web::Data<PrismaClient>,
     id: web::Path<String>,
