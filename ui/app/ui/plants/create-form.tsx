@@ -44,16 +44,25 @@ import {
 import { cn } from '@/lib/utils';
 import { PlantModel } from '@/prisma/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { BadgePlus, Check, ChevronsUpDown, RefreshCcwDot } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { Genetic } from '@prisma/client';
 import type { z } from 'zod';
 
-export default function CreatePlantForm(genetics: Genetic[]) {
+/**
+ * Renders a form for creating a new plant.
+ *
+ * @component
+ * @param {Genetic[]} genetics - The genetics to choose from.
+ * @returns {JSX.Element} The rendered component.
+ */
+export default function CreatePlantForm({ genetics }: { genetics: Genetic[] }) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const form = useForm<z.infer<typeof PlantModel>>({
     defaultValues: {
       geneticId: '',
@@ -87,16 +96,36 @@ export default function CreatePlantForm(genetics: Genetic[]) {
   }
 
   async function autoGenerateName() {
+    if (isGenerating) return;
+    setIsGenerating(true);
+
     const geneticId = form.getValues('geneticId');
     if (geneticId === '') {
       form.setError('name', { message: 'Please select a genetic first.' });
+      setIsGenerating(false);
       return;
     }
+
     const geneticName = genetics.find(
       (genetic: Genetic) => genetic.id === geneticId
     )?.name;
-    const plantTag = await generatePlantName(form.getValues('geneticId'));
-    form.setValue('name', `${geneticName} #${plantTag.padStart(8, '0')}`);
+    try {
+      const plantTag = String(
+        await generatePlantName(form.getValues('geneticId'))
+      );
+      form.setValue('name', `${geneticName} #${plantTag.padStart(8, '0')}`);
+      form.clearErrors('name');
+    } catch (error) {
+      let errorMessage = 'There was a problem with your request.';
+      if (error instanceof Error) {
+        errorMessage += `\n${error.message}`;
+      }
+      toast({
+        description: errorMessage,
+        title: 'Uh oh! Something went wrong.',
+      });
+    }
+    setIsGenerating(false);
   }
 
   return (
@@ -126,8 +155,13 @@ export default function CreatePlantForm(genetics: Genetic[]) {
                     </FormItem>
                   )}
                 />
-                <Button onClick={() => autoGenerateName()}>
-                  Auto Generate
+                <Button onClick={() => autoGenerateName()} type='button'>
+                  <RefreshCcwDot
+                    className={`mr-2 size-4 ${
+                      isGenerating ? ' animate-spin' : ''
+                    }`}
+                  />{' '}
+                  Auto generate
                 </Button>
               </div>
               <div className='grid gap-2'>
@@ -135,14 +169,14 @@ export default function CreatePlantForm(genetics: Genetic[]) {
                   control={form.control}
                   name='geneticId'
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Language</FormLabel>
+                    <FormItem className='flex flex-col'>
+                      <FormLabel>Genetic</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
                               className={cn(
-                                'w-[200px] justify-between',
+                                'justify-between',
                                 !field.value && 'text-muted-foreground'
                               )}
                               role='combobox'
@@ -200,7 +234,11 @@ export default function CreatePlantForm(genetics: Genetic[]) {
               </div>
             </CardContent>
             <CardFooter>
-              <SubmitButton isSubmitting={isSubmitting} text='Create' />
+              <SubmitButton
+                icon={<BadgePlus className='mr-2 size-4' />}
+                isSubmitting={isSubmitting}
+                text='Create'
+              />
             </CardFooter>
           </Card>
         </form>
