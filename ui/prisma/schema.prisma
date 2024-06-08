@@ -73,7 +73,7 @@ model Plant {
   createdAt    DateTime       @default(now()) /// @zod.optional()
   updatedAt    DateTime       @updatedAt /// @zod.optional()
   plantHistory PlantHistory[]
-  stage        PlantStage     @default(SEED) /// @zod.optional()
+  stage        PlantStage     @default(SEEDLING) /// @zod.optional()
   mother       Plant?         @relation(name: "motherToChildren", fields: [motherId], references: [id]) /// @zod.optional()
   motherId     String? /// @zod.optional()
   children     Plant[]        @relation("motherToChildren")
@@ -97,7 +97,7 @@ model PlantHistory {
 }
 
 enum PlantStage {
-  SEED
+  SEEDLING
   VEGETATIVE
   FLOWERING
   HARVEST
