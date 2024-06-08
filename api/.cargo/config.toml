@@ -13,3 +13,7 @@ debuginfo-level = 1
 
 [alias]
 prisma = "run -p prisma-cli"
+
+# This is a workaround for failing connection on git repositories fetching
+#[http]
+#check-revoke = false
